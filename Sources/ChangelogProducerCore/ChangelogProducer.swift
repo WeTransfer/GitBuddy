@@ -27,6 +27,7 @@ public final class ChangelogProducer {
     private let sinceTag: OptionArgument<String>
     private let baseBranch: OptionArgument<String>
     private let parsedArguments: ArgumentParser.Result
+    private let octoKit: Octokit
 
     public init() throws {
         let parser = ArgumentParser(usage: "<options>", overview: "Create a changelog for GitHub repositories")
@@ -40,34 +41,40 @@ public final class ChangelogProducer {
         parsedArguments = try parser.parse(arguments)
 
         Log.isVerbose = parsedArguments.get(verbose) ?? false
+
+        let gitHubAPIToken = ProcessInfo.processInfo.environment["DANGER_GITHUB_API_TOKEN"]!
+        let config = TokenConfiguration(gitHubAPIToken)
+        octoKit = Octokit(config)
     }
 
     public func run() throws {
         let release = fetchRelease()
         Log.debug("Latest release is \(release.tag)")
 
-        let gitHubAPIToken = ProcessInfo.processInfo.environment["DANGER_GITHUB_API_TOKEN"]!
         let project = GITProject.current()
+        let pullRequests = try fetchPullRequest(for: project).get()
+        handle(pullRequests, for: release)
+    }
 
-        let config = TokenConfiguration(gitHubAPIToken)
-        let octoKit = Octokit(config)
-
+    private func fetchPullRequest(for project: GITProject) -> Result<[PullRequest], Swift.Error> {
         let group = DispatchGroup()
         group.enter()
+
+        var result: Result<[PullRequest], Swift.Error>!
+
         let base = parsedArguments.get(baseBranch) ?? "master"
         octoKit.pullRequests(URLSession.shared, owner: project.organisation, repository: project.repository, base: base, state: .Closed, sort: .updated, direction: .desc) { (response) in
             switch response {
             case .success(let pullRequests):
-                self.handle(pullRequests, for: release)
+                result = .success(pullRequests)
             case .failure(let error):
-                Log.debug(error)
+                result = .failure(error)
             }
             group.leave()
         }
         group.wait()
+        return result
     }
-
-
 
     private func fetchRelease() -> Release {
         if let tag = parsedArguments.get(sinceTag) {
