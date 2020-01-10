@@ -1,47 +1,29 @@
 import XCTest
-import class Foundation.Bundle
+@testable import ChangelogProducerCore
 
 final class ChangelogProducerTests: XCTestCase {
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
 
-        // Some of the APIs that we use below are available in macOS 10.13 and above.
-        guard #available(macOS 10.13, *) else {
-            return
-        }
-
-        let fooBinary = productsDirectory.appendingPathComponent("ChangelogProducer")
-
-        let process = Process()
-        process.executableURL = fooBinary
-
-        let pipe = Pipe()
-        process.standardOutput = pipe
-
-        try process.run()
-        process.waitUntilExit()
-
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        let output = String(data: data, encoding: .utf8)
-
-        XCTAssertEqual(output, "Hello, world!\n")
+    /// It should extract pull request IDs from squash merges.
+    func testPullRequestIDsFromSquashCommits() throws {
+        let gitLogOutput = """
+            * Fix bucket deeplinking after adding content (#5130) via Antoine van der Lee
+            * Fix CI for Coyote #trivial (#5114) via Antoine van der Lee
+            * Update to 4.3.1 via Antoine van der Lee
+            """
+        XCTAssertEqual(gitLogOutput.pullRequestIDs(), [5114, 5130])
     }
 
-    /// Returns path to the built products directory.
-    var productsDirectory: URL {
-      #if os(macOS)
-        for bundle in Bundle.allBundles where bundle.bundlePath.hasSuffix(".xctest") {
-            return bundle.bundleURL.deletingLastPathComponent()
+    /// It should extract pull request from merge commits.
+    func testPullRequestIDsFromMergeCommits() throws {
+            let gitLogOutput = """
+                * Merge pull request #65 from BalestraPatrick/profiles-devices-endpoints via Antoine van der Lee
+                * Merge pull request #62 from hexagons/issue/42 via Antoine van der Lee
+                """
+            XCTAssertEqual(gitLogOutput.pullRequestIDs(), [62, 65])
         }
-        fatalError("couldn't find the products directory")
-      #else
-        return Bundle.main.bundleURL
-      #endif
-    }
 
     static var allTests = [
-        ("testExample", testExample),
+        ("testPullRequestIDsFromSquashCommits", testPullRequestIDsFromSquashCommits),
+        ("testPullRequestIDsFromMergeCommits", testPullRequestIDsFromMergeCommits)
     ]
 }
