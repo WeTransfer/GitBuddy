@@ -1,8 +1,7 @@
 import ChangelogProducerCore
 
-let changelogProducer = ChangelogProducer()
-
 do {
+    let changelogProducer = try ChangelogProducer()
     try changelogProducer.run()
 } catch {
     print("Whoops! An error occurred: \(error)")
