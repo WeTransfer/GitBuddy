@@ -14,4 +14,9 @@ extension String {
     func pullRequestIDs() -> [Int] {
         return []
     }
+
+    /// Extracts the resolved issue from a Pull Request body.
+    func resolvingIssue() -> Int? {
+        return nil
+    }
 }
