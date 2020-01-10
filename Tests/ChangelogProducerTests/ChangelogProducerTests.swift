@@ -46,7 +46,8 @@ final class ChangelogProducerTests: XCTestCase {
 
     static var allTests = [
         ("testPullRequestIDsFromSquashCommits", testPullRequestIDsFromSquashCommits),
-        ("testPullRequestIDsFromMergeCommits", testPullRequestIDsFromMergeCommits)
+        ("testPullRequestIDsFromMergeCommits", testPullRequestIDsFromMergeCommits),
+        ("testResolvingReferencedIssue", testResolvingReferencedIssue)
     ]
 }
 
