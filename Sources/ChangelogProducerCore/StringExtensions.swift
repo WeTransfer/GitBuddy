@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  StringExtensions.swift
 //  
 //
 //  Created by Antoine van der Lee on 10/01/2020.

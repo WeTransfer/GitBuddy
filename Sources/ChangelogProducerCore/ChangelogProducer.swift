@@ -14,7 +14,11 @@ public final class ChangelogProducer {
         self.arguments = arguments
     }
 
+    /// Input parameters:
+    /// - Target branch, defaults to master
     public func run() throws {
         print("Hello world")
+        /// Fetch last release from GitHub
+        /// Fetch PRs after last released tag creation date
     }
 }
