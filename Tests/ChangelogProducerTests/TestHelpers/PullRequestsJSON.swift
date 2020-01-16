@@ -7,7 +7,7 @@
 
 import Foundation
 
-let pullRequestsJSON = """
+let PullRequestsJSON = """
 
 [{
         "url": "https://api.github.com/repos/WeTransfer/Diagnostics/pulls/50",

@@ -1,7 +1,37 @@
 import XCTest
+import OctoKit
+import Mocker
 @testable import ChangelogProducerCore
 
 final class IssueResolverTests: XCTestCase {
+
+    private let octoKit: Octokit = Octokit()
+    private var urlSession: URLSession!
+
+    override func setUp() {
+        super.setUp()
+        let configuration = URLSessionConfiguration.default
+        configuration.protocolClasses = [MockingURLProtocol.self]
+        urlSession = URLSession(configuration: configuration)
+        ShellInjector.shell = MockedShell.self
+    }
+
+    override func tearDown() {
+        super.tearDown()
+        urlSession = nil
+    }
+
+    /// It should return the issue fetched from GitHub.
+    func testFetchingIssue() {
+        let project = GITProject(organisation: "WeTransfer", repository: "Diagnostics")
+        let input = MockChangelogInput(body: "Fixes #39")
+        let resolver = IssuesResolver(octoKit: octoKit, project: project, input: input)
+        Mocker.mockForIssueNumber(39)
+        let issues = resolver.resolve(using: urlSession)
+
+        XCTAssertEqual(issues?.count, 1)
+        XCTAssertEqual(issues?[0].title, "Get warning for file 'style.css' after building")
+    }
 
     /// It should extract the fixed issue from the Pull Request body.
     func testResolvingReferencedIssue() {

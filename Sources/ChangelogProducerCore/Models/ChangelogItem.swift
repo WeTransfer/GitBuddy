@@ -11,6 +11,7 @@ import OctoKit
 protocol ChangelogInput {
     var number: Int? { get }
     var title: String? { get }
+    var body: String? { get }
     var user: User? { get }
     var htmlURL: Foundation.URL? { get }
     var assignee: User? { get }

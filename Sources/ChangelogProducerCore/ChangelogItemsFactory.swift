@@ -15,7 +15,7 @@ struct ChangelogItemsFactory {
 
     func items() -> [ChangelogItem] {
         return pullRequests.flatMap { pullRequest -> [ChangelogItem] in
-            let issuesResolver = IssuesResolver(octoKit: octoKit, project: project, pullRequest: pullRequest)
+            let issuesResolver = IssuesResolver(octoKit: octoKit, project: project, input: pullRequest)
             guard let resolvedIssues = issuesResolver.resolve(), !resolvedIssues.isEmpty else {
                 return [ChangelogItem(input: pullRequest, closedBy: pullRequest)]
             }

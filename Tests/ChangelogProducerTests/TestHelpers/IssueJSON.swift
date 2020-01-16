@@ -55,7 +55,7 @@ let IssueJSON = """
   "updated_at": "2020-01-06T08:45:18Z",
   "closed_at": "2020-01-03T13:02:59Z",
   "author_association": "NONE",
-  "body": "Details are in the image. I resolved it for the time being by removing file 'style.css' from the Xcode project. (Installed Diagnostics 1.2 using Cocoapods 1.8 and Xcode 11.3.)\r\n\r\n<img width=\"1735\" alt=\"DiagnosticsWarning\" src=\"https://user-images.githubusercontent.com/59126213/71322557-b3f94500-24c0-11ea-9758-cdd772fc66e1.png\">\r\n",
+  "body": "Details are in the image. I resolved it for the time being by removing file 'style.css' from the Xcode project. (Installed Diagnostics 1.2 using Cocoapods 1.8 and Xcode)",
   "closed_by": {
     "login": "AvdLee",
     "id": 4329185,

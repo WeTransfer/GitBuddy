@@ -11,21 +11,21 @@ import OctoKit
 struct IssuesResolver {
     let octoKit: Octokit
     let project: GITProject
-    let pullRequest: PullRequest
+    let input: ChangelogInput
 
-    func resolve() -> [Issue]? {
-        guard let resolvedIssueNumbers = pullRequest.body?.resolvingIssues(), !resolvedIssueNumbers.isEmpty else {
+    func resolve(using session: URLSession = URLSession.shared) -> [Issue]? {
+        guard let resolvedIssueNumbers = input.body?.resolvingIssues(), !resolvedIssueNumbers.isEmpty else {
             return nil
         }
-        return issues(for: resolvedIssueNumbers)
+        return issues(for: resolvedIssueNumbers, using: session)
     }
 
-    private func issues(for issueNumbers: [Int]) -> [Issue] {
+    private func issues(for issueNumbers: [Int], using session: URLSession) -> [Issue] {
         var issues: [Issue] = []
         let dispatchGroup = DispatchGroup()
         for issueNumber in issueNumbers {
             dispatchGroup.enter()
-            octoKit.issue(owner: project.organisation, repository: project.repository, number: issueNumber) { response in
+            octoKit.issue(session, owner: project.organisation, repository: project.repository, number: issueNumber) { response in
                 switch response {
                 case .success(let issue):
                     issues.append(issue)
