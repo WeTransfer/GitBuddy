@@ -16,13 +16,13 @@ struct PullRequestFetcher {
     let base: Branch
     let project: GITProject
 
-    func fetchAllAfter(_ release: Release) throws -> [PullRequest] {
+    func fetchAllAfter(_ release: Release, using session: URLSession = URLSession.shared) throws -> [PullRequest] {
         let group = DispatchGroup()
         group.enter()
 
         var result: Result<[PullRequest], Swift.Error>!
 
-        octoKit.pullRequests(URLSession.shared, owner: project.organisation, repository: project.repository, base: base, state: .Closed, sort: .updated, direction: .desc) { (response) in
+        octoKit.pullRequests(session, owner: project.organisation, repository: project.repository, base: base, state: .Closed, sort: .updated, direction: .desc) { (response) in
             switch response {
             case .success(let pullRequests):
                 result = .success(pullRequests)

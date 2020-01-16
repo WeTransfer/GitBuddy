@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Mocker
 @testable import ChangelogProducerCore
 
 struct MockedShell: ShellExecuting {
@@ -27,4 +28,16 @@ struct MockedShell: ShellExecuting {
         commandMocks["git remote show origin -n | ruby -ne 'puts /^\\s*Fetch.*(:|\\/){1}([^\\/]+\\/[^\\/]+).git/.match($_)[2] rescue nil'"] = "\(organisation)/\(repository)"
     }
 
+}
+
+extension Mocker {
+    static func mockPullRequests() {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let date = dateFormatter.date(from: "2020-01-03")!
+        MockedShell.mockRelease(tag: "1.0.0", date: date)
+        let pullRequestsURL = URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/pulls?base=master&direction=desc&sort=updated&state=closed")!
+        let pullRequestJSONData = pullRequestsJSON.data(using: .utf8)!
+        Mock(url: pullRequestsURL, dataType: .json, statusCode: 200, data: [.get: pullRequestJSONData]).register()
+    }
 }
