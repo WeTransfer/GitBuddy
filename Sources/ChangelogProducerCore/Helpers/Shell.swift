@@ -25,8 +25,23 @@ extension Process {
     }
 }
 
-enum Shell {
+protocol ShellExecuting {
+    @discardableResult static func execute(_ command: String) -> String
+}
+
+private enum Shell: ShellExecuting {
     @discardableResult static func execute(_ command: String) -> String {
         return Process().shell(command: command)
     }
+}
+
+/// Adds a `shell` property which defaults to `Shell.self`.
+protocol ShellInjectable { }
+
+extension ShellInjectable {
+    static var shell: ShellExecuting.Type { ShellInjector.shell }
+}
+
+enum ShellInjector {
+    static var shell: ShellExecuting.Type = Shell.self
 }
