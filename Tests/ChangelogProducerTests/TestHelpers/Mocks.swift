@@ -34,34 +34,40 @@ struct MockChangelogInput: ChangelogInput {
     let number: Int?
     let title: String?
     let body: String?
-    let user: User?
+    let username: String?
     let htmlURL: Foundation.URL?
-    let assignee: User?
 
-    init(number: Int? = nil, title: String? = nil, body: String? = nil, user: User? = nil, htmlURL: URL? = nil, assignee: User? = nil) {
+    init(number: Int? = nil, title: String? = nil, body: String? = nil, username: String? = nil, htmlURL: URL? = nil) {
         self.number = number
         self.title = title
         self.body = body
-        self.user = user
+        self.username = username
         self.htmlURL = htmlURL
-        self.assignee = assignee
     }
 }
 
 extension Mocker {
-    static func mockPullRequests() {
+    static func mockPullRequests(token: String = UUID().uuidString) {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         let date = dateFormatter.date(from: "2020-01-03")!
         MockedShell.mockRelease(tag: "1.0.0", date: date)
-        let pullRequestsURL = URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/pulls?base=master&direction=desc&sort=updated&state=closed")!
+        let pullRequestsURL = URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/pulls?access_token=\(token)&base=master&direction=desc&sort=updated&state=closed")!
         let pullRequestJSONData = PullRequestsJSON.data(using: .utf8)!
         Mock(url: pullRequestsURL, dataType: .json, statusCode: 200, data: [.get: pullRequestJSONData]).register()
     }
 
-    static func mockForIssueNumber(_ issueNumber: Int) {
-        let url = URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/issues/\(issueNumber)")!
+    static func mockForIssueNumber(_ issueNumber: Int, token: String = UUID().uuidString) {
+        let url = URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/issues/\(issueNumber)?access_token=\(token)")!
         let issueJSONData = IssueJSON.data(using: .utf8)!
         Mock(url: url, dataType: .json, statusCode: 200, data: [.get: issueJSONData]).register()
+    }
+}
+
+extension Data {
+    func mapJSON<T: Decodable>(to type: T.Type) -> T {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .formatted(Time.rfc3339DateFormatter)
+        return try! decoder.decode(type, from: self)
     }
 }

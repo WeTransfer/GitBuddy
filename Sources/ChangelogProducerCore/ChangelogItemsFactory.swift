@@ -13,10 +13,10 @@ struct ChangelogItemsFactory {
     let pullRequests: [PullRequest]
     let project: GITProject
 
-    func items() -> [ChangelogItem] {
+    func items(using session: URLSession = URLSession.shared) -> [ChangelogItem] {
         return pullRequests.flatMap { pullRequest -> [ChangelogItem] in
             let issuesResolver = IssuesResolver(octoKit: octoKit, project: project, input: pullRequest)
-            guard let resolvedIssues = issuesResolver.resolve(), !resolvedIssues.isEmpty else {
+            guard let resolvedIssues = issuesResolver.resolve(using: session), !resolvedIssues.isEmpty else {
                 return [ChangelogItem(input: pullRequest, closedBy: pullRequest)]
             }
             return resolvedIssues.map { issue -> ChangelogItem in

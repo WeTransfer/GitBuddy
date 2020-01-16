@@ -12,13 +12,16 @@ protocol ChangelogInput {
     var number: Int? { get }
     var title: String? { get }
     var body: String? { get }
-    var user: User? { get }
     var htmlURL: Foundation.URL? { get }
-    var assignee: User? { get }
+    var username: String? { get }
 }
 
-extension PullRequest: ChangelogInput { }
-extension Issue: ChangelogInput { }
+extension PullRequest: ChangelogInput {
+    var username: String? { assignee?.login }
+}
+extension Issue: ChangelogInput {
+    var username: String? { assignee?.login }
+}
 
 struct ChangelogItem {
     let input: ChangelogInput
@@ -29,7 +32,7 @@ struct ChangelogItem {
         if let number = input.number, let htmlURL = input.htmlURL {
             title += " ([#\(number)](\(htmlURL)))"
         }
-        if let username = closedBy.assignee?.login {
+        if let username = closedBy.username {
             title += " via @\(username)"
         }
         return title

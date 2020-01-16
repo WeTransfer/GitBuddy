@@ -33,6 +33,14 @@ final class IssueResolverTests: XCTestCase {
         XCTAssertEqual(issues?[0].title, "Get warning for file 'style.css' after building")
     }
 
+    /// It should return no issues if there's no issue referenced.
+    func testNoReferencedIssue() {
+        let project = GITProject(organisation: "WeTransfer", repository: "Diagnostics")
+        let input = MockChangelogInput(body: "Pull Request description text")
+        let resolver = IssuesResolver(octoKit: octoKit, project: project, input: input)
+        XCTAssertNil(resolver.resolve(using: urlSession))
+    }
+
     /// It should extract the fixed issue from the Pull Request body.
     func testResolvingReferencedIssue() {
         let issueClosingKeywords = [

@@ -11,6 +11,10 @@ import SPMUtility
 
 public final class ChangelogProducer {
 
+    enum Error: Swift.Error {
+        case missingDangerToken
+    }
+
     let octoKit: Octokit
     let base: Branch
     let latestRelease: Release
@@ -24,7 +28,10 @@ public final class ChangelogProducer {
         let baseBranch = parser.add(option: "--baseBranch", shortName: "-b", kind: String.self, usage: "The base branch to compare with")
         let verbose = parser.add(option: "--verbose", kind: Bool.self, usage: "Show extra logging for debugging purposes")
 
-        let gitHubAPIToken = environment["DANGER_GITHUB_API_TOKEN"]!
+        guard let gitHubAPIToken = environment["DANGER_GITHUB_API_TOKEN"] else {
+            throw Error.missingDangerToken
+        }
+        
         let config = TokenConfiguration(gitHubAPIToken)
         octoKit = Octokit(config)
 
@@ -43,15 +50,17 @@ public final class ChangelogProducer {
         project = GITProject.current()
     }
 
-    public func run() throws {
+    @discardableResult public func run(using session: URLSession = URLSession.shared) throws -> String {
         Log.debug("Latest release is \(latestRelease.tag)")
 
         let pullRequestsFetcher = PullRequestFetcher(octoKit: octoKit, base: base, project: project)
-        let pullRequests = try pullRequestsFetcher.fetchAllAfter(latestRelease)
-        let items = ChangelogItemsFactory(octoKit: octoKit, pullRequests: pullRequests, project: project).items()
+        let pullRequests = try pullRequestsFetcher.fetchAllAfter(latestRelease, using: session)
+        let items = ChangelogItemsFactory(octoKit: octoKit, pullRequests: pullRequests, project: project).items(using: session)
         let changelog = ChangelogBuilder(items: items).build()
 
         Log.debug("Generated changelog:\n")
         Log.message(changelog)
+
+        return changelog
     }
 }
