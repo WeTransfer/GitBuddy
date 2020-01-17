@@ -8,6 +8,9 @@ let package = Package(
     platforms: [
         .macOS(.v10_15)
         ],
+    products: [
+        .executable(name: "ChangelogProducer", targets: ["ChangelogProducer"]),
+    ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         .package(url: "https://github.com/nerdishbynature/octokit.swift", from: "0.9.0"),
