@@ -69,7 +69,7 @@ final class IssueResolverTests: XCTestCase {
         XCTAssertTrue(description.resolvingIssues().isEmpty)
     }
     
-    /// It should not extract anything if no closing keywork is found.
+    /// It should not extract anything if no closing keyword is found.
     func testResolvingNoClosingKeyword() {
         let issueNumber = 4343
 
