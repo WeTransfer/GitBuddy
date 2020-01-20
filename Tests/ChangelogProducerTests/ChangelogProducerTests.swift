@@ -1,8 +1,9 @@
 //
 //  ChangelogProducerTests.swift
-//  ChangelogProducer
+//  ChangelogProducerTests
 //
-//  Created by Antoine van der Lee on 16/01/2020.
+//  Created by Antoine van der Lee on 10/01/2020.
+//  Copyright © 2020 WeTransfer. All rights reserved.
 //
 
 import XCTest
