@@ -48,20 +48,35 @@ struct MockChangelogInput: ChangelogInput {
 }
 
 extension Mocker {
-    static func mockPullRequests(token: String = UUID().uuidString) {
+    static func mockPullRequests(token: String? = nil) {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         let date = dateFormatter.date(from: "2020-01-03")!
         MockedShell.mockRelease(tag: "1.0.0", date: date)
-        let pullRequestsURL = URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/pulls?access_token=\(token)&base=master&direction=desc&sort=updated&state=closed")!
+
+        var urlComponents = URLComponents(url: URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/pulls?base=master&direction=desc&sort=updated&state=closed")!, resolvingAgainstBaseURL: false)!
+        urlComponents.queryItems = [
+            URLQueryItem(name: "base", value: "master"),
+            URLQueryItem(name: "direction", value: "desc"),
+            URLQueryItem(name: "sort", value: "updated"),
+            URLQueryItem(name: "state", value: "closed"),
+        ]
+        if let token = token {
+            urlComponents.queryItems?.insert(URLQueryItem(name: "access_token", value: token), at: 0)
+        }
+
         let pullRequestJSONData = PullRequestsJSON.data(using: .utf8)!
-        Mock(url: pullRequestsURL, dataType: .json, statusCode: 200, data: [.get: pullRequestJSONData]).register()
+        Mock(url: urlComponents.url!, dataType: .json, statusCode: 200, data: [.get: pullRequestJSONData]).register()
     }
 
-    static func mockForIssueNumber(_ issueNumber: Int, token: String = UUID().uuidString) {
-        let url = URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/issues/\(issueNumber)?access_token=\(token)")!
+    static func mockForIssueNumber(_ issueNumber: Int, token: String? = nil) {
+        var urlComponents = URLComponents(string: "https://api.github.com/repos/WeTransfer/Diagnostics/issues/\(issueNumber)")!
+        if let token = token {
+            urlComponents.queryItems = [URLQueryItem(name: "access_token", value: token)]
+        }
+
         let issueJSONData = IssueJSON.data(using: .utf8)!
-        Mock(url: url, dataType: .json, statusCode: 200, data: [.get: issueJSONData]).register()
+        Mock(url: urlComponents.url!, dataType: .json, statusCode: 200, data: [.get: issueJSONData]).register()
     }
 }
 
