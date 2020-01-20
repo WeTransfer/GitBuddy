@@ -1,63 +1,112 @@
+//
+//  ChangelogProducerTests.swift
+//  ChangelogProducerTests
+//
+//  Created by Antoine van der Lee on 10/01/2020.
+//  Copyright © 2020 WeTransfer. All rights reserved.
+//
+
 import XCTest
 @testable import ChangelogProducerCore
+import Mocker
 
 final class ChangelogProducerTests: XCTestCase {
 
-    /// It should extract pull request IDs from squash merges.
-    func testPullRequestIDsFromSquashCommits() {
-        let gitLogOutput = """
-            * Fix bucket deeplinking after adding content (#5130) via Antoine van der Lee
-            * Fix CI for Coyote #trivial (#5114) via Antoine van der Lee
-            * Update to 4.3.1 via Antoine van der Lee
-            """
-        XCTAssertEqual(gitLogOutput.pullRequestIDs(), [5114, 5130])
+    private let environment = ["DANGER_GITHUB_API_TOKEN": UUID().uuidString]
+    private var urlSession: URLSession!
+
+    override func setUp() {
+        super.setUp()
+        let configuration = URLSessionConfiguration.default
+        configuration.protocolClasses = [MockingURLProtocol.self]
+        urlSession = URLSession(configuration: configuration)
+        ShellInjector.shell = MockedShell.self
+        MockedShell.mockRelease(tag: "1.0.0")
+        MockedShell.mockGITProject()
     }
 
-    /// It should extract pull request from merge commits.
-    func testPullRequestIDsFromMergeCommits() {
-        let gitLogOutput = """
-            * Merge pull request #65 from BalestraPatrick/profiles-devices-endpoints via Antoine van der Lee
-            * Merge pull request #62 from hexagons/issue/42 via Antoine van der Lee
-            """
-        XCTAssertEqual(gitLogOutput.pullRequestIDs(), [62, 65])
+    override func tearDown() {
+        super.tearDown()
+        MockedShell.commandMocks.removeAll()
+        urlSession = nil
     }
 
-    /// It should extract the fixed issue from the Pull Request body.
-    func testResolvingReferencedIssue() {
-        // See this code as an example: https://github.com/fastlane/issue-bot/blob/457348717d99e5ffde34ca1619e7253ed51ec172/bot.rb#L456
+    /// It should correctly output the changelog.
+    func testChangelogOutput() throws {
+        Mocker.mockPullRequests(token: environment.values.first!)
+        Mocker.mockForIssueNumber(39, token: environment.values.first!)
+        MockedShell.mockGITProject(organisation: "WeTransfer", repository: "Diagnostics")
+        let changelog = try ChangelogProducer(environment: environment, arguments: ["ChangelogProducer"]).run(using: urlSession)
+        XCTAssertEqual(changelog, "- Add charset utf-8 to html head ([#50](https://github.com/WeTransfer/Diagnostics/pull/50)) via @AvdLee\n- Get warning for file \'style.css\' after building ([#39](https://github.com/WeTransfer/Diagnostics/issues/39)) via @AvdLee")
+    }
 
-        let issueClosingKeywords = [
-            "close",
-            "Closes",
-            "closed",
-            "fix",
-            "fixes",
-            "Fixed",
-            "resolve",
-            "Resolves",
-            "resolved"
-        ]
+    /// It should use the `DANGER_GITHUB_API_TOKEN` for setting up OctoKit.
+    func testOctoKitConfiguration() throws {
+        let token = UUID().uuidString
+        let producer = try ChangelogProducer(environment: ["DANGER_GITHUB_API_TOKEN": token], arguments: ["ChangelogProducer"])
+        XCTAssertEqual(producer.octoKit.configuration.accessToken, token)
+    }
 
-        issueClosingKeywords.forEach { (closingKeyword) in
-            let description = examplePullRequestDescriptionUsing(closingKeyword: closingKeyword)
-            XCTAssertEqual(description.resolvingIssue(), 4343)
+    /// It should throw an error if the `DANGER_GITHUB_API_TOKEN` was not set.
+    func testMissingDangerAPIToken() {
+        do {
+            _ = try ChangelogProducer()
+        } catch {
+            XCTAssertEqual(error as? ChangelogProducer.Error, .missingDangerToken)
         }
     }
 
-    static var allTests = [
-        ("testPullRequestIDsFromSquashCommits", testPullRequestIDsFromSquashCommits),
-        ("testPullRequestIDsFromMergeCommits", testPullRequestIDsFromMergeCommits),
-        ("testResolvingReferencedIssue", testResolvingReferencedIssue)
-    ]
-}
-
-extension ChangelogProducerTests {
-    func examplePullRequestDescriptionUsing(closingKeyword: String) -> String {
-        return """
-            This PR does a lot of awesome stuff.
-
-            \(closingKeyword) #4343
-            """
-
+    /// It should enable verbose logging.
+    func testVerboseLogging() throws {
+        XCTAssertFalse(Log.isVerbose)
+        _ = try ChangelogProducer(environment: environment, arguments: ["ChangelogProducer", "--verbose"])
+        XCTAssertTrue(Log.isVerbose)
     }
+
+    /// It should default to master branch.
+    func testDefaultBranch() throws {
+        let producer = try ChangelogProducer(environment: environment, arguments: ["ChangelogProducer"])
+        XCTAssertEqual(producer.base, "master")
+    }
+
+    /// It should accept a different branch as base argument.
+    func testBaseBranchArgument() throws {
+        let producer = try ChangelogProducer(environment: environment, arguments: ["ChangelogProducer", "-b", "develop"])
+        XCTAssertEqual(producer.base, "develop")
+    }
+
+    /// It should use the latest tag by default for the latest release.
+    func testLatestReleaseUsingLatestTag() throws {
+        let tag = "2.1.3"
+        let date = Date()
+        MockedShell.mockRelease(tag: tag, date: date)
+
+        let producer = try ChangelogProducer(environment: environment, arguments: ["ChangelogProducer"])
+
+        XCTAssertEqual(producer.latestRelease.tag, tag)
+        XCTAssertEqual(Int(producer.latestRelease.created.timeIntervalSince1970), Int(date.timeIntervalSince1970))
+    }
+
+    /// It should use a tag passed as argument over the latest tag.
+    func testReleaseUsingTagArgument() throws {
+        let tag = "3.0.2"
+        let date = Date()
+        MockedShell.mockRelease(tag: tag, date: date)
+
+        let producer = try ChangelogProducer(environment: environment, arguments: ["ChangelogProducer", "-s", tag])
+        XCTAssertEqual(producer.latestRelease.tag, tag)
+        XCTAssertEqual(Int(producer.latestRelease.created.timeIntervalSince1970), Int(date.timeIntervalSince1970))
+    }
+
+    /// It should parse the current GIT project correctly.
+    func testGITProjectParsing() throws {
+        let organisation = "WeTransfer"
+        let repository = "ChangelogProducer"
+        MockedShell.mockGITProject(organisation: organisation, repository: repository)
+
+        let producer = try ChangelogProducer(environment: environment, arguments: ["ChangelogProducer"])
+        XCTAssertEqual(producer.project.organisation, organisation)
+        XCTAssertEqual(producer.project.repository, repository)
+    }
+
 }
