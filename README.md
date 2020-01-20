@@ -10,7 +10,7 @@ $ mint install WeTransfer/ChangelogProducer
 
 After that you can directly use it:
 
-```bash
+```
 $ changelogproducer --help
 OVERVIEW: Create a changelog for GitHub repositories
 
