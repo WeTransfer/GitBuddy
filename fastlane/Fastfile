@@ -8,5 +8,7 @@ lane :test do |options|
 	spm(command: "generate-xcodeproj")
 	test_project(
 		project_name: "ChangelogProducer", 
-		scheme: "ChangelogProducer-Package")
+		scheme: "ChangelogProducer-Package",
+		device: nil,
+		destination: "platform=macOS")
 end
