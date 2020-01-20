@@ -59,7 +59,7 @@ extension Mocker {
             URLQueryItem(name: "base", value: "master"),
             URLQueryItem(name: "direction", value: "desc"),
             URLQueryItem(name: "sort", value: "updated"),
-            URLQueryItem(name: "state", value: "closed"),
+            URLQueryItem(name: "state", value: "closed")
         ]
         if let token = token {
             urlComponents.queryItems?.insert(URLQueryItem(name: "access_token", value: token), at: 0)
