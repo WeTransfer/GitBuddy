@@ -50,7 +50,7 @@ final class ChangelogProducerTests: XCTestCase {
     /// It should throw an error if the `DANGER_GITHUB_API_TOKEN` was not set.
     func testMissingDangerAPIToken() {
         do {
-            _ = try ChangelogProducer()
+            _ = try ChangelogProducer(environment: [:])
         } catch {
             XCTAssertEqual(error as? ChangelogProducer.Error, .missingDangerToken)
         }

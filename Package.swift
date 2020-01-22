@@ -10,9 +10,11 @@ let package = Package(
         ],
     products: [
         .executable(name: "ChangelogProducer", targets: ["ChangelogProducer"]),
+        .library(name: "DangerDeps", type: .dynamic, targets: ["DangerDependencies"]) // dev
     ],
     dependencies: [
-        // Dependencies declare other packages that this package depends on.
+        .package(url: "https://github.com/danger/swift", from: "3.0.0"), // dev
+        .package(path: "Submodules/WeTransfer-iOS-CI/Danger-Swift"), // dev
         .package(url: "https://github.com/nerdishbynature/octokit.swift", from: "0.9.0"),
         .package(url: "https://github.com/apple/swift-package-manager.git", from: "0.1.0"),
         .package(url: "https://github.com/WeTransfer/Mocker.git", from: "2.0.0")
@@ -26,5 +28,6 @@ let package = Package(
                 dependencies: ["OctoKit", "SPMUtility"]),
         .testTarget(name: "ChangelogProducerTests",
                     dependencies: ["ChangelogProducer", "Mocker"]),
+        .target(name: "DangerDependencies", dependencies: ["Danger", "WeTransferPRLinter"], path: "Submodules/WeTransfer-iOS-CI/Danger-Swift", sources: ["DangerFakeSource.swift"]) // dev
     ]
 )
