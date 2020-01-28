@@ -9,8 +9,8 @@ let package = Package(
         .macOS(.v10_15)
         ],
     products: [
-        .executable(name: "ChangelogProducer", targets: ["ChangelogProducer"]),
-        // dev .library(name: "DangerDeps", type: .dynamic, targets: ["DangerDependencies"])
+        // dev .library(name: "DangerDeps", type: .dynamic, targets: ["DangerDependencies"]),
+        .executable(name: "ChangelogProducer", targets: ["ChangelogProducer"])
     ],
     dependencies: [
         // dev .package(url: "https://github.com/danger/swift", from: "3.0.0"),
