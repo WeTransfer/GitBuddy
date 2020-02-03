@@ -1,16 +1,16 @@
 //
-//  ChangelogProducerTests.swift
-//  ChangelogProducerTests
+//  GitBuddyTests.swift
+//  GitBuddyTests
 //
 //  Created by Antoine van der Lee on 10/01/2020.
 //  Copyright © 2020 WeTransfer. All rights reserved.
 //
 
 import XCTest
-@testable import ChangelogProducerCore
+@testable import GitBuddyCore
 import Mocker
 
-final class ChangelogProducerTests: XCTestCase {
+final class GitBuddyTests: XCTestCase {
 
     private let environment = ["DANGER_GITHUB_API_TOKEN": UUID().uuidString]
     private var urlSession: URLSession!
@@ -36,42 +36,42 @@ final class ChangelogProducerTests: XCTestCase {
         Mocker.mockPullRequests(token: environment.values.first!)
         Mocker.mockForIssueNumber(39, token: environment.values.first!)
         MockedShell.mockGITProject(organisation: "WeTransfer", repository: "Diagnostics")
-        let changelog = try ChangelogProducer(environment: environment, arguments: ["ChangelogProducer"]).run(using: urlSession)
+        let changelog = try GitBuddy(environment: environment, arguments: ["GitBuddy"]).run(using: urlSession)
         XCTAssertEqual(changelog, "- Add charset utf-8 to html head ([#50](https://github.com/WeTransfer/Diagnostics/pull/50)) via @AvdLee\n- Get warning for file \'style.css\' after building ([#39](https://github.com/WeTransfer/Diagnostics/issues/39)) via @AvdLee")
     }
 
     /// It should use the `DANGER_GITHUB_API_TOKEN` for setting up OctoKit.
     func testOctoKitConfiguration() throws {
         let token = UUID().uuidString
-        let producer = try ChangelogProducer(environment: ["DANGER_GITHUB_API_TOKEN": token], arguments: ["ChangelogProducer"])
+        let producer = try GitBuddy(environment: ["DANGER_GITHUB_API_TOKEN": token], arguments: ["GitBuddy"])
         XCTAssertEqual(producer.octoKit.configuration.accessToken, token)
     }
 
     /// It should throw an error if the `DANGER_GITHUB_API_TOKEN` was not set.
     func testMissingDangerAPIToken() {
         do {
-            _ = try ChangelogProducer(environment: [:])
+            _ = try GitBuddy(environment: [:])
         } catch {
-            XCTAssertEqual(error as? ChangelogProducer.Error, .missingDangerToken)
+            XCTAssertEqual(error as? GitBuddy.Error, .missingDangerToken)
         }
     }
 
     /// It should enable verbose logging.
     func testVerboseLogging() throws {
         XCTAssertFalse(Log.isVerbose)
-        _ = try ChangelogProducer(environment: environment, arguments: ["ChangelogProducer", "--verbose"])
+        _ = try GitBuddy(environment: environment, arguments: ["GitBuddy", "--verbose"])
         XCTAssertTrue(Log.isVerbose)
     }
 
     /// It should default to master branch.
     func testDefaultBranch() throws {
-        let producer = try ChangelogProducer(environment: environment, arguments: ["ChangelogProducer"])
+        let producer = try GitBuddy(environment: environment, arguments: ["GitBuddy"])
         XCTAssertEqual(producer.base, "master")
     }
 
     /// It should accept a different branch as base argument.
     func testBaseBranchArgument() throws {
-        let producer = try ChangelogProducer(environment: environment, arguments: ["ChangelogProducer", "-b", "develop"])
+        let producer = try GitBuddy(environment: environment, arguments: ["GitBuddy", "-b", "develop"])
         XCTAssertEqual(producer.base, "develop")
     }
 
@@ -81,7 +81,7 @@ final class ChangelogProducerTests: XCTestCase {
         let date = Date()
         MockedShell.mockRelease(tag: tag, date: date)
 
-        let producer = try ChangelogProducer(environment: environment, arguments: ["ChangelogProducer"])
+        let producer = try GitBuddy(environment: environment, arguments: ["GitBuddy"])
 
         XCTAssertEqual(producer.latestRelease.tag, tag)
         XCTAssertEqual(Int(producer.latestRelease.created.timeIntervalSince1970), Int(date.timeIntervalSince1970))
@@ -93,7 +93,7 @@ final class ChangelogProducerTests: XCTestCase {
         let date = Date()
         MockedShell.mockRelease(tag: tag, date: date)
 
-        let producer = try ChangelogProducer(environment: environment, arguments: ["ChangelogProducer", "-s", tag])
+        let producer = try GitBuddy(environment: environment, arguments: ["GitBuddy", "-s", tag])
         XCTAssertEqual(producer.latestRelease.tag, tag)
         XCTAssertEqual(Int(producer.latestRelease.created.timeIntervalSince1970), Int(date.timeIntervalSince1970))
     }
@@ -101,10 +101,10 @@ final class ChangelogProducerTests: XCTestCase {
     /// It should parse the current GIT project correctly.
     func testGITProjectParsing() throws {
         let organisation = "WeTransfer"
-        let repository = "ChangelogProducer"
+        let repository = "GitBuddy"
         MockedShell.mockGITProject(organisation: organisation, repository: repository)
 
-        let producer = try ChangelogProducer(environment: environment, arguments: ["ChangelogProducer"])
+        let producer = try GitBuddy(environment: environment, arguments: ["GitBuddy"])
         XCTAssertEqual(producer.project.organisation, organisation)
         XCTAssertEqual(producer.project.repository, repository)
     }

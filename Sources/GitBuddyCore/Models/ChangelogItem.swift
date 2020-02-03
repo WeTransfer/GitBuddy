@@ -1,6 +1,6 @@
 //
 //  ChangelogItem.swift
-//  ChangelogProducerCore
+//  GitBuddyCore
 //
 //  Created by Antoine van der Lee on 10/01/2020.
 //  Copyright © 2020 WeTransfer. All rights reserved.

@@ -1,13 +1,13 @@
 //
 //  ChangelogItemsFactoryTests.swift
-//  ChangelogProducerTests
+//  GitBuddyTests
 //
 //  Created by Antoine van der Lee on 10/01/2020.
 //  Copyright © 2020 WeTransfer. All rights reserved.
 //
 
 import XCTest
-@testable import ChangelogProducerCore
+@testable import GitBuddyCore
 @testable import OctoKit
 import Mocker
 

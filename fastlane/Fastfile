@@ -7,8 +7,8 @@ desc "Run the tests and prepare for Danger"
 lane :test do |options|
 	spm(command: "generate-xcodeproj")
 	test_project(
-		project_name: "ChangelogProducer", 
-		scheme: "ChangelogProducer-Package",
+		project_name: "GitBuddy", 
+		scheme: "GitBuddy-Package",
 		device: nil,
 		destination: "platform=macOS")
 end

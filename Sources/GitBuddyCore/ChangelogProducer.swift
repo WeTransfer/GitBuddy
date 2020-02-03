@@ -1,6 +1,6 @@
 //
-//  ChangelogProducer.swift
-//  ChangelogProducerCore
+//  GitBuddy.swift
+//  GitBuddyCore
 //
 //  Created by Antoine van der Lee on 10/01/2020.
 //  Copyright © 2020 WeTransfer. All rights reserved.
@@ -10,7 +10,7 @@ import Foundation
 import OctoKit
 import SPMUtility
 
-public final class ChangelogProducer {
+public final class GitBuddy {
 
     enum Error: Swift.Error {
         case missingDangerToken

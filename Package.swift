@@ -4,13 +4,13 @@
 import PackageDescription
 
 let package = Package(
-    name: "ChangelogProducer",
+    name: "GitBuddy",
     platforms: [
         .macOS(.v10_15)
         ],
     products: [
         // dev .library(name: "DangerDeps", type: .dynamic, targets: ["DangerDependencies"]),
-        .executable(name: "ChangelogProducer", targets: ["ChangelogProducer"])
+        .executable(name: "GitBuddy", targets: ["GitBuddy"])
     ],
     dependencies: [
         // dev .package(url: "https://github.com/danger/swift", from: "3.0.0"),
@@ -20,9 +20,9 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-package-manager.git", from: "0.1.0")
     ],
     targets: [
-        // dev .testTarget(name: "ChangelogProducerTests", dependencies: ["ChangelogProducer", "Mocker"]),
+        // dev .testTarget(name: "GitBuddyTests", dependencies: ["GitBuddy", "Mocker"]),
         // dev .target(name: "DangerDependencies", dependencies: ["Danger", "WeTransferPRLinter"], path: "Submodules/WeTransfer-iOS-CI/Danger-Swift", sources: ["DangerFakeSource.swift"]),
-        .target(name: "ChangelogProducer", dependencies: ["ChangelogProducerCore"]),
-        .target(name: "ChangelogProducerCore", dependencies: ["OctoKit", "SPMUtility"])
+        .target(name: "GitBuddy", dependencies: ["GitBuddyCore"]),
+        .target(name: "GitBuddyCore", dependencies: ["OctoKit", "SPMUtility"])
     ]
 )

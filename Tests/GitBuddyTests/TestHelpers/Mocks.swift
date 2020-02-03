@@ -1,6 +1,6 @@
 //
 //  Mocks.swift
-//  ChangelogProducerTests
+//  GitBuddyTests
 //
 //  Created by Antoine van der Lee on 10/01/2020.
 //  Copyright © 2020 WeTransfer. All rights reserved.
@@ -9,7 +9,7 @@
 import Foundation
 import Mocker
 import OctoKit
-@testable import ChangelogProducerCore
+@testable import GitBuddyCore
 
 struct MockedShell: ShellExecuting {
 
@@ -26,7 +26,7 @@ struct MockedShell: ShellExecuting {
         commandMocks["git log -1 --format=%ai \(tag)"] = dateFormatter.string(from: date)
     }
 
-    static func mockGITProject(organisation: String = "WeTransfer", repository: String = "ChangelogProducer") {
+    static func mockGITProject(organisation: String = "WeTransfer", repository: String = "GitBuddy") {
         commandMocks["git remote show origin -n | ruby -ne 'puts /^\\s*Fetch.*(:|\\/){1}([^\\/]+\\/[^\\/]+).git/.match($_)[2] rescue nil'"] = "\(organisation)/\(repository)"
     }
 }
