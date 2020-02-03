@@ -15,12 +15,12 @@ let package = Package(
     dependencies: [
         // dev .package(url: "https://github.com/danger/swift", from: "3.0.0"),
         // dev .package(path: "Submodules/WeTransfer-iOS-CI/Danger-Swift"),
-        // dev .package(url: "https://github.com/WeTransfer/Mocker.git", from: "2.0.0"),
+        .package(url: "https://github.com/WeTransfer/Mocker.git", from: "2.0.0"),
         .package(url: "https://github.com/nerdishbynature/octokit.swift", from: "0.9.0"),
         .package(url: "https://github.com/apple/swift-package-manager.git", from: "0.1.0")
     ],
     targets: [
-        // dev .testTarget(name: "GitBuddyTests", dependencies: ["GitBuddy", "Mocker"]),
+        .testTarget(name: "GitBuddyTests", dependencies: ["GitBuddy", "Mocker"]),
         // dev .target(name: "DangerDependencies", dependencies: ["Danger", "WeTransferPRLinter"], path: "Submodules/WeTransfer-iOS-CI/Danger-Swift", sources: ["DangerFakeSource.swift"]),
         .target(name: "GitBuddy", dependencies: ["GitBuddyCore"]),
         .target(name: "GitBuddyCore", dependencies: ["OctoKit", "SPMUtility"])

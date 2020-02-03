@@ -9,8 +9,7 @@
 import GitBuddyCore
 
 do {
-    let gitBuddy = try GitBuddy()
-    try gitBuddy.run()
+    try GitBuddy.run()
 } catch {
     print("Whoops! An error occurred: \(error)")
 }
