@@ -25,6 +25,7 @@ public enum GitBuddy {
                                               arguments: arguments,
                                               environment: environment)
         try commandRegistry.register(commandType: ChangelogCommand.self)
+        try commandRegistry.register(commandType: ReleaseCommand.self)
         return commandRegistry.run()
     }
 

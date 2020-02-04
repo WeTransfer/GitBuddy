@@ -37,7 +37,7 @@ final class ChangelogProducer: URLSessionInjectable {
 
     private lazy var octoKit: Octokit = Octokit()
     let base: Branch
-    let latestRelease: Release
+    let baseRelease: Release
     let project: GITProject
 
     init(sinceTag: String?, baseBranch: Branch?, verbose: Bool) throws {
@@ -45,19 +45,19 @@ final class ChangelogProducer: URLSessionInjectable {
         Log.isVerbose = verbose
 
         if let tag = sinceTag {
-            latestRelease = try Release(tag: tag)
+            baseRelease = try Release(tag: tag)
         } else {
-            latestRelease = try Release.latest()
+            baseRelease = try Release.latest()
         }
         base = baseBranch ?? "master"
         project = GITProject.current()
     }
 
     @discardableResult public func run() throws -> String {
-        Log.debug("Latest release is \(latestRelease.tag)")
+        Log.debug("Getting all changes happened after \(baseRelease.tag)")
 
         let pullRequestsFetcher = PullRequestFetcher(octoKit: octoKit, base: base, project: project)
-        let pullRequests = try pullRequestsFetcher.fetchAllAfter(latestRelease, using: urlSession)
+        let pullRequests = try pullRequestsFetcher.fetchAllAfter(baseRelease, using: urlSession)
         let items = ChangelogItemsFactory(octoKit: octoKit, pullRequests: pullRequests, project: project).items(using: urlSession)
         let changelog = ChangelogBuilder(items: items).build()
 
