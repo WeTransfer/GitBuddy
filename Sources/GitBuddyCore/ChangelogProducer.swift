@@ -46,8 +46,6 @@ final class ChangelogProducer: URLSessionInjectable {
     let project: GITProject
 
     init(sinceTag: String?, baseBranch: Branch?, verbose: Bool, environment: [String: String]) throws {
-
-
         guard let gitHubAPIToken = environment["DANGER_GITHUB_API_TOKEN"] else {
             throw Error.missingDangerToken
         }
