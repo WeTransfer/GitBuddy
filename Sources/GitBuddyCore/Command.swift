@@ -17,5 +17,5 @@ protocol Command {
     var description: String { get }
 
     init(parser: ArgumentParser) throws
-    @discardableResult func run(using arguments: ArgumentParser.Result, environment: [String: String]) throws -> String
+    @discardableResult func run(using arguments: ArgumentParser.Result) throws -> String
 }

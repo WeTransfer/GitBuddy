@@ -24,11 +24,10 @@ struct ChangelogCommand: Command {
         verbose = subparser.add(option: "--verbose", kind: Bool.self, usage: "Show extra logging for debugging purposes")
     }
 
-    @discardableResult func run(using arguments: ArgumentParser.Result, environment: [String: String]) throws -> String {
+    @discardableResult func run(using arguments: ArgumentParser.Result) throws -> String {
         let changelogProducer = try ChangelogProducer(sinceTag: arguments.get(sinceTag),
                                                       baseBranch: arguments.get(baseBranch),
-                                                      verbose: arguments.get(verbose) ?? false,
-                                                      environment: environment)
+                                                      verbose: arguments.get(verbose) ?? false)
         return try changelogProducer.run()
     }
 }
@@ -36,23 +35,12 @@ struct ChangelogCommand: Command {
 /// Capable of producing a changelog based on input parameters.
 final class ChangelogProducer: URLSessionInjectable {
 
-    enum Error: Swift.Error {
-        case missingDangerToken
-    }
-
-    let octoKit: Octokit
+    private lazy var octoKit: Octokit = Octokit()
     let base: Branch
     let latestRelease: Release
     let project: GITProject
 
-    init(sinceTag: String?, baseBranch: Branch?, verbose: Bool, environment: [String: String]) throws {
-        guard let gitHubAPIToken = environment["DANGER_GITHUB_API_TOKEN"] else {
-            throw Error.missingDangerToken
-        }
-
-        let config = TokenConfiguration(gitHubAPIToken)
-        octoKit = Octokit(config)
-
+    init(sinceTag: String?, baseBranch: Branch?, verbose: Bool) throws {
         // The first argument is always the executable, drop it
         Log.isVerbose = verbose
 

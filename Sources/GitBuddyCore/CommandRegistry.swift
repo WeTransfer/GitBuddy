@@ -41,7 +41,7 @@ struct CommandRegistry {
                 parser.printUsage(on: stdoutStream)
                 return nil
             }
-            return try command.run(using: arguments, environment: environment)
+            return try command.run(using: arguments)
         } catch let error as ArgumentParserError {
             print(error.description)
         } catch let error {

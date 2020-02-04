@@ -31,19 +31,22 @@ You can install GitBuddy using Mint as follows:
 $ mint install WeTransfer/GitBuddy
 ```
 
+[Setup a personal access token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) inside an environment variable `GITBUDDY_ACCESS_TOKEN` by combining your GitHub username with the token:
+
+```ruby
+export GITBUDDY_ACCESS_TOKEN="<username>:<access_token>"
+```
+
 After that you can directly use it:
 
 ```
 $ gitbuddy --help
-OVERVIEW: Your buddy in managing and maintaining GitHub repositories.
+OVERVIEW: Manage your GitHub repositories with ease
 
-USAGE: GitBuddy <options>
+USAGE: GitBuddy <commands> <options>
 
-OPTIONS:
-  --baseBranch, -b   The base branch to compare with
-  --sinceTag, -s     The tag to use as a base
-  --verbose          Show extra logging for debugging purposes
-  --help             Display available options
+SUBCOMMANDS:
+  changelog               Create a changelog for GitHub repositories
 ```
 
 ### Development
