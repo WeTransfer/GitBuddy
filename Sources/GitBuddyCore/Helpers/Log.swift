@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Log {
+enum Log {
     static var isVerbose: Bool = false
 
     static func debug(_ message: Any) {
