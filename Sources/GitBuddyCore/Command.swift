@@ -13,9 +13,9 @@ protocol Command {
     /// The name of the command.
     var command: String { get }
 
-    /// The overview explaining what the command is about.
-    var overview: String { get }
+    /// The command description explaining what it does.
+    var description: String { get }
 
-    init(parser: ArgumentParser)
-    @discardableResult func run(arguments: ArgumentParser.Result, environment: [String: String]) throws -> String
+    init(parser: ArgumentParser) throws
+    @discardableResult func run(using arguments: ArgumentParser.Result, environment: [String: String]) throws -> String
 }

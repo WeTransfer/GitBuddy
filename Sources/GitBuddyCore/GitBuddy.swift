@@ -11,9 +11,12 @@ import SPMUtility
 /// Entry class of GitBuddy that registers commands and handles execution.
 public final class GitBuddy {
 
-    public static func run() throws {
-        var commandRegistry = try CommandRegistry(usage: "<commands> <options>", overview: "Manage your GitHub repositories with ease")
-        commandRegistry.register(command: ChangelogProducer.self)
-        try commandRegistry.run()
+    @discardableResult public static func run(arguments: [String] = ProcessInfo.processInfo.arguments, environment: [String: String] = ProcessInfo.processInfo.environment) throws -> String? {
+        var commandRegistry = CommandRegistry(usage: "<commands> <options>",
+                                              overview: "Manage your GitHub repositories with ease",
+                                              arguments: arguments,
+                                              environment: environment)
+        try commandRegistry.register(commandType: ChangelogCommand.self)
+        return commandRegistry.run()
     }
 }
