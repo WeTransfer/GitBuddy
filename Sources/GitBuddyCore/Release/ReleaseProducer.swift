@@ -47,31 +47,28 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
 
     @discardableResult public func run() throws -> String {
         Log.debug("Fetching tags..")
-        Self.shell.execute("git fetch --tags origin master --no-recurse-submodules -q")
+        Self.shell.execute(.fetchTags)
 
-        let releasedTag = Self.shell.execute("git describe --abbrev=0 --tags `git rev-list --tags --max-count=1 --no-walk`").trimmingCharacters(in: .whitespacesAndNewlines)
-        let previousTag = Self.shell.execute("git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1 --no-walk`").trimmingCharacters(in: .whitespacesAndNewlines)
+        let releasedTag = Self.shell.execute(.latestTag)
+        let previousTag = Self.shell.execute(.previousTag)
 
         Log.debug("Creating a changelog between tag \(previousTag) and \(releasedTag)")
         let changelogProducer = try ChangelogProducer(sinceTag: previousTag, baseBranch: "master", verbose: Log.isVerbose)
         let changelog = try changelogProducer.run()
 
-        let commitish = Self.shell.execute("git rev-parse HEAD")
-        let repositoryName = Self.shell.execute("git remote show origin -n | ruby -ne 'puts /^\\s*Fetch.*(:|\\/){1}([^\\/]+\\/[^\\/]+).git/.match($_)[2] rescue nil'").trimmingCharacters(in: .whitespacesAndNewlines)
+        let repositoryName = Self.shell.execute(.repositoryName)
 
-        Log.debug("Creating a release for tag \(releasedTag) at repository \(repositoryName) using commitish \(commitish)")
-
-        let owner = String(repositoryName.split(separator: "/").first!)
-        let repository = String(repositoryName.split(separator: "/").last!)
+        Log.debug("Creating a release for tag \(releasedTag) at repository \(repositoryName)")
+        let project = GITProject.current()
 
         let group = DispatchGroup()
         group.enter()
 
         var result: String!
-        octoKit.postRelease(urlSession, owner: owner, repository: repository, tagName: releasedTag, targetCommitish: nil, name: releasedTag, body: changelog, prerelease: false, draft: false) { (response) in
+        octoKit.postRelease(urlSession, owner: project.organisation, repository: project.repository, tagName: releasedTag, targetCommitish: nil, name: releasedTag, body: changelog, prerelease: false, draft: false) { (response) in
             switch response {
             case .success(let release):
-                result = "Created release at \(release.htmlURL)"
+                result = "Created release at:\n\(release.htmlURL)"
             case .failure(let error):
                 result = "Releasing failed: \(error)"
             }

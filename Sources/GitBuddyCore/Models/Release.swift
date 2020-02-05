@@ -17,7 +17,7 @@ struct Release: ShellInjectable {
     let created: Date
 
     init(tag: String) throws {
-        let tagCreationDate = Self.shell.execute("git log -1 --format=%ai \(tag)").filter { !$0.isNewline }
+        let tagCreationDate = Self.shell.execute(.tagCreationDate(tag: tag))
         Log.debug("Tag \(tag) is created at \(tagCreationDate)")
 
         let dateFormatter = DateFormatter()
@@ -32,8 +32,8 @@ struct Release: ShellInjectable {
 
     static func latest() throws -> Release {
         Log.debug("Fetching tags")
-        shell.execute("git fetch --tags")
-        let latestTag = shell.execute("git tag --sort=committerdate | tail -1").filter { !$0.isNewline && !$0.isWhitespace }
+        shell.execute(.fetchTags)
+        let latestTag = shell.execute(.latestTag)
         Log.debug("Latest tag is \(latestTag)")
 
         return try Release(tag: latestTag)

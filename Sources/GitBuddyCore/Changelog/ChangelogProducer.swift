@@ -61,9 +61,6 @@ final class ChangelogProducer: URLSessionInjectable {
         let items = ChangelogItemsFactory(octoKit: octoKit, pullRequests: pullRequests, project: project).items(using: urlSession)
         let changelog = ChangelogBuilder(items: items).build()
 
-        Log.debug("Generated changelog:\n")
-        Log.debug(changelog)
-
         return changelog
     }
 }
