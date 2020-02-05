@@ -42,20 +42,16 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
     }
 
     @discardableResult public func run() throws -> String {
-        Log.debug("Fetching tags..")
-        Self.shell.execute(.fetchTags)
-
-        let releasedTag = Self.shell.execute(.latestTag)
+        let releasedTag = try Release.latest().tag
         let previousTag = Self.shell.execute(.previousTag)
 
         Log.debug("Creating a changelog between tag \(previousTag) and \(releasedTag)")
-        let changelogProducer = try ChangelogProducer(sinceTag: previousTag, baseBranch: "master")
-        let changelog = try changelogProducer.run()
+        let changelog = try ChangelogProducer(sinceTag: previousTag, baseBranch: "master").run()
 
         let repositoryName = Self.shell.execute(.repositoryName)
-
-        Log.debug("Creating a release for tag \(releasedTag) at repository \(repositoryName)")
         let project = GITProject.current()
+        Log.debug("Creating a release for tag \(releasedTag) at repository \(repositoryName)")
+
 
         let group = DispatchGroup()
         group.enter()
