@@ -83,6 +83,12 @@ extension Mocker {
         let releaseJSONData = ReleaseJSON.data(using: .utf8)!
         Mock(url: URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/releases")!, dataType: .json, statusCode: 201, data: [.post: releaseJSONData]).register()
     }
+
+    static func mockForCommentingOn(issueNumber: Int) -> Mock {
+        let urlComponents = URLComponents(string: "https://api.github.com/repos/WeTransfer/Diagnostics/issues/\(issueNumber)/comments")!
+        let commentJSONData = CommentJSON.data(using: .utf8)!
+        return Mock(url: urlComponents.url!, dataType: .json, statusCode: 201, data: [.post: commentJSONData])
+    }
 }
 
 extension Data {
