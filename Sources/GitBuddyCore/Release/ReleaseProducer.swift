@@ -33,11 +33,15 @@ struct ReleaseCommand: Command {
 final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
 
     private lazy var octoKit: Octokit = Octokit()
-    let changelogPath: String?
+    let changelogURL: Foundation.URL?
     let skipComments: Bool
 
     init(changelogPath: String?, skipComments: Bool) throws {
-        self.changelogPath = changelogPath
+        if let changelogPath = changelogPath {
+            changelogURL = URL(string: changelogPath)
+        } else {
+            changelogURL = nil
+        }
         self.skipComments = skipComments
     }
 
@@ -48,15 +52,39 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
         Log.debug("Creating a changelog between tag \(previousTag) and \(releasedTag)")
         let changelog = try ChangelogProducer(sinceTag: previousTag, baseBranch: "master").run()
 
+        try updateChangelogFile(adding: changelog, for: releasedTag)
+
         let repositoryName = Self.shell.execute(.repositoryName)
         let project = GITProject.current()
         Log.debug("Creating a release for tag \(releasedTag) at repository \(repositoryName)")
+        return postRelease(using: project, tag: releasedTag, body: changelog)
+    }
 
+    /// Appends the changelog to the changelog file if the argument is set.
+    /// - Parameters:
+    ///   - changelog: The changelog to append to the changelog file.
+    ///   - tag: The tag that is used as the title for the newly added section.
+    private func updateChangelogFile(adding changelog: String, for tag: String) throws {
+        guard let changelogURL = changelogURL else { return }
+
+        let currentContent = try String(contentsOfFile: changelogURL.path)
+        let newContent = """
+        ### \(tag)
+        \(changelog)\n
+        \(currentContent)
+        """
+
+        let handle = try FileHandle(forWritingTo: changelogURL)
+        handle.write(Data(newContent.utf8))
+        handle.closeFile()
+    }
+
+    private func postRelease(using project: GITProject, tag: String, body: String) -> String {
         let group = DispatchGroup()
         group.enter()
 
         var result: String!
-        octoKit.postRelease(urlSession, owner: project.organisation, repository: project.repository, tagName: releasedTag, targetCommitish: nil, name: releasedTag, body: changelog, prerelease: false, draft: false) { (response) in
+        octoKit.postRelease(urlSession, owner: project.organisation, repository: project.repository, tagName: tag, name: tag, body: body, prerelease: false, draft: false) { (response) in
             switch response {
             case .success(let release):
                 Log.debug("Created release at:\n")
