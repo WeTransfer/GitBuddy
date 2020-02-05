@@ -14,19 +14,17 @@ struct ReleaseCommand: Command {
     let description = "Create a new release including a changelog and publish comments on related issues"
     let changelogPath: OptionArgument<String>
     let skipComments: OptionArgument<Bool>
-    let verbose: OptionArgument<Bool>
 
     init(parser: ArgumentParser) {
         let subparser = parser.add(subparser: command, overview: description)
         changelogPath = subparser.add(option: "--changelogPath", shortName: "-c", kind: String.self, usage: "The path to the Changelog to update it with the latest changes")
         skipComments = subparser.add(option: "--skipComments", shortName: "-s", kind: Bool.self, usage: "Disable commenting on issues and PRs about the new release")
-        verbose = subparser.add(option: "--verbose", kind: Bool.self, usage: "Show extra logging for debugging purposes")
+        _ = subparser.add(option: "--verbose", kind: Bool.self, usage: "Show extra logging for debugging purposes")
     }
 
     @discardableResult func run(using arguments: ArgumentParser.Result) throws -> String {
         let changelogProducer = try ReleaseProducer(changelogPath: arguments.get(changelogPath),
-                                                    skipComments: arguments.get(skipComments) ?? false,
-                                                    verbose: arguments.get(verbose) ?? false)
+                                                    skipComments: arguments.get(skipComments) ?? false)
         return try changelogProducer.run()
     }
 }
@@ -38,9 +36,7 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
     let changelogPath: String?
     let skipComments: Bool
 
-    init(changelogPath: String?, skipComments: Bool, verbose: Bool) throws {
-        // The first argument is always the executable, drop it
-        Log.isVerbose = verbose
+    init(changelogPath: String?, skipComments: Bool) throws {
         self.changelogPath = changelogPath
         self.skipComments = skipComments
     }
@@ -53,7 +49,7 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
         let previousTag = Self.shell.execute(.previousTag)
 
         Log.debug("Creating a changelog between tag \(previousTag) and \(releasedTag)")
-        let changelogProducer = try ChangelogProducer(sinceTag: previousTag, baseBranch: "master", verbose: Log.isVerbose)
+        let changelogProducer = try ChangelogProducer(sinceTag: previousTag, baseBranch: "master")
         let changelog = try changelogProducer.run()
 
         let repositoryName = Self.shell.execute(.repositoryName)

@@ -15,19 +15,17 @@ struct ChangelogCommand: Command {
     let description = "Create a changelog for GitHub repositories"
     let sinceTag: OptionArgument<String>
     let baseBranch: OptionArgument<String>
-    let verbose: OptionArgument<Bool>
 
     init(parser: ArgumentParser) {
         let subparser = parser.add(subparser: command, overview: description)
         sinceTag = subparser.add(option: "--sinceTag", shortName: "-s", kind: String.self, usage: "The tag to use as a base")
         baseBranch = subparser.add(option: "--baseBranch", shortName: "-b", kind: String.self, usage: "The base branch to compare with")
-        verbose = subparser.add(option: "--verbose", kind: Bool.self, usage: "Show extra logging for debugging purposes")
+        _ = subparser.add(option: "--verbose", kind: Bool.self, usage: "Show extra logging for debugging purposes")
     }
 
     @discardableResult func run(using arguments: ArgumentParser.Result) throws -> String {
         let changelogProducer = try ChangelogProducer(sinceTag: arguments.get(sinceTag),
-                                                      baseBranch: arguments.get(baseBranch),
-                                                      verbose: arguments.get(verbose) ?? false)
+                                                      baseBranch: arguments.get(baseBranch))
         return try changelogProducer.run()
     }
 }
@@ -40,10 +38,7 @@ final class ChangelogProducer: URLSessionInjectable {
     let baseRelease: Release
     let project: GITProject
 
-    init(sinceTag: String?, baseBranch: Branch?, verbose: Bool) throws {
-        // The first argument is always the executable, drop it
-        Log.isVerbose = verbose
-
+    init(sinceTag: String?, baseBranch: Branch?) throws {
         if let tag = sinceTag {
             baseRelease = try Release(tag: tag)
         } else {

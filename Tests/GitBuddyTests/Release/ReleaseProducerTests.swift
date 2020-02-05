@@ -48,13 +48,13 @@ final class ReleaseProducerTests: XCTestCase {
 
     /// It should default to master branch.
     func testDefaultBranch() throws {
-        let producer = try ChangelogProducer(sinceTag: nil, baseBranch: nil, verbose: false)
+        let producer = try ChangelogProducer(sinceTag: nil, baseBranch: nil)
         XCTAssertEqual(producer.base, "master")
     }
 
     /// It should accept a different branch as base argument.
     func testBaseBranchArgument() throws {
-        let producer = try ChangelogProducer(sinceTag: nil, baseBranch: "develop", verbose: false)
+        let producer = try ChangelogProducer(sinceTag: nil, baseBranch: "develop")
         XCTAssertEqual(producer.base, "develop")
     }
 
@@ -64,7 +64,7 @@ final class ReleaseProducerTests: XCTestCase {
         let date = Date()
         MockedShell.mockRelease(tag: tag, date: date)
 
-        let producer = try ChangelogProducer(sinceTag: nil, baseBranch: nil, verbose: false)
+        let producer = try ChangelogProducer(sinceTag: nil, baseBranch: nil)
 
         XCTAssertEqual(producer.baseRelease.tag, tag)
         XCTAssertEqual(Int(producer.baseRelease.created.timeIntervalSince1970), Int(date.timeIntervalSince1970))
@@ -76,7 +76,7 @@ final class ReleaseProducerTests: XCTestCase {
         let date = Date()
         MockedShell.mockRelease(tag: tag, date: date)
 
-        let producer = try ChangelogProducer(sinceTag: tag, baseBranch: nil, verbose: false)
+        let producer = try ChangelogProducer(sinceTag: tag, baseBranch: nil)
         XCTAssertEqual(producer.baseRelease.tag, tag)
         XCTAssertEqual(Int(producer.baseRelease.created.timeIntervalSince1970), Int(date.timeIntervalSince1970))
     }
@@ -87,7 +87,7 @@ final class ReleaseProducerTests: XCTestCase {
         let repository = "GitBuddy"
         MockedShell.mockGITProject(organisation: organisation, repository: repository)
 
-        let producer = try ChangelogProducer(sinceTag: nil, baseBranch: nil, verbose: false)
+        let producer = try ChangelogProducer(sinceTag: nil, baseBranch: nil)
         XCTAssertEqual(producer.project.organisation, organisation)
         XCTAssertEqual(producer.project.repository, repository)
     }
