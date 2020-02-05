@@ -16,17 +16,20 @@ protocol ChangelogInput {
     var htmlURL: Foundation.URL? { get }
     var username: String? { get }
 }
+protocol ChangelogIssue: ChangelogInput { }
+protocol ChangelogPullRequest: ChangelogInput { }
 
-extension PullRequest: ChangelogInput {
+extension PullRequest: ChangelogPullRequest {
     var username: String? { assignee?.login }
 }
-extension Issue: ChangelogInput {
+
+extension Issue: ChangelogIssue {
     var username: String? { assignee?.login }
 }
 
 struct ChangelogItem {
     let input: ChangelogInput
-    let closedBy: PullRequest
+    let closedBy: ChangelogPullRequest
 
     var title: String? {
         guard var title = input.title else { return nil }

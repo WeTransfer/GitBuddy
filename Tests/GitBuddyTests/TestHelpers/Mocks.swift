@@ -35,14 +35,14 @@ struct MockedShell: ShellExecuting {
     }
 }
 
-struct MockChangelogInput: ChangelogInput {
-    let number: Int?
+class MockChangelogInput: ChangelogInput {
+    let number: Int
     let title: String?
     let body: String?
     let username: String?
     let htmlURL: Foundation.URL?
 
-    init(number: Int? = nil, title: String? = nil, body: String? = nil, username: String? = nil, htmlURL: URL? = nil) {
+    init(number: Int = 0, title: String? = nil, body: String? = nil, username: String? = nil, htmlURL: URL? = nil) {
         self.number = number
         self.title = title
         self.body = body
@@ -50,6 +50,9 @@ struct MockChangelogInput: ChangelogInput {
         self.htmlURL = htmlURL
     }
 }
+
+final class MockedPullRequest: MockChangelogInput, ChangelogPullRequest { }
+final class MockedIssue: MockChangelogInput, ChangelogIssue { }
 
 extension Mocker {
     static func mockPullRequests() {

@@ -59,37 +59,3 @@ final class ChangelogProducer: URLSessionInjectable {
         return Changelog(items: items)
     }
 }
-
-extension PullRequest: Hashable {
-    public static func == (lhs: PullRequest, rhs: PullRequest) -> Bool {
-        return lhs.id == rhs.id
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
-}
-
-extension Issue: Hashable {
-    public static func == (lhs: Issue, rhs: Issue) -> Bool {
-        return lhs.id == rhs.id
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
-}
-
-struct Changelog: CustomStringConvertible {
-    let description: String
-
-    /// The pull requests and related issues that are merged with the related release of this changelog.
-    let items: [PullRequest: [Issue]]
-
-    init(items: [ChangelogItem]) {
-        description = ChangelogBuilder(items: items).build()
-        self.items = items.reduce(into: [:], { (result, item) in
-            result[item.closedBy] = [item.input].compactMap { $0 as? Issue }
-        })
-    }
-}

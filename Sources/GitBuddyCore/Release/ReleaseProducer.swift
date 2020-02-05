@@ -67,21 +67,21 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
     private func postComments(for changelog: Changelog, project: GITProject, release: Release) {
         guard !skipComments else { return }
         let dispatchGroup = DispatchGroup()
-        for (pullRequest, issues) in changelog.items {
-            Log.debug("Marking PR #\(pullRequest.number) as having been released in version #\(release.tag.name)")
+        for (pullRequestID, issueIDs) in changelog.itemIdentifiers {
+            Log.debug("Marking PR #\(pullRequestID) as having been released in version #\(release.tag.name)")
             let body = "Congratulations! :tada: This was released as part of [Release \(release.title)](\(release.url)) :rocket:"
             dispatchGroup.enter()
-            postComment(issueID: pullRequest.number, project: project, body: body) {
+            postComment(issueID: pullRequestID, project: project, body: body) {
                 dispatchGroup.leave()
             }
 
-            issues.forEach { issue in
-                Log.debug("Adding a comment to issue #\(issue.number) that pull request #\(pullRequest.number) has been released")
-                var body = "The pull request #\(pullRequest.number) that closed this issue was merged and released as part of [Release \(release.title)](\(release.url)) :rocket:\n"
+            issueIDs.forEach { issueID in
+                Log.debug("Adding a comment to issue #\(issueID) that pull request #\(pullRequestID) has been released")
+                var body = "The pull request #\(pullRequestID) that closed this issue was merged and released as part of [Release \(release.title)](\(release.url)) :rocket:\n"
                 body += "Please let us know if the functionality works as expected as a reply here. If it does not, please open a new issue. Thanks!"
 
                 dispatchGroup.enter()
-                postComment(issueID: issue.number, project: project, body: body) {
+                postComment(issueID: issueID, project: project, body: body) {
                     dispatchGroup.leave()
                 }
             }

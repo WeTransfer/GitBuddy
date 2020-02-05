@@ -60,8 +60,8 @@ final class ChangelogProducerTests: XCTestCase {
 
         let producer = try ChangelogProducer(sinceTag: nil, baseBranch: nil)
 
-        XCTAssertEqual(producer.baseRelease.tag, tag)
-        XCTAssertEqual(Int(producer.baseRelease.created.timeIntervalSince1970), Int(date.timeIntervalSince1970))
+        XCTAssertEqual(producer.baseTag.name, tag)
+        XCTAssertEqual(Int(producer.baseTag.created.timeIntervalSince1970), Int(date.timeIntervalSince1970))
     }
 
     /// It should use a tag passed as argument over the latest tag.
@@ -71,8 +71,8 @@ final class ChangelogProducerTests: XCTestCase {
         MockedShell.mockRelease(tag: tag, date: date)
 
         let producer = try ChangelogProducer(sinceTag: tag, baseBranch: nil)
-        XCTAssertEqual(producer.baseRelease.tag, tag)
-        XCTAssertEqual(Int(producer.baseRelease.created.timeIntervalSince1970), Int(date.timeIntervalSince1970))
+        XCTAssertEqual(producer.baseTag.name, tag)
+        XCTAssertEqual(Int(producer.baseTag.created.timeIntervalSince1970), Int(date.timeIntervalSince1970))
     }
 
     /// It should parse the current GIT project correctly.
