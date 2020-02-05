@@ -47,7 +47,7 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
 
     @discardableResult public func run() throws -> String {
         Log.debug("Fetching tags..")
-        Self.shell.execute("git fetch --tags origin master --no-recurse-submodules")
+        Self.shell.execute("git fetch --tags origin master --no-recurse-submodules -q")
 
         let releasedTag = Self.shell.execute("git describe --abbrev=0 --tags `git rev-list --tags --max-count=1 --no-walk`").trimmingCharacters(in: .whitespacesAndNewlines)
         let previousTag = Self.shell.execute("git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1 --no-walk`").trimmingCharacters(in: .whitespacesAndNewlines)
@@ -57,10 +57,27 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
         let changelog = try changelogProducer.run()
 
         let commitish = Self.shell.execute("git rev-parse HEAD")
-        let repositoryName = Self.shell.execute("git remote show origin -n | ruby -ne 'puts /^\\s*Fetch.*(:|\\/){1}([^\\/]+\\/[^\\/]+).git/.match($_)[2] rescue nil'")
+        let repositoryName = Self.shell.execute("git remote show origin -n | ruby -ne 'puts /^\\s*Fetch.*(:|\\/){1}([^\\/]+\\/[^\\/]+).git/.match($_)[2] rescue nil'").trimmingCharacters(in: .whitespacesAndNewlines)
 
         Log.debug("Creating a release for tag \(releasedTag) at repository \(repositoryName) using commitish \(commitish)")
 
-        return ""
+        let owner = String(repositoryName.split(separator: "/").first!)
+        let repository = String(repositoryName.split(separator: "/").last!)
+
+        let group = DispatchGroup()
+        group.enter()
+
+        var result: String!
+        octoKit.postRelease(urlSession, owner: owner, repository: repository, tagName: releasedTag, targetCommitish: nil, name: releasedTag, body: changelog, prerelease: false, draft: false) { (response) in
+            switch response {
+            case .success(let release):
+                result = "Created release at \(release.htmlURL)"
+            case .failure(let error):
+                result = "Releasing failed: \(error)"
+            }
+            group.leave()
+        }
+        group.wait()
+        return result
     }
 }

@@ -32,22 +32,21 @@ struct CommandRegistry {
         return try parser.parse(Array(arguments.dropFirst()))
     }
 
-    @discardableResult func run() -> String? {
+    @discardableResult func run() -> String {
         do {
             let arguments = try processArguments()
             
             guard let subparser = arguments.subparser(parser),
                 let command = commands.first(where: { $0.command == subparser }) else {
                 parser.printUsage(on: stdoutStream)
-                return nil
+                return ""
             }
             return try command.run(using: arguments)
         } catch let error as ArgumentParserError {
-            print(error.description)
+            return error.description
         } catch let error {
-            print(error.localizedDescription)
+            return error.localizedDescription
         }
-        return nil
     }
 
 }
