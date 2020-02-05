@@ -10,7 +10,7 @@ import Foundation
 import OctoKit
 
 protocol ChangelogInput {
-    var number: Int? { get }
+    var number: Int { get }
     var title: String? { get }
     var body: String? { get }
     var htmlURL: Foundation.URL? { get }
@@ -26,12 +26,12 @@ extension Issue: ChangelogInput {
 
 struct ChangelogItem {
     let input: ChangelogInput
-    let closedBy: ChangelogInput
+    let closedBy: PullRequest
 
     var title: String? {
         guard var title = input.title else { return nil }
-        if let number = input.number, let htmlURL = input.htmlURL {
-            title += " ([#\(number)](\(htmlURL)))"
+        if let htmlURL = input.htmlURL {
+            title += " ([#\(input.number)](\(htmlURL)))"
         }
         if let username = closedBy.username {
             title += " via @\(username)"
