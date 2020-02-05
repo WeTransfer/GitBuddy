@@ -26,7 +26,9 @@ public enum GitBuddy {
                                               environment: environment)
         try commandRegistry.register(commandType: ChangelogCommand.self)
         try commandRegistry.register(commandType: ReleaseCommand.self)
-        return commandRegistry.run()
+        let output = commandRegistry.run()
+        Log.message(output)
+        return output
     }
 
     private static func sessionConfiguration(using environment: [String: String]) throws -> URLSessionConfiguration {

@@ -62,7 +62,7 @@ final class ChangelogProducer: URLSessionInjectable {
         let changelog = ChangelogBuilder(items: items).build()
 
         Log.debug("Generated changelog:\n")
-        Log.message(changelog)
+        Log.debug(changelog)
 
         return changelog
     }
