@@ -19,6 +19,10 @@ struct MockedShell: ShellExecuting {
         return commandMocks[command.rawValue] ?? ""
     }
 
+    static func mock(_ command: ShellCommand, value: String) {
+        commandMocks[command.rawValue] = value
+    }
+
     static func mockRelease(tag: String, date: Date = Date()) {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss Z"
@@ -70,6 +74,11 @@ extension Mocker {
         let urlComponents = URLComponents(string: "https://api.github.com/repos/WeTransfer/Diagnostics/issues/\(issueNumber)")!
         let issueJSONData = IssueJSON.data(using: .utf8)!
         Mock(url: urlComponents.url!, dataType: .json, statusCode: 200, data: [.get: issueJSONData]).register()
+    }
+
+    static func mockRelease() {
+        let releaseJSONData = ReleaseJSON.data(using: .utf8)!
+        Mock(url: URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/releases")!, dataType: .json, statusCode: 201, data: [.post: releaseJSONData]).register()
     }
 }
 

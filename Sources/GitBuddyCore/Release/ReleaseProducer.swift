@@ -52,7 +52,6 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
         let project = GITProject.current()
         Log.debug("Creating a release for tag \(releasedTag) at repository \(repositoryName)")
 
-
         let group = DispatchGroup()
         group.enter()
 
@@ -60,9 +59,11 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
         octoKit.postRelease(urlSession, owner: project.organisation, repository: project.repository, tagName: releasedTag, targetCommitish: nil, name: releasedTag, body: changelog, prerelease: false, draft: false) { (response) in
             switch response {
             case .success(let release):
-                result = "Created release at:\n\(release.htmlURL)"
+                Log.debug("Created release at:\n")
+                result = release.htmlURL.absoluteString
             case .failure(let error):
-                result = "Releasing failed: \(error)"
+                Log.debug("Releasing failed:\n")
+                result = "\(error)"
             }
             group.leave()
         }

@@ -40,13 +40,6 @@ final class ChangelogProducerTests: XCTestCase {
         XCTAssertEqual(changelog, "- Add charset utf-8 to html head ([#50](https://github.com/WeTransfer/Diagnostics/pull/50)) via @AvdLee\n- Get warning for file \'style.css\' after building ([#39](https://github.com/WeTransfer/Diagnostics/issues/39)) via @AvdLee")
     }
 
-    /// It should enable verbose logging.
-    func testVerboseLogging() throws {
-        XCTAssertFalse(Log.isVerbose)
-        _ = try GitBuddy.run(arguments: ["GitBuddy", "changelog", "--verbose"], configuration: configuration)
-        XCTAssertTrue(Log.isVerbose)
-    }
-
     /// It should default to master branch.
     func testDefaultBranch() throws {
         let producer = try ChangelogProducer(sinceTag: nil, baseBranch: nil)
