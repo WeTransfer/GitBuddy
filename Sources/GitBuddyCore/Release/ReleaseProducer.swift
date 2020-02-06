@@ -3,6 +3,7 @@
 //  GitBuddy
 //
 //  Created by Antoine van der Lee on 04/02/2020.
+//  Copyright © 2020 WeTransfer. All rights reserved.
 //
 
 import Foundation

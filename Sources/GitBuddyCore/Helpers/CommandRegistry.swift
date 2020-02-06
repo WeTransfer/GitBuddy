@@ -3,6 +3,7 @@
 //  GitBuddyCore
 //
 //  Created by Antoine van der Lee on 03/02/2020.
+//  Copyright © 2020 WeTransfer. All rights reserved.
 //
 
 import Foundation
@@ -12,7 +13,7 @@ import Basic
 /// Allows to register subcommands that can be run.
 struct CommandRegistry {
 
-    private let parser: ArgumentParser
+    let parser: ArgumentParser
     private var commands: [Command] = []
     private let arguments: [String]
     private let environment: [String: String]
@@ -38,12 +39,13 @@ struct CommandRegistry {
     @discardableResult func run() -> String {
         do {
             let arguments = try processArguments()
-            
+
             guard let subparser = arguments.subparser(parser),
                 let command = commands.first(where: { type(of: $0).command == subparser }) else {
                 parser.printUsage(on: stdoutStream)
                 return ""
             }
+
             return try command.run(using: arguments)
         } catch let error as ArgumentParserError {
             return error.description
