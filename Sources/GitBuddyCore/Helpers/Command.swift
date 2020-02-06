@@ -11,11 +11,11 @@ import SPMUtility
 /// Defines a command that can be executed.
 protocol Command {
     /// The name of the command.
-    var command: String { get }
+    static var command: String { get }
 
     /// The command description explaining what it does.
-    var description: String { get }
+    static var description: String { get }
 
-    init(parser: ArgumentParser) throws
+    init(subparser: ArgumentParser) throws
     @discardableResult func run(using arguments: ArgumentParser.Result) throws -> String
 }

@@ -24,7 +24,10 @@ struct CommandRegistry {
     }
 
     mutating func register(commandType: Command.Type) throws {
-        let command = try commandType.init(parser: parser)
+        let subparser = parser.add(subparser: commandType.command, overview: commandType.description)
+        let command = try commandType.init(subparser: subparser)
+        subparser.addHelpArgument()
+        subparser.addVerboseArgument()
         commands.append(command)
     }
 
@@ -37,7 +40,7 @@ struct CommandRegistry {
             let arguments = try processArguments()
             
             guard let subparser = arguments.subparser(parser),
-                let command = commands.first(where: { $0.command == subparser }) else {
+                let command = commands.first(where: { type(of: $0).command == subparser }) else {
                 parser.printUsage(on: stdoutStream)
                 return ""
             }
@@ -49,4 +52,14 @@ struct CommandRegistry {
         }
     }
 
+}
+
+private extension ArgumentParser {
+    func addHelpArgument() {
+        _ = add(option: "--help", kind: Bool.self, usage: "Display available options")
+    }
+
+    func addVerboseArgument() {
+        _ = add(option: "--verbose", kind: Bool.self, usage: "Show extra logging for debugging purposes")
+    }
 }

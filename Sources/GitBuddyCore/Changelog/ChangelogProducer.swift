@@ -11,16 +11,14 @@ import OctoKit
 import SPMUtility
 
 struct ChangelogCommand: Command {
-    let command = "changelog"
-    let description = "Create a changelog for GitHub repositories"
+    static let command = "changelog"
+    static let description = "Create a changelog for GitHub repositories"
     let sinceTag: OptionArgument<String>
     let baseBranch: OptionArgument<String>
 
-    init(parser: ArgumentParser) {
-        let subparser = parser.add(subparser: command, overview: description)
-        sinceTag = subparser.add(option: "--sinceTag", shortName: "-s", kind: String.self, usage: "The tag to use as a base. Defaults to the latest tag.")
-        baseBranch = subparser.add(option: "--baseBranch", shortName: "-b", kind: String.self, usage: "The base branch to compare with. Defaults to master.")
-        _ = subparser.add(option: "--verbose", kind: Bool.self, usage: "Show extra logging for debugging purposes")
+    init(subparser: ArgumentParser) {
+        sinceTag = subparser.add(option: "--since-tag", shortName: "-s", kind: String.self, usage: "The tag to use as a base. Defaults to the latest tag.")
+        baseBranch = subparser.add(option: "--base-branch", shortName: "-b", kind: String.self, usage: "The base branch to compare with. Defaults to master.")
     }
 
     @discardableResult func run(using arguments: ArgumentParser.Result) throws -> String {
