@@ -12,13 +12,13 @@ import SPMUtility
 /// Entry class of GitBuddy that registers commands and handles execution.
 public enum GitBuddy {
 
-    public static let version = "2.0.0"
-
     enum Error: Swift.Error, CustomDebugStringConvertible {
         case missingAccessToken
 
         var debugDescription: String { "GitHub Access Token is missing. Add an environment variable: GITBUDDY_ACCESS_TOKEN='username:access_token'" }
     }
+
+    public static let version = "2.0.0"
 
     @discardableResult public static func run(arguments: [String] = ProcessInfo.processInfo.arguments, environment: [String: String] = ProcessInfo.processInfo.environment, configuration: URLSessionConfiguration? = nil) throws -> String? {
         let configuration = try configuration ?? sessionConfiguration(using: environment)

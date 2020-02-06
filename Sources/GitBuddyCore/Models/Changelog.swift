@@ -36,21 +36,21 @@ struct Changelog: CustomStringConvertible {
 }
 
 extension PullRequest: Hashable {
-    public static func == (lhs: PullRequest, rhs: PullRequest) -> Bool {
-        return lhs.id == rhs.id
-    }
-
     public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
+    }
+
+    public static func == (lhs: PullRequest, rhs: PullRequest) -> Bool {
+        return lhs.id == rhs.id
     }
 }
 
 extension Issue: Hashable {
-    public static func == (lhs: Issue, rhs: Issue) -> Bool {
-        return lhs.id == rhs.id
-    }
-
     public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
+    }
+
+    public static func == (lhs: Issue, rhs: Issue) -> Bool {
+        return lhs.id == rhs.id
     }
 }
