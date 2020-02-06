@@ -17,8 +17,7 @@ let package = Package(
         // dev .package(path: "Submodules/WeTransfer-iOS-CI/Danger-Swift"),
         .package(url: "https://github.com/WeTransfer/Mocker.git", from: "2.0.0"),
 //        .package(url: "https://github.com/nerdishbynature/octokit.swift", from: "0.9.0"),
-//        .package(url: "https://github.com/nerdishbynature/octokit.swift", .branch("master")),
-        .package(path: "/Users/antoinevanderlee/Documents/GIT-Projects/Forks/octokit.swift"),
+        .package(url: "https://github.com/nerdishbynature/octokit.swift", .branch("feature/bugfixes")),
         .package(url: "https://github.com/apple/swift-package-manager.git", from: "0.1.0")
     ],
     targets: [
