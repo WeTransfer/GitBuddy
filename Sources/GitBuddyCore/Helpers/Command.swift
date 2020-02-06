@@ -16,6 +16,12 @@ protocol Command {
     /// The command description explaining what it does.
     var description: String { get }
 
+    /// Creates a new instance of this `Command`.
+    /// - Parameter parser: The main parser that is being used for execution.
     init(parser: ArgumentParser) throws
+
+    /// Runs the command with the given arguments and environment.
+    /// - Parameters:
+    ///   - arguments: The arguments that are parsed upon execution.
     @discardableResult func run(using arguments: ArgumentParser.Result) throws -> String
 }
