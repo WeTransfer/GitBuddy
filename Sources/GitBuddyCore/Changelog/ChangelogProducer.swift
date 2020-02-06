@@ -49,7 +49,7 @@ final class ChangelogProducer: URLSessionInjectable {
     }
 
     @discardableResult public func run() throws -> String {
-        Log.debug("Getting all changes happened after \(baseRelease.tag)")
+        Log.debug("Getting all changes since \(baseRelease.tag)")
 
         let pullRequestsFetcher = PullRequestFetcher(octoKit: octoKit, base: base, project: project)
         let pullRequests = try pullRequestsFetcher.fetchAllAfter(baseRelease, using: urlSession)
