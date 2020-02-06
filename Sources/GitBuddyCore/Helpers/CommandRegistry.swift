@@ -33,6 +33,7 @@ struct CommandRegistry {
     }
 
     private func processArguments() throws -> ArgumentParser.Result {
+        // We drop the first argument as this is always the execution path. In our case: "gitbuddy"
         return try parser.parse(Array(arguments.dropFirst()))
     }
 

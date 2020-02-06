@@ -28,7 +28,7 @@ This command generates a changelog based on merged PRs and fixed issues. Once a 
 
 Pull requests that are merged into the `baseBranch` will be used as input for the changelog. Only pull requests that are merged after the creation date of the `sinceTag` are taken as input.
 
-#### An Changelog example
+#### A Changelog example
 This is an example taken from [Mocker](https://github.com/WeTransfer/Mocker/releases/tag/2.0.1)
 
 ----
@@ -72,7 +72,7 @@ You can install GitBuddy using Mint as follows:
 $ mint install WeTransfer/GitBuddy
 ```
 
-[Setup a personal access token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) with the scope set to `repo` only. Add this token an environment variable `GITBUDDY_ACCESS_TOKEN` by combining your GitHub username with the token:
+[Setup a personal access token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) with the scope set to `repo` only. Add this token as an environment variable `GITBUDDY_ACCESS_TOKEN` by combining your GitHub username with the token:
 
 ```ruby
 export GITBUDDY_ACCESS_TOKEN="<username>:<access_token>"

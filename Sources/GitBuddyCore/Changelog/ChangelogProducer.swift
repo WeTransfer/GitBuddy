@@ -11,6 +11,7 @@ import OctoKit
 import SPMUtility
 
 struct ChangelogCommand: Command {
+
     static let command = "changelog"
     static let description = "Create a changelog for GitHub repositories"
     let sinceTag: OptionArgument<String>
@@ -49,7 +50,7 @@ final class ChangelogProducer: URLSessionInjectable {
     }
 
     @discardableResult public func run() throws -> Changelog {
-        Log.debug("Getting all changes happened after \(baseTag.name)")
+        Log.debug("Getting all changes since \(baseTag.name)")
 
         let pullRequestsFetcher = PullRequestFetcher(octoKit: octoKit, base: base, project: project)
         let pullRequests = try pullRequestsFetcher.fetchAllAfter(baseTag, using: urlSession)

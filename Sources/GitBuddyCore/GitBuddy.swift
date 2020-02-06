@@ -30,6 +30,7 @@ public enum GitBuddy {
                                               environment: environment)
         try commandRegistry.register(commandType: ChangelogCommand.self)
         try commandRegistry.register(commandType: ReleaseCommand.self)
+
         addVersionArgument(using: arguments, parser: commandRegistry.parser)
 
         let output = commandRegistry.run()

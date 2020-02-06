@@ -17,6 +17,12 @@ protocol Command {
     /// The command description explaining what it does.
     static var description: String { get }
 
+    /// Creates a new instance of this `Command`.
+    /// - Parameter subparser: The subparser that is being used for this execution.
     init(subparser: ArgumentParser) throws
+
+    /// Runs the command with the given arguments and environment.
+    /// - Parameters:
+    ///   - arguments: The arguments that are parsed upon execution.
     @discardableResult func run(using arguments: ArgumentParser.Result) throws -> String
 }
