@@ -28,7 +28,7 @@ This command generates a changelog based on merged PRs and fixed issues. Once a 
 
 Pull requests that are merged into the `baseBranch` will be used as input for the changelog. Only pull requests that are merged after the creation date of the `sinceTag` are taken as input.
 
-#### An Changelog example
+#### A Changelog example
 This is an example taken from [Mocker](https://github.com/WeTransfer/Mocker/releases/tag/2.0.1)
 
 ----
