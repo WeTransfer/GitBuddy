@@ -20,12 +20,16 @@ public enum GitBuddy {
     @discardableResult public static func run(arguments: [String] = ProcessInfo.processInfo.arguments, environment: [String: String] = ProcessInfo.processInfo.environment, configuration: URLSessionConfiguration? = nil) throws -> String? {
         let configuration = try configuration ?? sessionConfiguration(using: environment)
         URLSessionInjector.urlSession = URLSession(configuration: configuration, delegate: nil, delegateQueue: nil)
+        Log.isVerbose = arguments.contains("--verbose")
         var commandRegistry = CommandRegistry(usage: "<commands> <options>",
                                               overview: "Manage your GitHub repositories with ease",
                                               arguments: arguments,
                                               environment: environment)
         try commandRegistry.register(commandType: ChangelogCommand.self)
-        return commandRegistry.run()
+        try commandRegistry.register(commandType: ReleaseCommand.self)
+        let output = commandRegistry.run()
+        Log.message(output)
+        return output
     }
 
     private static func sessionConfiguration(using environment: [String: String]) throws -> URLSessionConfiguration {
