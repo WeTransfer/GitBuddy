@@ -72,7 +72,7 @@ You can install GitBuddy using Mint as follows:
 $ mint install WeTransfer/GitBuddy
 ```
 
-[Setup a personal access token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) with the scope set to `repo` only. Add this token an environment variable `GITBUDDY_ACCESS_TOKEN` by combining your GitHub username with the token:
+[Setup a personal access token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) with the scope set to `repo` only. Add this token as an environment variable `GITBUDDY_ACCESS_TOKEN` by combining your GitHub username with the token:
 
 ```ruby
 export GITBUDDY_ACCESS_TOKEN="<username>:<access_token>"
