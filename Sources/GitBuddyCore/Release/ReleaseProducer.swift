@@ -15,15 +15,18 @@ struct ReleaseCommand: Command {
     static let description = "Create a new release including a changelog and publish comments on related issues"
     let changelogPath: OptionArgument<String>
     let skipComments: OptionArgument<Bool>
+    let isPrelease: OptionArgument<Bool>
 
     init(subparser: ArgumentParser) {
         changelogPath = subparser.add(option: "--changelog-path", shortName: "-c", kind: String.self, usage: "The path to the Changelog to update it with the latest changes")
         skipComments = subparser.add(option: "--skip-comments", shortName: "-s", kind: Bool.self, usage: "Disable commenting on issues and PRs about the new release")
+        isPrelease = subparser.add(option: "--use-pre-release", shortName: "-p", kind: Bool.self, usage: "Create the release as a pre-release")
     }
 
     @discardableResult func run(using arguments: ArgumentParser.Result) throws -> String {
         let changelogProducer = try ReleaseProducer(changelogPath: arguments.get(changelogPath),
-                                                    skipComments: arguments.get(skipComments) ?? false)
+                                                    skipComments: arguments.get(skipComments) ?? false,
+                                                    isPrelease: arguments.get(isPrelease) ?? false)
 
         Log.debug("Result of creating the release:\n")
         return try changelogProducer.run().url.absoluteString
@@ -36,14 +39,16 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
     private lazy var octoKit: Octokit = Octokit()
     let changelogURL: Foundation.URL?
     let skipComments: Bool
+    let isPrelease: Bool
 
-    init(changelogPath: String?, skipComments: Bool) throws {
+    init(changelogPath: String?, skipComments: Bool, isPrelease: Bool) throws {
         if let changelogPath = changelogPath {
             changelogURL = URL(string: changelogPath)
         } else {
             changelogURL = nil
         }
         self.skipComments = skipComments
+        self.isPrelease = isPrelease
     }
 
     @discardableResult public func run() throws -> Release {
@@ -108,7 +113,7 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
         group.enter()
 
         var result: Result<Foundation.URL, Swift.Error>!
-        octoKit.postRelease(urlSession, owner: project.organisation, repository: project.repository, tagName: tag.name, name: tag.name, body: body, prerelease: false, draft: false) { (response) in
+        octoKit.postRelease(urlSession, owner: project.organisation, repository: project.repository, tagName: tag.name, name: tag.name, body: body, prerelease: isPrelease, draft: false) { (response) in
             switch response {
             case .success(let release):
                 result = .success(release.htmlURL)
