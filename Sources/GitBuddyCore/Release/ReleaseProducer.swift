@@ -69,36 +69,20 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
         let dispatchGroup = DispatchGroup()
         for (pullRequestID, issueIDs) in changelog.itemIdentifiers {
             Log.debug("Marking PR #\(pullRequestID) as having been released in version #\(release.tag.name)")
-            let body = "Congratulations! :tada: This was released as part of [Release \(release.title)](\(release.url)) :rocket:"
             dispatchGroup.enter()
-            postComment(issueID: pullRequestID, project: project, body: body) {
+            Commenter.post(.releasedPR(release: release), on: pullRequestID, at: project) {
                 dispatchGroup.leave()
             }
 
             issueIDs.forEach { issueID in
                 Log.debug("Adding a comment to issue #\(issueID) that pull request #\(pullRequestID) has been released")
-                var body = "The pull request #\(pullRequestID) that closed this issue was merged and released as part of [Release \(release.title)](\(release.url)) :rocket:\n"
-                body += "Please let us know if the functionality works as expected as a reply here. If it does not, please open a new issue. Thanks!"
-
                 dispatchGroup.enter()
-                postComment(issueID: issueID, project: project, body: body) {
+                Commenter.post(.releasedIssue(release: release, pullRequestID: pullRequestID), on: issueID, at: project) {
                     dispatchGroup.leave()
                 }
             }
         }
         dispatchGroup.wait()
-    }
-
-    private func postComment(issueID: Int, project: GITProject, body: String, completion: @escaping () -> Void) {
-        octoKit.commentIssue(urlSession, owner: project.organisation, repository: project.repository, number: issueID, body: body) { response in
-            switch response {
-            case .success(let comment):
-                Log.debug("Successfully posted comment at: \(comment.htmlURL)")
-            case .failure(let error):
-                Log.debug("Posting comment for issue #\(issueID) failed: \(error)")
-            }
-            completion()
-        }
     }
 
     /// Appends the changelog to the changelog file if the argument is set.
