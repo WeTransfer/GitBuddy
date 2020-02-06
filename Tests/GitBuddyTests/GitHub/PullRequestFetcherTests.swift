@@ -31,7 +31,7 @@ final class PullRequestFetcherTests: XCTestCase {
 
     func testFetchingPullRequest() throws {
         Mocker.mockPullRequests()
-        let release = try Release.latest()
+        let release = try Tag.latest()
         let project = GITProject(organisation: "WeTransfer", repository: "Diagnostics")
         let fetcher = PullRequestFetcher(octoKit: octoKit, base: "master", project: project)
         let pullRequests = try fetcher.fetchAllAfter(release, using: urlSession)

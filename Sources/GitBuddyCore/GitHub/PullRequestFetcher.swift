@@ -17,7 +17,7 @@ struct PullRequestFetcher {
     let base: Branch
     let project: GITProject
 
-    func fetchAllAfter(_ release: Release, using session: URLSession = URLSession.shared) throws -> [PullRequest] {
+    func fetchAllAfter(_ tag: Tag, using session: URLSession = URLSession.shared) throws -> [PullRequest] {
         let group = DispatchGroup()
         group.enter()
 
@@ -36,7 +36,7 @@ struct PullRequestFetcher {
 
         return try result.get().filter { pullRequest -> Bool in
             guard let mergedAt = pullRequest.mergedAt else { return false }
-            return mergedAt > release.created
+            return mergedAt > tag.created
         }
     }
 
