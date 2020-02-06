@@ -23,6 +23,5 @@ protocol Command {
     /// Runs the command with the given arguments and environment.
     /// - Parameters:
     ///   - arguments: The arguments that are parsed upon execution.
-    ///   - environment: The available environment variables.
-    @discardableResult func run(using arguments: ArgumentParser.Result, environment: [String: String]) throws -> String
+    @discardableResult func run(using arguments: ArgumentParser.Result) throws -> String
 }

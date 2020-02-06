@@ -15,5 +15,6 @@ extension URLSessionInjectable {
 }
 
 enum URLSessionInjector {
-    static var urlSession: URLSession = URLSession.shared
+    /// Will be setup using the configuration inside the GitBuddy.run method
+    static var urlSession: URLSession!
 }
