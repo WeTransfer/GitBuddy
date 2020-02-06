@@ -18,8 +18,8 @@ struct ChangelogCommand: Command {
 
     init(parser: ArgumentParser) {
         let subparser = parser.add(subparser: command, overview: description)
-        sinceTag = subparser.add(option: "--sinceTag", shortName: "-s", kind: String.self, usage: "The tag to use as a base")
-        baseBranch = subparser.add(option: "--baseBranch", shortName: "-b", kind: String.self, usage: "The base branch to compare with")
+        sinceTag = subparser.add(option: "--sinceTag", shortName: "-s", kind: String.self, usage: "The tag to use as a base. Defaults to the latest tag.")
+        baseBranch = subparser.add(option: "--baseBranch", shortName: "-b", kind: String.self, usage: "The base branch to compare with. Defaults to master.")
         _ = subparser.add(option: "--verbose", kind: Bool.self, usage: "Show extra logging for debugging purposes")
     }
 
