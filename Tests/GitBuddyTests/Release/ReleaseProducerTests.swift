@@ -41,6 +41,28 @@ final class ReleaseProducerTests: XCTestCase {
         XCTAssertEqual(releaseURL, "https://github.com/WeTransfer/ChangelogProducer/releases/tag/1.0.1")
     }
 
+    /// It should set the parameters correctly.
+    func testPostBodyArguments() throws {
+        let mockExpectation = expectation(description: "Mocks should be called")
+        var mock = Mocker.mockRelease()
+        mock.onRequest = { _, parameters in
+            guard let parameters = try? XCTUnwrap(parameters) else { return }
+            XCTAssertEqual(parameters["prerelease"] as? Bool, false)
+            XCTAssertEqual(parameters["draft"] as? Bool, false)
+            XCTAssertEqual(parameters["tag_name"] as? String, "1.0.1")
+            XCTAssertEqual(parameters["name"] as? String, "1.0.1")
+            XCTAssertEqual(parameters["body"] as? String, """
+            - Add charset utf-8 to html head ([#50](https://github.com/WeTransfer/Diagnostics/pull/50)) via @AvdLee
+            - Get warning for file 'style.css' after building ([#39](https://github.com/WeTransfer/Diagnostics/issues/39)) via @AvdLee
+            """)
+            mockExpectation.fulfill()
+        }
+        mock.register()
+
+        _ = try GitBuddy.run(arguments: ["GitBuddy", "release", "-s"], configuration: configuration)
+        wait(for: [mockExpectation], timeout: 0.3)
+    }
+
     /// It should update the changelog file if the argument is set.
     func testChangelogUpdating() throws {
         let existingChangelog = """
@@ -83,7 +105,7 @@ final class ReleaseProducerTests: XCTestCase {
 
     /// It should not post comments if --skipComments is passed as an argument.
     func testSkippingComments() throws {
-        let mockExpectation = expectation(description: "Mocks should be called")
+        let mockExpectation = expectation(description: "Mock should not be called")
         mockExpectation.isInverted = true
         var mock = Mocker.mockForCommentingOn(issueNumber: 39)
         mock.completion = {
@@ -92,6 +114,21 @@ final class ReleaseProducerTests: XCTestCase {
         mock.register()
 
         _ = try GitBuddy.run(arguments: ["GitBuddy", "release", "-s"], configuration: configuration)
+        wait(for: [mockExpectation], timeout: 0.3)
+    }
+
+    /// It should use the prerelease setting.
+    func testPrerelease() throws {
+        let mockExpectation = expectation(description: "Mocks should be called")
+        var mock = Mocker.mockRelease()
+        mock.onRequest = { _, parameters in
+            guard let parameters = try? XCTUnwrap(parameters) else { return }
+            XCTAssertTrue(parameters["prerelease"] as? Bool == true)
+            mockExpectation.fulfill()
+        }
+        mock.register()
+
+        _ = try GitBuddy.run(arguments: ["GitBuddy", "release", "-s", "-p"], configuration: configuration)
         wait(for: [mockExpectation], timeout: 0.3)
     }
 }

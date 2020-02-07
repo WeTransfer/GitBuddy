@@ -19,9 +19,10 @@ $ gitbuddy changelog --help
 OVERVIEW: Create a changelog for GitHub repositories
 
 OPTIONS:
-  --baseBranch, -b   The base branch to compare with. Defaults to master.
-  --sinceTag, -s     The tag to use as a base. Defaults to the latest tag.
-  --verbose          Show extra logging for debugging purposes
+  --base-branch, -b   The base branch to compare with. Defaults to master.
+  --help              Display available options
+  --since-tag, -s     The tag to use as a base. Defaults to the latest tag.
+  --verbose           Show extra logging for debugging purposes
 ```
 
 This command generates a changelog based on merged PRs and fixed issues. Once a PR contains a reference like `"Fixed #30"`, the title of issue 30 will be included in the changelog. Otherwise, the Pull Request title will be used.
@@ -44,9 +45,11 @@ $ gitbuddy release --help
 OVERVIEW: Create a new release including a changelog and publish comments on related issues
 
 OPTIONS:
-  --changelogPath, -c   The path to the Changelog to update it with the latest changes
-  --skipComments, -s    Disable commenting on issues and PRs about the new release
-  --verbose             Show extra logging for debugging purposes
+  --changelog-path, -c    The path to the Changelog to update it with the latest changes
+  --help                  Display available options
+  --skip-comments, -s     Disable commenting on issues and PRs about the new release
+  --use-pre-release, -p   Create the release as a pre-release
+  --verbose               Show extra logging for debugging purposes
 ```
 
 The `release` command can be used to transform the latest tag into a GitHub release including the changelog as a body.
