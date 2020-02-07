@@ -3,6 +3,7 @@
 //  GitBuddyCore
 //
 //  Created by Antoine van der Lee on 06/02/2020.
+//  Copyright © 2020 WeTransfer. All rights reserved.
 //
 
 import Foundation
@@ -25,7 +26,7 @@ enum Comment {
 }
 
 /// Responsible for posting comments on issues at GitHub.
-struct Commenter {
+enum Commenter {
     static var urlSession: URLSession { URLSessionInjector.urlSession }
 
     /// Posts a given comment on the issue from the given project.

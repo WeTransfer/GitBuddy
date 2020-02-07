@@ -3,6 +3,7 @@
 //  GitBuddy
 //
 //  Created by Antoine van der Lee on 04/02/2020.
+//  Copyright © 2020 WeTransfer. All rights reserved.
 //
 
 import Foundation
@@ -10,16 +11,14 @@ import OctoKit
 import SPMUtility
 
 struct ReleaseCommand: Command {
-    let command = "release"
-    let description = "Create a new release including a changelog and publish comments on related issues"
+    static let command = "release"
+    static let description = "Create a new release including a changelog and publish comments on related issues"
     let changelogPath: OptionArgument<String>
     let skipComments: OptionArgument<Bool>
 
-    init(parser: ArgumentParser) {
-        let subparser = parser.add(subparser: command, overview: description)
-        changelogPath = subparser.add(option: "--changelogPath", shortName: "-c", kind: String.self, usage: "The path to the Changelog to update it with the latest changes")
-        skipComments = subparser.add(option: "--skipComments", shortName: "-s", kind: Bool.self, usage: "Disable commenting on issues and PRs about the new release")
-        _ = subparser.add(option: "--verbose", kind: Bool.self, usage: "Show extra logging for debugging purposes")
+    init(subparser: ArgumentParser) {
+        changelogPath = subparser.add(option: "--changelog-path", shortName: "-c", kind: String.self, usage: "The path to the Changelog to update it with the latest changes")
+        skipComments = subparser.add(option: "--skip-comments", shortName: "-s", kind: Bool.self, usage: "Disable commenting on issues and PRs about the new release")
     }
 
     @discardableResult func run(using arguments: ArgumentParser.Result) throws -> String {
