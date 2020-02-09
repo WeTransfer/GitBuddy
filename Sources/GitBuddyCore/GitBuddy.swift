@@ -33,7 +33,7 @@ public enum GitBuddy {
 
         addVersionArgument(using: arguments, parser: commandRegistry.parser)
 
-        let output = commandRegistry.run()
+        let output = try commandRegistry.run()
         Log.message(output)
         return output
     }

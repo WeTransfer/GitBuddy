@@ -27,8 +27,6 @@ struct ReleaseCommand: Command {
         let changelogProducer = try ReleaseProducer(changelogPath: arguments.get(changelogPath),
                                                     skipComments: arguments.get(skipComments) ?? false,
                                                     isPrelease: arguments.get(isPrelease) ?? false)
-
-        Log.debug("Result of creating the release:\n")
         return try changelogProducer.run().url.absoluteString
     }
 }
@@ -55,8 +53,10 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
         let releasedTag = try Tag.latest()
         let previousTag = Self.shell.execute(.previousTag)
 
-        Log.debug("Creating a changelog between tag \(previousTag) and \(releasedTag.name)")
-        let changelog = try ChangelogProducer(sinceTag: previousTag, baseBranch: "master").run()
+        let changelogProducer = try ChangelogProducer(from: .tag(tag: previousTag), to: releasedTag.created, baseBranch: "master")
+        Log.debug("Result of creating the changelog:\n")
+        let changelog = try changelogProducer.run()
+        Log.debug("\(changelog)\n")
 
         try updateChangelogFile(adding: changelog.description, for: releasedTag)
 
@@ -65,11 +65,16 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
         Log.debug("Creating a release for tag \(releasedTag.name) at repository \(repositoryName)")
         let release = try createRelease(using: project, tag: releasedTag, body: changelog.description)
         postComments(for: changelog, project: project, release: release)
+
+        Log.debug("Result of creating the release:\n")
         return release
     }
 
     private func postComments(for changelog: Changelog, project: GITProject, release: Release) {
-        guard !skipComments else { return }
+        guard !skipComments else {
+            Log.debug("Skipping comments")
+            return
+        }
         let dispatchGroup = DispatchGroup()
         for (pullRequestID, issueIDs) in changelog.itemIdentifiers {
             Log.debug("Marking PR #\(pullRequestID) as having been released in version #\(release.tag.name)")
@@ -94,7 +99,10 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
     ///   - changelog: The changelog to append to the changelog file.
     ///   - tag: The tag that is used as the title for the newly added section.
     private func updateChangelogFile(adding changelog: String, for tag: Tag) throws {
-        guard let changelogURL = changelogURL else { return }
+        guard let changelogURL = changelogURL else {
+            Log.debug("Skipping changelog file updating")
+            return
+        }
 
         let currentContent = try String(contentsOfFile: changelogURL.path)
         let newContent = """

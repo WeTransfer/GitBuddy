@@ -9,8 +9,19 @@
 import Foundation
 
 struct Tag: ShellInjectable {
-    enum Error: Swift.Error {
+    enum Error: Swift.Error, CustomStringConvertible {
         case missingTagCreationDate
+        case noTagsAvailable
+
+        var description: String {
+            switch self {
+            case .missingTagCreationDate:
+                return "Tag creation date could not be determined"
+            case .noTagsAvailable:
+                return "There's no tags available"
+            }
+        }
+
     }
 
     let name: String
@@ -34,6 +45,9 @@ struct Tag: ShellInjectable {
         Log.debug("Fetching tags")
         shell.execute(.fetchTags)
         let latestTag = shell.execute(.latestTag)
+
+        guard !latestTag.isEmpty else { throw Error.noTagsAvailable }
+
         Log.debug("Latest tag is \(latestTag)")
 
         return try Tag(name: latestTag)

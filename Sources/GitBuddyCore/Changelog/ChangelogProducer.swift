@@ -23,7 +23,8 @@ struct ChangelogCommand: Command {
     }
 
     @discardableResult func run(using arguments: ArgumentParser.Result) throws -> String {
-        let changelogProducer = try ChangelogProducer(sinceTag: arguments.get(sinceTag),
+        let sinceTag = arguments.get(self.sinceTag).map { ChangelogProducer.Since.tag(tag: $0) }
+        let changelogProducer = try ChangelogProducer(from: sinceTag ?? .latestTag,
                                                       baseBranch: arguments.get(baseBranch))
 
         Log.debug("Result of creating the changelog:\n")
@@ -34,26 +35,49 @@ struct ChangelogCommand: Command {
 /// Capable of producing a changelog based on input parameters.
 final class ChangelogProducer: URLSessionInjectable {
 
+    enum Since {
+        case date(date: Date)
+        case tag(tag: String)
+        case latestTag
+
+        func get() throws -> Date {
+            switch self {
+            case .date(let date):
+                return date
+            case .tag(let tag):
+                return try Tag(name: tag).created
+            case .latestTag:
+                return try Tag.latest().created
+            }
+        }
+    }
+
     private lazy var octoKit: Octokit = Octokit()
-    let base: Branch
-    let baseTag: Tag
+    let baseBranch: Branch
+    let from: Date
+    let to: Date
     let project: GITProject
 
-    init(sinceTag: String?, baseBranch: Branch?) throws {
-        if let tag = sinceTag {
-            baseTag = try Tag(name: tag)
+    init(from: Since = .latestTag, to: Date = Date(), baseBranch: Branch?) throws {
+        self.to = to
+
+        let from = try from.get()
+
+        if from != self.to {
+            self.from = from
         } else {
-            baseTag = try Tag.latest()
+            Log.debug("From date could not be determined. Using today minus 30 days as the base date")
+            self.from = Calendar.current.date(byAdding: .day, value: -30, to: Date())!
         }
-        base = baseBranch ?? "master"
+
+        Log.debug("Getting all changes between \(self.from) and \(self.to)")
+        self.baseBranch = baseBranch ?? "master"
         project = GITProject.current()
     }
 
     @discardableResult public func run() throws -> Changelog {
-        Log.debug("Getting all changes since \(baseTag.name)")
-
-        let pullRequestsFetcher = PullRequestFetcher(octoKit: octoKit, base: base, project: project)
-        let pullRequests = try pullRequestsFetcher.fetchAllAfter(baseTag, using: urlSession)
+        let pullRequestsFetcher = PullRequestFetcher(octoKit: octoKit, baseBranch: baseBranch, project: project)
+        let pullRequests = try pullRequestsFetcher.fetchAllBetween(from, and: to, using: urlSession)
         let items = ChangelogItemsFactory(octoKit: octoKit, pullRequests: pullRequests, project: project).items(using: urlSession)
         return Changelog(items: items)
     }
