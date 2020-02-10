@@ -68,7 +68,7 @@ final class ChangelogProducerTests: XCTestCase {
         let date = Date().addingTimeInterval(TimeInterval.random(in: 0..<100))
         MockedShell.mockRelease(tag: expectedTag, date: date)
 
-        let producer = try ChangelogProducer(since: .tag(tag: expectedTag) ,baseBranch: nil)
+        let producer = try ChangelogProducer(since: .tag(tag: expectedTag), baseBranch: nil)
         guard case let ChangelogProducer.Since.tag(tag) = producer.since else {
             XCTFail("Wrong since used")
             return
