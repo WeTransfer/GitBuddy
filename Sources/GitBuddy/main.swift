@@ -11,5 +11,5 @@ import GitBuddyCore
 do {
     try GitBuddy.run()
 } catch {
-    print("Whoops! An error occurred: \(error)")
+    print("GitBuddy failed: \(error)")
 }

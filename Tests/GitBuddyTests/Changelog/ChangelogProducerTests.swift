@@ -42,37 +42,39 @@ final class ChangelogProducerTests: XCTestCase {
 
     /// It should default to master branch.
     func testDefaultBranch() throws {
-        let producer = try ChangelogProducer(sinceTag: nil, baseBranch: nil)
-        XCTAssertEqual(producer.base, "master")
+        let producer = try ChangelogProducer(baseBranch: nil)
+        XCTAssertEqual(producer.baseBranch, "master")
     }
 
     /// It should accept a different branch as base argument.
     func testBaseBranchArgument() throws {
-        let producer = try ChangelogProducer(sinceTag: nil, baseBranch: "develop")
-        XCTAssertEqual(producer.base, "develop")
+        let producer = try ChangelogProducer(baseBranch: "develop")
+        XCTAssertEqual(producer.baseBranch, "develop")
     }
 
-    /// It should use the latest tag by default for the latest release.
+    /// It should use the latest tag by default for the latest release adding 60 seconds to its creation date.
     func testLatestReleaseUsingLatestTag() throws {
         let tag = "2.1.3"
-        let date = Date()
+        let date = Date().addingTimeInterval(TimeInterval.random(in: 0..<100))
         MockedShell.mockRelease(tag: tag, date: date)
 
-        let producer = try ChangelogProducer(sinceTag: nil, baseBranch: nil)
-
-        XCTAssertEqual(producer.baseTag.name, tag)
-        XCTAssertEqual(Int(producer.baseTag.created.timeIntervalSince1970), Int(date.timeIntervalSince1970))
+        let producer = try ChangelogProducer(baseBranch: nil)
+        XCTAssertEqual(Int(producer.from.timeIntervalSince1970), Int(date.addingTimeInterval(60).timeIntervalSince1970))
     }
 
-    /// It should use a tag passed as argument over the latest tag.
+    /// It should use a tag passed as argument over the latest tag adding 60 seconds to its creation date..
     func testReleaseUsingTagArgument() throws {
-        let tag = "3.0.2"
-        let date = Date()
-        MockedShell.mockRelease(tag: tag, date: date)
+        let expectedTag = "3.0.2"
+        let date = Date().addingTimeInterval(TimeInterval.random(in: 0..<100))
+        MockedShell.mockRelease(tag: expectedTag, date: date)
 
-        let producer = try ChangelogProducer(sinceTag: tag, baseBranch: nil)
-        XCTAssertEqual(producer.baseTag.name, tag)
-        XCTAssertEqual(Int(producer.baseTag.created.timeIntervalSince1970), Int(date.timeIntervalSince1970))
+        let producer = try ChangelogProducer(since: .tag(tag: expectedTag), baseBranch: nil)
+        guard case let ChangelogProducer.Since.tag(tag) = producer.since else {
+            XCTFail("Wrong since used")
+            return
+        }
+        XCTAssertEqual(tag, expectedTag)
+        XCTAssertEqual(Int(producer.from.timeIntervalSince1970), Int(date.addingTimeInterval(60).timeIntervalSince1970))
     }
 
     /// It should parse the current GIT project correctly.
@@ -81,7 +83,7 @@ final class ChangelogProducerTests: XCTestCase {
         let repository = "GitBuddy"
         MockedShell.mockGITProject(organisation: organisation, repository: repository)
 
-        let producer = try ChangelogProducer(sinceTag: nil, baseBranch: nil)
+        let producer = try ChangelogProducer(baseBranch: nil)
         XCTAssertEqual(producer.project.organisation, organisation)
         XCTAssertEqual(producer.project.repository, repository)
     }
