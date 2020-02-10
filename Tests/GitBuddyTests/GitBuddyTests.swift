@@ -28,9 +28,9 @@ final class GitBuddyTests: XCTestCase {
     }
 
     /// It should enable verbose logging.
-    func testVerboseLogging() throws {
+    func testVerboseLogging() {
         XCTAssertFalse(Log.isVerbose)
-        _ = try GitBuddy.run(arguments: ["GitBuddy", "--verbose"], environment: ["GITBUDDY_ACCESS_TOKEN": UUID().uuidString])
+        _ = try? GitBuddy.run(arguments: ["GitBuddy", "--verbose"], environment: ["GITBUDDY_ACCESS_TOKEN": UUID().uuidString])
         XCTAssertTrue(Log.isVerbose)
     }
 }

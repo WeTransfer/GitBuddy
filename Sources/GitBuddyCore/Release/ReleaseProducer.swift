@@ -53,7 +53,7 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
         let releasedTag = try Tag.latest()
         let previousTag = Self.shell.execute(.previousTag)
 
-        let changelogProducer = try ChangelogProducer(from: .tag(tag: previousTag), to: releasedTag.created, baseBranch: "master")
+        let changelogProducer = try ChangelogProducer(since: .tag(tag: previousTag), to: releasedTag.created, baseBranch: "master")
         Log.debug("Result of creating the changelog:\n")
         let changelog = try changelogProducer.run()
         Log.debug("\(changelog)\n")

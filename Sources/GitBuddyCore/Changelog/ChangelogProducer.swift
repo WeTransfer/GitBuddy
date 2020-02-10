@@ -24,7 +24,7 @@ struct ChangelogCommand: Command {
 
     @discardableResult func run(using arguments: ArgumentParser.Result) throws -> String {
         let sinceTag = arguments.get(self.sinceTag).map { ChangelogProducer.Since.tag(tag: $0) }
-        let changelogProducer = try ChangelogProducer(from: sinceTag ?? .latestTag,
+        let changelogProducer = try ChangelogProducer(since: sinceTag ?? .latestTag,
                                                       baseBranch: arguments.get(baseBranch))
 
         Log.debug("Result of creating the changelog:\n")
@@ -54,14 +54,16 @@ final class ChangelogProducer: URLSessionInjectable {
 
     private lazy var octoKit: Octokit = Octokit()
     let baseBranch: Branch
+    let since: Since
     let from: Date
     let to: Date
     let project: GITProject
 
-    init(from: Since = .latestTag, to: Date = Date(), baseBranch: Branch?) throws {
+    init(since: Since = .latestTag, to: Date = Date(), baseBranch: Branch?) throws {
         self.to = to
+        self.since = since
 
-        let from = try from.get()
+        let from = try since.get()
 
         if from != self.to {
             self.from = from
