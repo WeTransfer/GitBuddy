@@ -16,18 +16,33 @@ struct ReleaseCommand: Command {
     let changelogPath: OptionArgument<String>
     let skipComments: OptionArgument<Bool>
     let isPrelease: OptionArgument<Bool>
+    let targetCommitish: OptionArgument<String>
+    let tagName: OptionArgument<String>
+    let releaseTitle: OptionArgument<String>
+    let lastReleaseTag: OptionArgument<String>
+    let baseBranch: OptionArgument<String>
 
     init(subparser: ArgumentParser) {
         changelogPath = subparser.add(option: "--changelog-path", shortName: "-c", kind: String.self, usage: "The path to the Changelog to update it with the latest changes")
         skipComments = subparser.add(option: "--skip-comments", shortName: "-s", kind: Bool.self, usage: "Disable commenting on issues and PRs about the new release")
         isPrelease = subparser.add(option: "--use-pre-release", shortName: "-p", kind: Bool.self, usage: "Create the release as a pre-release")
+        targetCommitish = subparser.add(option: "--target-commitish", shortName: "-t", kind: String.self, usage: "Specifies the commitish value that determines where the Git tag is created from. Can be any branch or commit SHA. Unused if the Git tag already exists. Default: the repository's default branch (usually master).")
+        tagName = subparser.add(option: "--tag-name", shortName: "-n", kind: String.self, usage: "The name of the tag. Default: takes the last created tag to publish as a GitHub release.")
+        releaseTitle = subparser.add(option: "--release-title", shortName: "-r", kind: String.self, usage: "The title of the release. Default: uses the tag name.")
+        lastReleaseTag = subparser.add(option: "--last-release-tag", shortName: "-l", kind: String.self, usage: "The last release tag to use as a base for the changelog creation. Default: previous tag")
+        baseBranch = subparser.add(option: "--base-branch", shortName: "-b", kind: String.self, usage: "The base branch to compare with for generating the changelog. Defaults to master.")
     }
 
     @discardableResult func run(using arguments: ArgumentParser.Result) throws -> String {
-        let changelogProducer = try ReleaseProducer(changelogPath: arguments.get(changelogPath),
-                                                    skipComments: arguments.get(skipComments) ?? false,
-                                                    isPrelease: arguments.get(isPrelease) ?? false)
-        return try changelogProducer.run().url.absoluteString
+        let releaseProducer = try ReleaseProducer(changelogPath: arguments.get(changelogPath),
+                                                  skipComments: arguments.get(skipComments) ?? false,
+                                                  isPrelease: arguments.get(isPrelease) ?? false,
+                                                  targetCommitish: arguments.get(targetCommitish),
+                                                  tagName: arguments.get(tagName),
+                                                  releaseTitle: arguments.get(releaseTitle),
+                                                  lastReleaseTag: arguments.get(lastReleaseTag),
+                                                  baseBranch: arguments.get(baseBranch))
+        return try releaseProducer.run().url.absoluteString
     }
 }
 
@@ -38,8 +53,13 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
     let changelogURL: Foundation.URL?
     let skipComments: Bool
     let isPrerelease: Bool
-
-    init(changelogPath: String?, skipComments: Bool, isPrelease: Bool) throws {
+    let targetCommitish: String?
+    let tagName: String?
+    let releaseTitle: String?
+    let lastReleaseTag: String?
+    let baseBranch: String
+    
+    init(changelogPath: String?, skipComments: Bool, isPrelease: Bool, targetCommitish: String? = nil, tagName: String? = nil, releaseTitle: String? = nil, lastReleaseTag: String? = nil, baseBranch: String? = nil) throws {
         if let changelogPath = changelogPath {
             changelogURL = URL(string: changelogPath)
         } else {
@@ -47,14 +67,18 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
         }
         self.skipComments = skipComments
         self.isPrerelease = isPrelease
+        self.targetCommitish = targetCommitish
+        self.tagName = tagName
+        self.releaseTitle = releaseTitle
+        self.lastReleaseTag = lastReleaseTag
+        self.baseBranch = baseBranch ?? "master"
     }
 
     @discardableResult public func run() throws -> Release {
-        let releasedTag = try Tag.latest()
-        let previousTag = Self.shell.execute(.previousTag)
+        let releasedTag = try tagName.map { try Tag(name: $0, created: Date()) } ?? Tag.latest()
+        let previousTag = lastReleaseTag ?? Self.shell.execute(.previousTag)
 
-        let changelogProducer = try ChangelogProducer(since: .tag(tag: previousTag), to: releasedTag.created, baseBranch: "master")
-        Log.debug("Result of creating the changelog:\n")
+        let changelogProducer = try ChangelogProducer(since: .tag(tag: previousTag), to: releasedTag.created, baseBranch: baseBranch)
         let changelog = try changelogProducer.run()
         Log.debug("\(changelog)\n")
 
@@ -63,7 +87,7 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
         let repositoryName = Self.shell.execute(.repositoryName)
         let project = GITProject.current()
         Log.debug("Creating a release for tag \(releasedTag.name) at repository \(repositoryName)")
-        let release = try createRelease(using: project, tag: releasedTag, body: changelog.description)
+        let release = try createRelease(using: project, tag: releasedTag, targetCommitish: targetCommitish, title: releaseTitle, body: changelog.description)
         postComments(for: changelog, project: project, release: release)
 
         Log.debug("Result of creating the release:\n")
@@ -116,24 +140,25 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
         handle.closeFile()
     }
 
-    private func createRelease(using project: GITProject, tag: Tag, body: String) throws -> Release {
+    private func createRelease(using project: GITProject, tag: Tag, targetCommitish: String?, title: String?, body: String) throws -> Release {
         let group = DispatchGroup()
         group.enter()
 
         Log.debug("""
         \nCreating a new release:
-            owner:      \(project.organisation)
-            repo:       \(project.repository)
-            tagName:    \(tag.name)
-            prerelease: \(isPrerelease)
-            draft:      false
-            title:      \(tag.name)
+            owner:           \(project.organisation)
+            repo:            \(project.repository)
+            tagName:         \(tag.name)
+            targetCommitish: \(targetCommitish ?? "default")
+            prerelease:      \(isPrerelease)
+            draft:           false
+            title:           \(title ?? tag.name)
             body:
             \(body)\n
         """)
 
         var result: Result<Foundation.URL, Swift.Error>!
-        octoKit.postRelease(urlSession, owner: project.organisation, repository: project.repository, tagName: tag.name, name: tag.name, body: body, prerelease: isPrerelease, draft: false) { (response) in
+        octoKit.postRelease(urlSession, owner: project.organisation, repository: project.repository, tagName: tag.name, targetCommitish: targetCommitish, name: title ?? tag.name, body: body, prerelease: isPrerelease, draft: false) { (response) in
             switch response {
             case .success(let release):
                 result = .success(release.htmlURL)
