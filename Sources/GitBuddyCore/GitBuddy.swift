@@ -12,18 +12,13 @@ import SPMUtility
 /// Entry class of GitBuddy that registers commands and handles execution.
 public enum GitBuddy {
 
-    enum Error: Swift.Error, CustomDebugStringConvertible {
-        case missingAccessToken
-
-        var debugDescription: String { "GitHub Access Token is missing. Add an environment variable: GITBUDDY_ACCESS_TOKEN='username:access_token'" }
-    }
-
     public static let version = "2.0.0"
 
     @discardableResult public static func run(arguments: [String] = ProcessInfo.processInfo.arguments, environment: [String: String] = ProcessInfo.processInfo.environment, configuration: URLSessionConfiguration? = nil) throws -> String? {
+        Log.isVerbose = arguments.contains("--verbose")
+
         let configuration = try configuration ?? sessionConfiguration(using: environment)
         URLSessionInjector.urlSession = URLSession(configuration: configuration, delegate: nil, delegateQueue: nil)
-        Log.isVerbose = arguments.contains("--verbose")
         var commandRegistry = CommandRegistry(usage: "<commands> <options>",
                                               overview: "Manage your GitHub repositories with ease",
                                               arguments: arguments,
@@ -52,13 +47,10 @@ public enum GitBuddy {
     }
 
     private static func sessionConfiguration(using environment: [String: String]) throws -> URLSessionConfiguration {
-        guard let gitHubAccessToken = environment["GITBUDDY_ACCESS_TOKEN"] else {
-            throw Error.missingAccessToken
-        }
-
+        let token = try Token(environment: environment)
+        Log.debug("Token is \(token)")
         let configuration = URLSessionConfiguration.default
-        let token = gitHubAccessToken.data(using: .utf8)!.base64EncodedString()
-        configuration.httpAdditionalHeaders = ["Authorization": "Basic \(token)"]
+        configuration.httpAdditionalHeaders = ["Authorization": "Basic \(token.base64Encoded)"]
         return configuration
     }
 }

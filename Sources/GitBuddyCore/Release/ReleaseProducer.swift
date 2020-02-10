@@ -37,7 +37,7 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
     private lazy var octoKit: Octokit = Octokit()
     let changelogURL: Foundation.URL?
     let skipComments: Bool
-    let isPrelease: Bool
+    let isPrerelease: Bool
 
     init(changelogPath: String?, skipComments: Bool, isPrelease: Bool) throws {
         if let changelogPath = changelogPath {
@@ -46,7 +46,7 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
             changelogURL = nil
         }
         self.skipComments = skipComments
-        self.isPrelease = isPrelease
+        self.isPrerelease = isPrelease
     }
 
     @discardableResult public func run() throws -> Release {
@@ -120,8 +120,20 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
         let group = DispatchGroup()
         group.enter()
 
+        Log.debug("""
+        \nCreating a new release:
+            owner:      \(project.organisation)
+            repo:       \(project.repository)
+            tagName:    \(tag.name)
+            prerelease: \(isPrerelease)
+            draft:      false
+            title:      \(tag.name)
+            body:
+            \(body)\n
+        """)
+
         var result: Result<Foundation.URL, Swift.Error>!
-        octoKit.postRelease(urlSession, owner: project.organisation, repository: project.repository, tagName: tag.name, name: tag.name, body: body, prerelease: isPrelease, draft: false) { (response) in
+        octoKit.postRelease(urlSession, owner: project.organisation, repository: project.repository, tagName: tag.name, name: tag.name, body: body, prerelease: isPrerelease, draft: false) { (response) in
             switch response {
             case .success(let release):
                 result = .success(release.htmlURL)
