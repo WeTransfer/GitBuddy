@@ -15,7 +15,7 @@ struct ReleaseCommand: Command {
     static let description = "Create a new release including a changelog and publish comments on related issues"
     let changelogPath: OptionArgument<String>
     let skipComments: OptionArgument<Bool>
-    let isPrelease: OptionArgument<Bool>
+    let isPrerelease: OptionArgument<Bool>
     let targetCommitish: OptionArgument<String>
     let tagName: OptionArgument<String>
     let releaseTitle: OptionArgument<String>
@@ -25,7 +25,7 @@ struct ReleaseCommand: Command {
     init(subparser: ArgumentParser) {
         changelogPath = subparser.add(option: "--changelog-path", shortName: "-c", kind: String.self, usage: "The path to the Changelog to update it with the latest changes")
         skipComments = subparser.add(option: "--skip-comments", shortName: "-s", kind: Bool.self, usage: "Disable commenting on issues and PRs about the new release")
-        isPrelease = subparser.add(option: "--use-pre-release", shortName: "-p", kind: Bool.self, usage: "Create the release as a pre-release")
+        isPrerelease = subparser.add(option: "--use-pre-release", shortName: "-p", kind: Bool.self, usage: "Create the release as a pre-release")
         targetCommitish = subparser.add(option: "--target-commitish", shortName: "-t", kind: String.self, usage: "Specifies the commitish value that determines where the Git tag is created from. Can be any branch or commit SHA. Unused if the Git tag already exists. Default: the repository's default branch (usually master).")
         tagName = subparser.add(option: "--tag-name", shortName: "-n", kind: String.self, usage: "The name of the tag. Default: takes the last created tag to publish as a GitHub release.")
         releaseTitle = subparser.add(option: "--release-title", shortName: "-r", kind: String.self, usage: "The title of the release. Default: uses the tag name.")
@@ -36,7 +36,7 @@ struct ReleaseCommand: Command {
     @discardableResult func run(using arguments: ArgumentParser.Result) throws -> String {
         let releaseProducer = try ReleaseProducer(changelogPath: arguments.get(changelogPath),
                                                   skipComments: arguments.get(skipComments) ?? false,
-                                                  isPrelease: arguments.get(isPrelease) ?? false,
+                                                  isPrerelease: arguments.get(isPrerelease) ?? false,
                                                   targetCommitish: arguments.get(targetCommitish),
                                                   tagName: arguments.get(tagName),
                                                   releaseTitle: arguments.get(releaseTitle),
@@ -59,14 +59,14 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
     let lastReleaseTag: String?
     let baseBranch: String
     
-    init(changelogPath: String?, skipComments: Bool, isPrelease: Bool, targetCommitish: String? = nil, tagName: String? = nil, releaseTitle: String? = nil, lastReleaseTag: String? = nil, baseBranch: String? = nil) throws {
+    init(changelogPath: String?, skipComments: Bool, isPrerelease: Bool, targetCommitish: String? = nil, tagName: String? = nil, releaseTitle: String? = nil, lastReleaseTag: String? = nil, baseBranch: String? = nil) throws {
         if let changelogPath = changelogPath {
             changelogURL = URL(string: changelogPath)
         } else {
             changelogURL = nil
         }
         self.skipComments = skipComments
-        self.isPrerelease = isPrelease
+        self.isPrerelease = isPrerelease
         self.targetCommitish = targetCommitish
         self.tagName = tagName
         self.releaseTitle = releaseTitle
