@@ -41,7 +41,6 @@ struct Tag: ShellInjectable {
             dateFormatter.locale = Locale(identifier: "en_US_POSIX")
             dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
 
-
             guard let date = dateFormatter.date(from: tagCreationDate) else {
                 throw Error.missingTagCreationDate
             }
