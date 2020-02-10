@@ -42,14 +42,20 @@ This is an example taken from [Mocker](https://github.com/WeTransfer/Mocker/rele
 ### Generating a release
 ```
 $ gitbuddy release --help
+[112/112] Linking GitBuddy
 OVERVIEW: Create a new release including a changelog and publish comments on related issues
 
 OPTIONS:
-  --changelog-path, -c    The path to the Changelog to update it with the latest changes
-  --help                  Display available options
-  --skip-comments, -s     Disable commenting on issues and PRs about the new release
-  --use-pre-release, -p   Create the release as a pre-release
-  --verbose               Show extra logging for debugging purposes
+  --base-branch, -b        The base branch to compare with for generating the changelog. Defaults to master.
+  --changelog-path, -c     The path to the Changelog to update it with the latest changes
+  --help                   Display available options
+  --last-release-tag, -l   The last release tag to use as a base for the changelog creation. Default: previous tag
+  --release-title, -r      The title of the release. Default: uses the tag name.
+  --skip-comments, -s      Disable commenting on issues and PRs about the new release
+  --tag-name, -n           The name of the tag. Default: takes the last created tag to publish as a GitHub release.
+  --target-commitish, -t   Specifies the commitish value that determines where the Git tag is created from. Can be any branch or commit SHA. Unused if the Git tag already exists. Default: the repository's default branch (usually master).
+  --use-pre-release, -p    Create the release as a pre-release
+  --verbose                Show extra logging for debugging purposes
 ```
 
 The `release` command can be used to transform the latest tag into a GitHub release including the changelog as a body.
@@ -90,6 +96,10 @@ $ gitbuddy --help
 OVERVIEW: Manage your GitHub repositories with ease
 
 USAGE: GitBuddy <commands> <options>
+
+OPTIONS:
+  --version   Prints the current GitBuddy version
+  --help      Display available options
 
 SUBCOMMANDS:
   changelog   Create a changelog for GitHub repositories
