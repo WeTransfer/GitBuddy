@@ -33,6 +33,8 @@ struct Tag: ShellInjectable {
 
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss Z"
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
 
         self.name = name
         guard let date = dateFormatter.date(from: tagCreationDate) else {

@@ -26,8 +26,6 @@ struct ChangelogCommand: Command {
         let sinceTag = arguments.get(self.sinceTag).map { ChangelogProducer.Since.tag(tag: $0) }
         let changelogProducer = try ChangelogProducer(since: sinceTag ?? .latestTag,
                                                       baseBranch: arguments.get(baseBranch))
-
-        Log.debug("Result of creating the changelog:\n")
         return try changelogProducer.run().description
     }
 }
@@ -40,14 +38,17 @@ final class ChangelogProducer: URLSessionInjectable {
         case tag(tag: String)
         case latestTag
 
+        /// Gets the date for the current Since property.
+        /// In the case of a tag, we add 60 seconds to make sure that the Changelog does not include the commit that is used for creating the tag.
+        /// This is needed as the tag creation date equals the commit creation date.
         func get() throws -> Date {
             switch self {
             case .date(let date):
                 return date
             case .tag(let tag):
-                return try Tag(name: tag).created
+                return try Tag(name: tag).created.addingTimeInterval(60)
             case .latestTag:
-                return try Tag.latest().created
+                return try Tag.latest().created.addingTimeInterval(60)
             }
         }
     }
@@ -80,7 +81,18 @@ final class ChangelogProducer: URLSessionInjectable {
     @discardableResult public func run() throws -> Changelog {
         let pullRequestsFetcher = PullRequestFetcher(octoKit: octoKit, baseBranch: baseBranch, project: project)
         let pullRequests = try pullRequestsFetcher.fetchAllBetween(from, and: to, using: urlSession)
+
+        if Log.isVerbose {
+            Log.debug("\nChangelog will use the following pull requests as input:")
+            pullRequests.forEach { pullRequest in
+                guard let title = pullRequest.title, let mergedAt = pullRequest.mergedAt else { return }
+                Log.debug("- \(title), merged at: \(mergedAt)\n")
+            }
+        }
+
         let items = ChangelogItemsFactory(octoKit: octoKit, pullRequests: pullRequests, project: project).items(using: urlSession)
+
+        Log.debug("Result of creating the changelog:")
         return Changelog(items: items)
     }
 }
