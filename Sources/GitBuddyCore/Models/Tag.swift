@@ -27,20 +27,25 @@ struct Tag: ShellInjectable {
     let name: String
     let created: Date
 
-    init(name: String) throws {
-        let tagCreationDate = Self.shell.execute(.tagCreationDate(tag: name))
-        Log.debug("Tag \(name) is created at \(tagCreationDate)")
-
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss Z"
-        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
-        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
-
+    init(name: String, created: Date? = nil) throws {
         self.name = name
-        guard let date = dateFormatter.date(from: tagCreationDate) else {
-            throw Error.missingTagCreationDate
+
+        if let created = created {
+            self.created = created
+        } else {
+            let tagCreationDate = Self.shell.execute(.tagCreationDate(tag: name))
+            Log.debug("Tag \(name) is created at \(tagCreationDate)")
+
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss Z"
+            dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+            dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+
+            guard let date = dateFormatter.date(from: tagCreationDate) else {
+                throw Error.missingTagCreationDate
+            }
+            self.created = date
         }
-        self.created = date
     }
 
     static func latest() throws -> Self {

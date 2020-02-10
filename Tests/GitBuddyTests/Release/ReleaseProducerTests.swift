@@ -131,4 +131,65 @@ final class ReleaseProducerTests: XCTestCase {
         _ = try GitBuddy.run(arguments: ["GitBuddy", "release", "-s", "-p"], configuration: configuration)
         wait(for: [mockExpectation], timeout: 0.3)
     }
+
+    /// It should use the target commitish setting.
+    func testTargetCommitish() throws {
+        let mockExpectation = expectation(description: "Mocks should be called")
+        var mock = Mocker.mockRelease()
+        mock.onRequest = { _, parameters in
+            guard let parameters = try? XCTUnwrap(parameters) else { return }
+            XCTAssertEqual(parameters["target_commitish"] as? String, "develop")
+            mockExpectation.fulfill()
+        }
+        mock.register()
+
+        _ = try GitBuddy.run(arguments: ["GitBuddy", "release", "-s", "-t", "develop"], configuration: configuration)
+        wait(for: [mockExpectation], timeout: 0.3)
+    }
+
+    /// It should use the tag name setting.
+    func testTagName() throws {
+        let mockExpectation = expectation(description: "Mocks should be called")
+        let tagName = UUID().uuidString
+        var mock = Mocker.mockRelease()
+        mock.onRequest = { _, parameters in
+            guard let parameters = try? XCTUnwrap(parameters) else { return }
+            XCTAssertEqual(parameters["tag_name"] as? String, tagName)
+            mockExpectation.fulfill()
+        }
+        mock.register()
+
+        _ = try GitBuddy.run(arguments: ["GitBuddy", "release", "-s", "-n", tagName], configuration: configuration)
+        wait(for: [mockExpectation], timeout: 0.3)
+    }
+
+    /// It should use the release title setting.
+    func testReleaseTitle() throws {
+        let mockExpectation = expectation(description: "Mocks should be called")
+        let title = UUID().uuidString
+        var mock = Mocker.mockRelease()
+        mock.onRequest = { _, parameters in
+            guard let parameters = try? XCTUnwrap(parameters) else { return }
+            XCTAssertEqual(parameters["name"] as? String, title)
+            mockExpectation.fulfill()
+        }
+        mock.register()
+
+        _ = try GitBuddy.run(arguments: ["GitBuddy", "release", "-s", "-r", title], configuration: configuration)
+        wait(for: [mockExpectation], timeout: 0.3)
+    }
+
+    /// It should use the changelog settings.
+    func testChangelogSettings() throws {
+        let lastReleaseTag = "2.0.1"
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let date = dateFormatter.date(from: "2020-01-03")!
+        MockedShell.mockRelease(tag: lastReleaseTag, date: date)
+
+        let baseBranch = UUID().uuidString
+        Mocker.mockPullRequests(baseBranch: baseBranch)
+
+        _ = try GitBuddy.run(arguments: ["GitBuddy", "release", "-s", "-l", lastReleaseTag, "-b", baseBranch, "--verbose"], configuration: configuration)
+    }
 }
