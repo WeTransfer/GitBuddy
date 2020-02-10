@@ -55,22 +55,24 @@ final class MockedPullRequest: MockChangelogInput, ChangelogPullRequest { }
 final class MockedIssue: MockChangelogInput, ChangelogIssue { }
 
 extension Mocker {
-    static func mockPullRequests() {
+    @discardableResult static func mockPullRequests(baseBranch: String = "master") -> Mock {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         let date = dateFormatter.date(from: "2020-01-03")!
         MockedShell.mockRelease(tag: "1.0.0", date: date)
 
-        var urlComponents = URLComponents(url: URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/pulls?base=master&direction=desc&sort=updated&state=closed")!, resolvingAgainstBaseURL: false)!
+        var urlComponents = URLComponents(url: URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/pulls")!, resolvingAgainstBaseURL: false)!
         urlComponents.queryItems = [
-            URLQueryItem(name: "base", value: "master"),
+            URLQueryItem(name: "base", value: baseBranch),
             URLQueryItem(name: "direction", value: "desc"),
             URLQueryItem(name: "sort", value: "updated"),
             URLQueryItem(name: "state", value: "closed")
         ]
 
         let pullRequestJSONData = PullRequestsJSON.data(using: .utf8)!
-        Mock(url: urlComponents.url!, dataType: .json, statusCode: 200, data: [.get: pullRequestJSONData]).register()
+        let mock = Mock(url: urlComponents.url!, dataType: .json, statusCode: 200, data: [.get: pullRequestJSONData])
+        mock.register()
+        return mock
     }
 
     static func mockForIssueNumber(_ issueNumber: Int) {
