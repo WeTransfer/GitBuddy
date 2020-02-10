@@ -5,6 +5,7 @@
 //  Created by Antoine van der Lee on 10/01/2020.
 //  Copyright © 2020 WeTransfer. All rights reserved.
 //
+//  danger:disable final_class
 
 import Foundation
 import Mocker
