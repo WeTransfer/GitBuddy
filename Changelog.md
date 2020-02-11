@@ -1,3 +1,8 @@
+### 2.1.0
+- Add extra arguments for creating releases ([#23](https://github.com/WeTransfer/GitBuddy/pull/23)) via @AvdLee
+- Improved support for release and changelog generation ([#22](https://github.com/WeTransfer/GitBuddy/pull/22)) via @AvdLee
+- Merge release 2.0.0 into master ([#21](https://github.com/WeTransfer/GitBuddy/pull/21))
+
 ### 2.0.0
 - Add an option to release as a prerelease ([#20](https://github.com/WeTransfer/GitBuddy/pull/20)) via @AvdLee
 - Add a --version argument ([#17](https://github.com/WeTransfer/GitBuddy/issues/17)) via @AvdLee
