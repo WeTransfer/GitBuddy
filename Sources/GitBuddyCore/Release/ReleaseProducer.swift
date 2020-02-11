@@ -78,7 +78,9 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
         let releasedTag = try tagName.map { try Tag(name: $0, created: Date()) } ?? Tag.latest()
         let previousTag = lastReleaseTag ?? Self.shell.execute(.previousTag)
 
-        let changelogProducer = try ChangelogProducer(since: .tag(tag: previousTag), to: releasedTag.created, baseBranch: baseBranch)
+        /// We're adding 60 seconds to make sure the tag commit itself is included in the changelog as well.
+        let toDate = releasedTag.created.addingTimeInterval(60)
+        let changelogProducer = try ChangelogProducer(since: .tag(tag: previousTag), to: toDate, baseBranch: baseBranch)
         let changelog = try changelogProducer.run()
         Log.debug("\(changelog)\n")
 
