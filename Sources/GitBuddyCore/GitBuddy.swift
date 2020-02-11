@@ -12,7 +12,7 @@ import SPMUtility
 /// Entry class of GitBuddy that registers commands and handles execution.
 public enum GitBuddy {
 
-    public static let version = "2.0.0"
+    public static let version = "2.1.0"
 
     @discardableResult public static func run(arguments: [String] = ProcessInfo.processInfo.arguments, environment: [String: String] = ProcessInfo.processInfo.environment, configuration: URLSessionConfiguration? = nil) throws -> String? {
         Log.isVerbose = arguments.contains("--verbose")
