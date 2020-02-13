@@ -1,3 +1,7 @@
+### 2.1.1
+- Reference OctoKit master ([#26](https://github.com/WeTransfer/GitBuddy/pull/26)) via @AvdLee
+- Merge release 2.1.0 into master ([#25](https://github.com/WeTransfer/GitBuddy/pull/25)) via @AvdLee
+
 ### 2.1.0
 - Improved support for release and changelog generation ([#22](https://github.com/WeTransfer/GitBuddy/pull/22)) via @AvdLee
 - Add extra arguments for creating releases ([#23](https://github.com/WeTransfer/GitBuddy/pull/23)) via @AvdLee
