@@ -1,3 +1,7 @@
+### 2.2.0
+- Username is not included in Changelog ([#30](https://github.com/WeTransfer/GitBuddy/issues/30)) via @AvdLee
+- Merge release 2.1.1 into master ([#27](https://github.com/WeTransfer/GitBuddy/pull/27)) via @WeTransferBot
+
 ### 2.1.1
 - Reference OctoKit master ([#26](https://github.com/WeTransfer/GitBuddy/pull/26)) via @AvdLee
 - Merge release 2.1.0 into master ([#25](https://github.com/WeTransfer/GitBuddy/pull/25)) via @AvdLee
