@@ -8,6 +8,7 @@
 
 import XCTest
 @testable import GitBuddyCore
+import OctoKit
 
 final class ChangelogItemTests: XCTestCase {
 
@@ -26,9 +27,19 @@ final class ChangelogItemTests: XCTestCase {
 
     /// It should show the user if possible.
     func testUser() {
-        let input = MockedPullRequest(title: UUID().uuidString, username: "Henk")
+        let input = PullRequestsJSON.data(using: .utf8)!.mapJSON(to: [PullRequest].self).first!
+        input.htmlURL = nil
         let item = ChangelogItem(input: input, closedBy: input)
-        XCTAssertEqual(item.title, "\(input.title!) via @Henk")
+        XCTAssertEqual(item.title, "\(input.title!) via @AvdLee")
+    }
+
+    /// It should fallback to the assignee if the user is nil for Pull Requests.
+    func testAssigneeFallback() {
+        let input = PullRequestsJSON.data(using: .utf8)!.mapJSON(to: [PullRequest].self).first!
+        input.user = nil
+        input.htmlURL = nil
+        let item = ChangelogItem(input: input, closedBy: input)
+        XCTAssertEqual(item.title, "\(input.title!) via @kairadiagne")
     }
 
     /// It should combine the title, number and user.

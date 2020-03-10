@@ -20,7 +20,7 @@ protocol ChangelogIssue: ChangelogInput { }
 protocol ChangelogPullRequest: ChangelogInput { }
 
 extension PullRequest: ChangelogPullRequest {
-    var username: String? { assignee?.login }
+    var username: String? { user?.login ?? assignee?.login }
 }
 
 extension Issue: ChangelogIssue {
