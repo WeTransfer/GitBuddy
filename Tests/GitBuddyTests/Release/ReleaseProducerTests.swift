@@ -52,8 +52,10 @@ final class ReleaseProducerTests: XCTestCase {
             XCTAssertEqual(parameters["tag_name"] as? String, "1.0.1")
             XCTAssertEqual(parameters["name"] as? String, "1.0.1")
             XCTAssertEqual(parameters["body"] as? String, """
-            - Add charset utf-8 to html head ([#50](https://github.com/WeTransfer/Diagnostics/pull/50)) via @AvdLee
-            - Get warning for file 'style.css' after building ([#39](https://github.com/WeTransfer/Diagnostics/issues/39)) via @AvdLee
+            - Add charset utf-8 to html head \
+            ([#50](https://github.com/WeTransfer/Diagnostics/pull/50)) via [@AvdLee](https://github.com/AvdLee)
+            - Get warning for file 'style.css' after building \
+            ([#39](https://github.com/WeTransfer/Diagnostics/issues/39)) via [@AvdLee](https://github.com/AvdLee)
             """)
             mockExpectation.fulfill()
         }
@@ -76,8 +78,10 @@ final class ReleaseProducerTests: XCTestCase {
 
         XCTAssertEqual(updatedChangelogContents, """
         ### 1.0.1
-        - Add charset utf-8 to html head ([#50](https://github.com/WeTransfer/Diagnostics/pull/50)) via @AvdLee
-        - Get warning for file \'style.css\' after building ([#39](https://github.com/WeTransfer/Diagnostics/issues/39)) via @AvdLee
+        - Add charset utf-8 to html head \
+        ([#50](https://github.com/WeTransfer/Diagnostics/pull/50)) via [@AvdLee](https://github.com/AvdLee)
+        - Get warning for file \'style.css\' after building \
+        ([#39](https://github.com/WeTransfer/Diagnostics/issues/39)) via [@AvdLee](https://github.com/AvdLee)
 
         \(existingChangelog)
         """)
