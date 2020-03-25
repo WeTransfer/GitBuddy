@@ -30,7 +30,7 @@ final class ChangelogItemTests: XCTestCase {
         let input = PullRequestsJSON.data(using: .utf8)!.mapJSON(to: [PullRequest].self).first!
         input.htmlURL = nil
         let item = ChangelogItem(input: input, closedBy: input)
-        XCTAssertEqual(item.title, "\(input.title!) via @AvdLee")
+        XCTAssertEqual(item.title, "\(input.title!) via [@AvdLee](https://github.com/AvdLee)")
     }
 
     /// It should fallback to the assignee if the user is nil for Pull Requests.
@@ -39,7 +39,10 @@ final class ChangelogItemTests: XCTestCase {
         input.user = nil
         input.htmlURL = nil
         let item = ChangelogItem(input: input, closedBy: input)
-        XCTAssertEqual(item.title, "\(input.title!) via @kairadiagne")
+        XCTAssertEqual(
+            item.title,
+            "\(input.title!) via [@kairadiagne](https://github.com/kairadiagne)"
+        )
     }
 
     /// It should combine the title, number and user.
@@ -47,7 +50,10 @@ final class ChangelogItemTests: XCTestCase {
         let input = MockChangelogInput(number: 1, title: UUID().uuidString, htmlURL: URL(string: "https://www.fakeurl.com")!)
         let closedBy = MockedPullRequest(username: "Henk")
         let item = ChangelogItem(input: input, closedBy: closedBy)
-        XCTAssertEqual(item.title, "\(input.title!) ([#1](https://www.fakeurl.com)) via @Henk")
+        XCTAssertEqual(
+            item.title,
+            "\(input.title!) ([#1](https://www.fakeurl.com)) via [@Henk](https://github.com/Henk)"
+        )
     }
 
 }

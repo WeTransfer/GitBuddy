@@ -37,7 +37,15 @@ final class ChangelogProducerTests: XCTestCase {
         Mocker.mockForIssueNumber(39)
         MockedShell.mockGITProject(organisation: "WeTransfer", repository: "Diagnostics")
         let changelog = try GitBuddy.run(arguments: ["GitBuddy", "changelog"], configuration: configuration)
-        XCTAssertEqual(changelog, "- Add charset utf-8 to html head ([#50](https://github.com/WeTransfer/Diagnostics/pull/50)) via @AvdLee\n- Get warning for file \'style.css\' after building ([#39](https://github.com/WeTransfer/Diagnostics/issues/39)) via @AvdLee")
+        XCTAssertEqual(
+            changelog,
+            """
+            - Add charset utf-8 to html head \
+            ([#50](https://github.com/WeTransfer/Diagnostics/pull/50)) via [@AvdLee](https://github.com/AvdLee)
+            - Get warning for file \'style.css\' after building \
+            ([#39](https://github.com/WeTransfer/Diagnostics/issues/39)) via [@AvdLee](https://github.com/AvdLee)
+            """
+        )
     }
 
     /// It should default to master branch.
