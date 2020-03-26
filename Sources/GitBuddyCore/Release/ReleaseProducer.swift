@@ -21,6 +21,7 @@ struct ReleaseCommand: Command {
     let releaseTitle: OptionArgument<String>
     let lastReleaseTag: OptionArgument<String>
     let baseBranch: OptionArgument<String>
+    let isSectioned: OptionArgument<Bool>
 
     init(subparser: ArgumentParser) {
         changelogPath = subparser.add(option: "--changelog-path", shortName: "-c", kind: String.self, usage: "The path to the Changelog to update it with the latest changes")
@@ -31,6 +32,7 @@ struct ReleaseCommand: Command {
         releaseTitle = subparser.add(option: "--release-title", shortName: "-r", kind: String.self, usage: "The title of the release. Default: uses the tag name.")
         lastReleaseTag = subparser.add(option: "--last-release-tag", shortName: "-l", kind: String.self, usage: "The last release tag to use as a base for the changelog creation. Default: previous tag")
         baseBranch = subparser.add(option: "--base-branch", shortName: "-b", kind: String.self, usage: "The base branch to compare with for generating the changelog. Defaults to master.")
+        isSectioned = subparser.add(option: "--sections", shortName: "-s", kind: Bool.self, usage: "Whether the changelog should be split into sections. Defaults to false.")
     }
 
     @discardableResult func run(using arguments: ArgumentParser.Result) throws -> String {
@@ -42,7 +44,7 @@ struct ReleaseCommand: Command {
                                                   releaseTitle: arguments.get(releaseTitle),
                                                   lastReleaseTag: arguments.get(lastReleaseTag),
                                                   baseBranch: arguments.get(baseBranch))
-        return try releaseProducer.run().url.absoluteString
+        return try releaseProducer.run(isSectioned: arguments.get(isSectioned) ?? false).url.absoluteString
     }
 }
 
@@ -74,14 +76,14 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
         self.baseBranch = baseBranch ?? "master"
     }
 
-    @discardableResult public func run() throws -> Release {
+    @discardableResult public func run(isSectioned: Bool) throws -> Release {
         let releasedTag = try tagName.map { try Tag(name: $0, created: Date()) } ?? Tag.latest()
         let previousTag = lastReleaseTag ?? Self.shell.execute(.previousTag)
 
         /// We're adding 60 seconds to make sure the tag commit itself is included in the changelog as well.
         let toDate = releasedTag.created.addingTimeInterval(60)
         let changelogProducer = try ChangelogProducer(since: .tag(tag: previousTag), to: toDate, baseBranch: baseBranch)
-        let changelog = try changelogProducer.run()
+        let changelog = try changelogProducer.run(isSectioned: isSectioned)
         Log.debug("\(changelog)\n")
 
         try updateChangelogFile(adding: changelog.description, for: releasedTag)

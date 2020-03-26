@@ -9,12 +9,40 @@
 import Foundation
 import OctoKit
 
-struct Changelog: CustomStringConvertible {
-    typealias PullRequestID = Int
-    typealias IssueID = Int
+typealias PullRequestID = Int
+typealias IssueID = Int
+
+protocol Changelog: CustomStringConvertible {
+    /// The pull requests ID and related issues IDs that are merged with the related release of this changelog.
+    var itemIdentifiers: [PullRequestID: [IssueID]] { get }
+}
+
+struct SectionedChangelog: Changelog {
     let description: String
 
-    /// The pull requests ID and related issues IDs that are merged with the related release of this changelog.
+    let itemIdentifiers: [PullRequestID: [IssueID]]
+    
+    init(issues: [Issue], pullRequests: [PullRequest]) {
+        description =
+            """
+            **Closed issues:**
+
+            \(ChangelogBuilder(items: issues.map { ChangelogItem(input: $0, closedBy: $0) }).build())
+
+            **Merged pull requests:**
+
+            \(ChangelogBuilder(items: pullRequests.map { ChangelogItem(input: $0, closedBy: $0) }).build())
+            """
+
+        self.itemIdentifiers = pullRequests.reduce(into: [:]) { (result, item) in
+            result[item.number] = item.body?.resolvingIssues()
+        }
+    }
+}
+
+struct SingleSectionChangelog: Changelog {
+    let description: String
+
     let itemIdentifiers: [PullRequestID: [IssueID]]
 
     init(items: [ChangelogItem]) {
