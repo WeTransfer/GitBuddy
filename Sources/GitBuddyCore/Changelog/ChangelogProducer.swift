@@ -86,7 +86,7 @@ final class ChangelogProducer: URLSessionInjectable {
             Log.debug("\nChangelog will use the following pull requests as input:")
             pullRequests.forEach { pullRequest in
                 guard let title = pullRequest.title, let mergedAt = pullRequest.mergedAt else { return }
-                Log.debug("- \(title), merged at: \(mergedAt)\n")
+                Log.debug("- #\(pullRequest.number): \(title), merged at: \(mergedAt)\n")
             }
         }
 
