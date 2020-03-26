@@ -32,9 +32,9 @@ struct IssuesFetcher {
 
         return try result.get().filter { issue -> Bool in
             guard
-                // It looks like OctoKit.swift doesn't support `pull_request` property that helps
-                // distinguishing between issues and pull requests, as the issues endpoint returns both
-                // see https://developer.github.com/v3/issues/ for more details
+                // It looks like OctoKit.swift doesn't support `pull_request` property that helps in
+                // distinguishing between issues and pull requests, as the issues endpoint returns both.
+                // See https://developer.github.com/v3/issues/ for more details.
                 issue.htmlURL?.pathComponents.contains("issues") ?? false,
                 let closedAt = issue.closedAt
             else { return false }
