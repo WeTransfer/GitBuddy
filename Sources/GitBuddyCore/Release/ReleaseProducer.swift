@@ -32,7 +32,7 @@ struct ReleaseCommand: Command {
         releaseTitle = subparser.add(option: "--release-title", shortName: "-r", kind: String.self, usage: "The title of the release. Default: uses the tag name.")
         lastReleaseTag = subparser.add(option: "--last-release-tag", shortName: "-l", kind: String.self, usage: "The last release tag to use as a base for the changelog creation. Default: previous tag")
         baseBranch = subparser.add(option: "--base-branch", shortName: "-b", kind: String.self, usage: "The base branch to compare with for generating the changelog. Defaults to master.")
-        isSectioned = subparser.add(option: "--sections", shortName: "-s", kind: Bool.self, usage: "Whether the changelog should be split into sections. Defaults to false.")
+        isSectioned = subparser.add(option: "--sections", kind: Bool.self, usage: "Whether the changelog should be split into sections. Defaults to false.")
     }
 
     @discardableResult func run(using arguments: ArgumentParser.Result) throws -> String {

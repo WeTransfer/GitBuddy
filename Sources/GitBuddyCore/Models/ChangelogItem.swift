@@ -36,7 +36,7 @@ struct ChangelogItem {
         if let htmlURL = input.htmlURL {
             title += " ([#\(input.number)](\(htmlURL)))"
         }
-        if closedBy is PullRequest, let username = closedBy.username {
+        if closedBy is ChangelogPullRequest, let username = closedBy.username {
             title += " via [@\(username)](https://github.com/\(username))"
         }
         return title
