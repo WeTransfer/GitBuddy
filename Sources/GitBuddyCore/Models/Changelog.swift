@@ -34,7 +34,7 @@ struct SectionedChangelog: Changelog {
             \(ChangelogBuilder(items: pullRequests.map { ChangelogItem(input: $0, closedBy: $0) }).build())
             """
 
-        self.itemIdentifiers = pullRequests.reduce(into: [:]) { (result, item) in
+        itemIdentifiers = pullRequests.reduce(into: [:]) { (result, item) in
             result[item.number] = item.body?.resolvingIssues()
         }
     }
