@@ -1,6 +1,6 @@
 //
 //  IssuesFetcher.swift
-//  
+//
 //
 //  Created by Max Desiatov on 26/03/2020.
 //

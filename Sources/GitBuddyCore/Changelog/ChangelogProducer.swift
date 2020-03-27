@@ -21,7 +21,7 @@ struct ChangelogCommand: Command {
     init(subparser: ArgumentParser) {
         sinceTag = subparser.add(option: "--since-tag", shortName: "-s", kind: String.self, usage: "The tag to use as a base. Defaults to the latest tag.")
         baseBranch = subparser.add(option: "--base-branch", shortName: "-b", kind: String.self, usage: "The base branch to compare with. Defaults to master.")
-        isSectioned = subparser.add(option: "--sections",shortName: "-s",kind: Bool.self,usage: "Whether the changelog should be split into sections. Defaults to false.")
+        isSectioned = subparser.add(option: "--sections", shortName: "-s", kind: Bool.self, usage: "Whether the changelog should be split into sections. Defaults to false.")
     }
 
     @discardableResult func run(using arguments: ArgumentParser.Result) throws -> String {
