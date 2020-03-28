@@ -5,7 +5,6 @@
 //  Created by Max Desiatov on 28/03/2020.
 //
 
-
 let IssuesJSON = #"""
 [
   {
