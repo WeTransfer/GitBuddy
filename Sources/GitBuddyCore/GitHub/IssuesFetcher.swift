@@ -13,6 +13,7 @@ struct IssuesFetcher {
     let octoKit: Octokit
     let project: GITProject
 
+    /// Fetches issues and filters them by a given `fromDate` and `toDate`.
     func fetchAllBetween(_ fromDate: Date, and toDate: Date, using session: URLSession = URLSession.shared) throws -> [Issue] {
         let group = DispatchGroup()
         group.enter()
