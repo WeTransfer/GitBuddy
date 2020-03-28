@@ -6,8 +6,6 @@
 //  Copyright © 2020 WeTransfer. All rights reserved.
 //
 
-import Foundation
-
 let IssueJSON = """
 
 {

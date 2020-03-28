@@ -40,7 +40,7 @@ This is an example taken from [Mocker](https://github.com/WeTransfer/Mocker/rele
 
 ----
 
-If you'd like the changelog to link to all of the issues closed before the release was tagged, pass the `--sections` argument, then it's going to look like this:
+If you'd like a changelog to link to issues closed before a release was tagged, pass the `--sections` argument, then it's going to look like this:
 
 ----
 

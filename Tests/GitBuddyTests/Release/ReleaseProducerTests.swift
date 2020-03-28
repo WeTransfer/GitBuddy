@@ -23,6 +23,7 @@ final class ReleaseProducerTests: XCTestCase {
         super.setUp()
         ShellInjector.shell = MockedShell.self
         Mocker.mockPullRequests()
+        Mocker.mockIssues()
         Mocker.mockForIssueNumber(39)
         Mocker.mockRelease()
         MockedShell.mockRelease(tag: "1.0.1")
@@ -82,6 +83,39 @@ final class ReleaseProducerTests: XCTestCase {
         ([#50](https://github.com/WeTransfer/Diagnostics/pull/50)) via [@AvdLee](https://github.com/AvdLee)
         - Get warning for file \'style.css\' after building \
         ([#39](https://github.com/WeTransfer/Diagnostics/issues/39)) via [@AvdLee](https://github.com/AvdLee)
+
+        \(existingChangelog)
+        """)
+    }
+
+    func testSectionedChangelogUpdating() throws {
+        let existingChangelog = """
+        ### 1.0.0
+        - Initial release
+        """
+        let tempFileURL = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true).appendingPathComponent("Changelog.md")
+        XCTAssertTrue(FileManager.default.createFile(atPath: tempFileURL.path, contents: Data(existingChangelog.utf8), attributes: nil))
+        try GitBuddy.run(arguments: ["GitBuddy", "release", "--sections", "-s", "-c", tempFileURL.path], configuration: configuration)
+        let updatedChangelogContents = try String(contentsOfFile: tempFileURL.path)
+
+        XCTAssertEqual(updatedChangelogContents, """
+        ### 1.0.1
+        **Closed issues:**
+
+        - Include device product names ([#60](https://github.com/WeTransfer/Diagnostics/issues/60))
+        - Change the order of reported sessions ([#54](https://github.com/WeTransfer/Diagnostics/issues/54))
+        - Encode Logging for HTML so object descriptions are visible ([#51](https://github.com/WeTransfer/Diagnostics/issues/51))
+        - Chinese characters display incorrectly in HTML output in Safari ([#48](https://github.com/WeTransfer/Diagnostics/issues/48))
+        - Get warning for file 'style.css' after building ([#39](https://github.com/WeTransfer/Diagnostics/issues/39))
+        - Crash happening when there is no space left on the device ([#37](https://github.com/WeTransfer/Diagnostics/issues/37))
+        - Add support for users without the Apple Mail app ([#36](https://github.com/WeTransfer/Diagnostics/issues/36))
+        - Support for Apple Watch App Logs ([#33](https://github.com/WeTransfer/Diagnostics/issues/33))
+        - Support different platforms/APIs ([#30](https://github.com/WeTransfer/Diagnostics/issues/30))
+        - Strongly typed HTML would be nice ([#6](https://github.com/WeTransfer/Diagnostics/issues/6))
+
+        **Merged pull requests:**
+
+        - Add charset utf-8 to html head ([#50](https://github.com/WeTransfer/Diagnostics/pull/50)) via [@AvdLee](https://github.com/AvdLee)
 
         \(existingChangelog)
         """)
