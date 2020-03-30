@@ -12,7 +12,7 @@ import OctoKit
 typealias PullRequestID = Int
 typealias IssueID = Int
 
-/// Generalizes different types of changelogs with either single or multiple sections.``
+/// Generalizes different types of changelogs with either single or multiple sections.
 protocol Changelog: CustomStringConvertible {
     /// The pull requests ID and related issues IDs that are merged with the related release of this
     /// changelog. It is used to post update comments on corresponding PRs and issues when a release
