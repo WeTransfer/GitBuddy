@@ -21,7 +21,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-package-manager.git", from: "0.1.0")
     ],
     targets: [
-        .testTarget(name: "GitBuddyTests", dependencies: ["GitBuddy", "Mocker"]),
+        // dev .testTarget(name: "GitBuddyTests", dependencies: ["GitBuddy", "Mocker"]),
         // dev .target(name: "DangerDependencies", dependencies: ["Danger", "WeTransferPRLinter"], path: "Submodules/WeTransfer-iOS-CI/Danger-Swift", sources: ["DangerFakeSource.swift"]),
         .target(name: "GitBuddy", dependencies: ["GitBuddyCore"]),
         .target(name: "GitBuddyCore", dependencies: ["OctoKit", "SPMUtility"])
