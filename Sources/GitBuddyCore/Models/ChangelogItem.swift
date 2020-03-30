@@ -29,14 +29,14 @@ extension Issue: ChangelogIssue {
 
 struct ChangelogItem {
     let input: ChangelogInput
-    let closedBy: ChangelogPullRequest
+    let closedBy: ChangelogInput
 
     var title: String? {
         guard var title = input.title else { return nil }
         if let htmlURL = input.htmlURL {
             title += " ([#\(input.number)](\(htmlURL)))"
         }
-        if let username = closedBy.username {
+        if closedBy is ChangelogPullRequest, let username = closedBy.username {
             title += " via [@\(username)](https://github.com/\(username))"
         }
         return title

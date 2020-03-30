@@ -21,6 +21,7 @@ OVERVIEW: Create a changelog for GitHub repositories
 OPTIONS:
   --base-branch, -b   The base branch to compare with. Defaults to master.
   --help              Display available options
+  --sections          Whether the changelog should be split into sections. Defaults to false. 
   --since-tag, -s     The tag to use as a base. Defaults to the latest tag.
   --verbose           Show extra logging for debugging purposes
 ```
@@ -39,10 +40,25 @@ This is an example taken from [Mocker](https://github.com/WeTransfer/Mocker/rele
 
 ----
 
+If you'd like a changelog to link to issues closed before a release was tagged, pass the `--sections` argument, then it's going to look like this:
+
+----
+
+**Closed issues:**
+
+- Can SPM support be merged branch add-spm-support be merged to master? ([#33](https://github.com/WeTransfer/Mocker/pull/33))
+- migrate 2.0.0 changes to spm compatible branch `feature/add-spm-support`? ([#32](https://github.com/WeTransfer/Mocker/pull/32))
+
+**Merged pull requests:**
+
+- Switch over to Danger-Swift & Bitrise ([#34](https://github.com/WeTransfer/Mocker/pull/34)) via @AvdLee
+- Fix important mismatch for getting the right mock ([#31](https://github.com/WeTransfer/Mocker/pull/31)) via @AvdLee
+
+----
+
 ### Generating a release
 ```
 $ gitbuddy release --help
-[112/112] Linking GitBuddy
 OVERVIEW: Create a new release including a changelog and publish comments on related issues
 
 OPTIONS:
@@ -51,6 +67,7 @@ OPTIONS:
   --help                   Display available options
   --last-release-tag, -l   The last release tag to use as a base for the changelog creation. Default: previous tag
   --release-title, -r      The title of the release. Default: uses the tag name.
+  --sections               Whether the changelog should be split into sections. Defaults to false.
   --skip-comments, -s      Disable commenting on issues and PRs about the new release
   --tag-name, -n           The name of the tag. Default: takes the last created tag to publish as a GitHub release.
   --target-commitish, -t   Specifies the commitish value that determines where the Git tag is created from. Can be any branch or commit SHA. Unused if the Git tag already exists. Default: the repository's default branch (usually master).

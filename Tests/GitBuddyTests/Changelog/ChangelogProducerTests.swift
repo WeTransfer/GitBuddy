@@ -48,6 +48,36 @@ final class ChangelogProducerTests: XCTestCase {
         )
     }
 
+    /// It should correctly output the changelog.
+    func testSectionedChangelogOutput() throws {
+        Mocker.mockPullRequests()
+        Mocker.mockIssues()
+        Mocker.mockForIssueNumber(39)
+        MockedShell.mockGITProject(organisation: "WeTransfer", repository: "Diagnostics")
+        let changelog = try GitBuddy.run(arguments: ["GitBuddy", "changelog", "--sections"], configuration: configuration)
+        XCTAssertEqual(
+            changelog,
+            """
+            **Closed issues:**
+
+            - Include device product names ([#60](https://github.com/WeTransfer/Diagnostics/issues/60))
+            - Change the order of reported sessions ([#54](https://github.com/WeTransfer/Diagnostics/issues/54))
+            - Encode Logging for HTML so object descriptions are visible ([#51](https://github.com/WeTransfer/Diagnostics/issues/51))
+            - Chinese characters display incorrectly in HTML output in Safari ([#48](https://github.com/WeTransfer/Diagnostics/issues/48))
+            - Get warning for file 'style.css' after building ([#39](https://github.com/WeTransfer/Diagnostics/issues/39))
+            - Crash happening when there is no space left on the device ([#37](https://github.com/WeTransfer/Diagnostics/issues/37))
+            - Add support for users without the Apple Mail app ([#36](https://github.com/WeTransfer/Diagnostics/issues/36))
+            - Support for Apple Watch App Logs ([#33](https://github.com/WeTransfer/Diagnostics/issues/33))
+            - Support different platforms/APIs ([#30](https://github.com/WeTransfer/Diagnostics/issues/30))
+            - Strongly typed HTML would be nice ([#6](https://github.com/WeTransfer/Diagnostics/issues/6))
+
+            **Merged pull requests:**
+
+            - Add charset utf-8 to html head ([#50](https://github.com/WeTransfer/Diagnostics/pull/50)) via [@AvdLee](https://github.com/AvdLee)
+            """
+        )
+    }
+
     /// It should default to master branch.
     func testDefaultBranch() throws {
         let producer = try ChangelogProducer(baseBranch: nil)

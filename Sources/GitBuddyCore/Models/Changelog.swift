@@ -9,12 +9,21 @@
 import Foundation
 import OctoKit
 
-struct Changelog: CustomStringConvertible {
-    typealias PullRequestID = Int
-    typealias IssueID = Int
+typealias PullRequestID = Int
+typealias IssueID = Int
+
+/// Generalizes different types of changelogs with either single or multiple sections.
+protocol Changelog: CustomStringConvertible {
+    /// The pull requests ID and related issues IDs that are merged with the related release of this
+    /// changelog. It is used to post update comments on corresponding PRs and issues when a release
+    /// is published.
+    var itemIdentifiers: [PullRequestID: [IssueID]] { get }
+}
+
+/// Represents a changelog with a single section of changelog items.
+struct SingleSectionChangelog: Changelog {
     let description: String
 
-    /// The pull requests ID and related issues IDs that are merged with the related release of this changelog.
     let itemIdentifiers: [PullRequestID: [IssueID]]
 
     init(items: [ChangelogItem]) {
@@ -32,6 +41,31 @@ struct Changelog: CustomStringConvertible {
                 result[pullRequestID] = []
             }
         })
+    }
+}
+
+/// Represents a changelog with at least two sections, one for closed issues, the other for
+/// merged pull requests.
+struct SectionedChangelog: Changelog {
+    let description: String
+
+    let itemIdentifiers: [PullRequestID: [IssueID]]
+    
+    init(issues: [Issue], pullRequests: [PullRequest]) {
+        description =
+            """
+            **Closed issues:**
+
+            \(ChangelogBuilder(items: issues.map { ChangelogItem(input: $0, closedBy: $0) }).build())
+
+            **Merged pull requests:**
+
+            \(ChangelogBuilder(items: pullRequests.map { ChangelogItem(input: $0, closedBy: $0) }).build())
+            """
+
+        itemIdentifiers = pullRequests.reduce(into: [:]) { (result, item) in
+            result[item.number] = item.body?.resolvingIssues()
+        }
     }
 }
 

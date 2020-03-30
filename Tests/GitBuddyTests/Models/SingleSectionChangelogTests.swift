@@ -1,5 +1,5 @@
 //
-//  ChangelogTests.swift
+//  SingleSectionChangelogTests.swift
 //  GitBuddyTests
 //
 //  Created by Antoine van der Lee on 05/02/2020.
@@ -10,14 +10,14 @@ import Foundation
 import XCTest
 @testable import GitBuddyCore
 
-final class ChangelogTests: XCTestCase {
+final class SingleSectionChangelogTests: XCTestCase {
 
     /// It should report a single issue from a pull request correctly.
     func testPullRequestSingleIssue() {
         let pullRequest = MockedPullRequest(number: 0)
         let issue = MockedIssue(number: 0)
         let changelogItem = ChangelogItem(input: issue, closedBy: pullRequest)
-        let changelog = Changelog(items: [changelogItem])
+        let changelog = SingleSectionChangelog(items: [changelogItem])
 
         XCTAssertEqual(changelog.itemIdentifiers, [0: [0]])
     }
@@ -29,7 +29,7 @@ final class ChangelogTests: XCTestCase {
             ChangelogItem(input: MockedIssue(number: 0), closedBy: pullRequest),
             ChangelogItem(input: MockedIssue(number: 1), closedBy: pullRequest)
         ]
-        let changelog = Changelog(items: changelogItems)
+        let changelog = SingleSectionChangelog(items: changelogItems)
 
         XCTAssertEqual(changelog.itemIdentifiers, [0: [0, 1]])
     }
@@ -38,7 +38,7 @@ final class ChangelogTests: XCTestCase {
     func testPullRequestNoIssues() {
         let pullRequest = MockedPullRequest(number: 0)
         let changelogItem = ChangelogItem(input: pullRequest, closedBy: pullRequest)
-        let changelog = Changelog(items: [changelogItem])
+        let changelog = SingleSectionChangelog(items: [changelogItem])
 
         XCTAssertEqual(changelog.itemIdentifiers, [0: []])
     }
@@ -48,7 +48,7 @@ final class ChangelogTests: XCTestCase {
         let pullRequest = MockedPullRequest(number: 0)
         let issue = MockedIssue(title: "Fixed something")
         let changelogItem = ChangelogItem(input: issue, closedBy: pullRequest)
-        let changelog = Changelog(items: [changelogItem])
+        let changelog = SingleSectionChangelog(items: [changelogItem])
 
         XCTAssertEqual(changelog.description, "- Fixed something")
     }

@@ -16,17 +16,19 @@ struct ChangelogCommand: Command {
     static let description = "Create a changelog for GitHub repositories"
     let sinceTag: OptionArgument<String>
     let baseBranch: OptionArgument<String>
+    let isSectioned: OptionArgument<Bool>
 
     init(subparser: ArgumentParser) {
         sinceTag = subparser.add(option: "--since-tag", shortName: "-s", kind: String.self, usage: "The tag to use as a base. Defaults to the latest tag.")
         baseBranch = subparser.add(option: "--base-branch", shortName: "-b", kind: String.self, usage: "The base branch to compare with. Defaults to master.")
+        isSectioned = subparser.add(option: "--sections", kind: Bool.self, usage: "Whether the changelog should be split into sections. Defaults to false.")
     }
 
     @discardableResult func run(using arguments: ArgumentParser.Result) throws -> String {
         let sinceTag = arguments.get(self.sinceTag).map { ChangelogProducer.Since.tag(tag: $0) }
         let changelogProducer = try ChangelogProducer(since: sinceTag ?? .latestTag,
                                                       baseBranch: arguments.get(baseBranch))
-        return try changelogProducer.run().description
+        return try changelogProducer.run(isSectioned: arguments.get(isSectioned) ?? false).description
     }
 }
 
@@ -78,7 +80,7 @@ final class ChangelogProducer: URLSessionInjectable {
         project = GITProject.current()
     }
 
-    @discardableResult public func run() throws -> Changelog {
+    @discardableResult public func run(isSectioned: Bool) throws -> Changelog {
         let pullRequestsFetcher = PullRequestFetcher(octoKit: octoKit, baseBranch: baseBranch, project: project)
         let pullRequests = try pullRequestsFetcher.fetchAllBetween(from, and: to, using: urlSession)
 
@@ -90,9 +92,28 @@ final class ChangelogProducer: URLSessionInjectable {
             }
         }
 
-        let items = ChangelogItemsFactory(octoKit: octoKit, pullRequests: pullRequests, project: project).items(using: urlSession)
+        if isSectioned {
+            let issuesFetcher = IssuesFetcher(octoKit: octoKit, project: project)
+            let issues = try issuesFetcher.fetchAllBetween(from, and: to, using: urlSession)
 
-        Log.debug("Result of creating the changelog:")
-        return Changelog(items: items)
+            if Log.isVerbose {
+                Log.debug("\nChangelog will use the following issues as input:")
+                issues.forEach { issue in
+                    guard let title = issue.title, let closedAt = issue.closedAt else { return }
+                    Log.debug("- #\(issue.number): \(title), closed at: \(closedAt)\n")
+                }
+            }
+
+            return SectionedChangelog(issues: issues, pullRequests: pullRequests)
+        } else {
+            let items = ChangelogItemsFactory(
+                octoKit: octoKit,
+                pullRequests: pullRequests,
+                project: project
+            ).items(using: urlSession)
+
+            Log.debug("Result of creating the changelog:")
+            return SingleSectionChangelog(items: items)
+        }
     }
 }
