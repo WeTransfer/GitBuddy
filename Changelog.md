@@ -1,3 +1,8 @@
+### 2.4.0
+- Allow changelog to be split into separate sections ([#40](https://github.com/WeTransfer/GitBuddy/pull/40)) via [@MaxDesiatov](https://github.com/MaxDesiatov)
+- Log pull request number for verbose changelog ([#39](https://github.com/WeTransfer/GitBuddy/pull/39)) via [@MaxDesiatov](https://github.com/MaxDesiatov)
+- Merge release 2.3.0 into master ([#38](https://github.com/WeTransfer/GitBuddy/pull/38)) via [@WeTransferBot](https://github.com/WeTransferBot)
+
 ### 2.3.0
 - Link to user's profile in a generated changelog ([#37](https://github.com/WeTransfer/GitBuddy/pull/37)) via [@MaxDesiatov](https://github.com/MaxDesiatov)
 - Merge release 2.2.0 into master ([#35](https://github.com/WeTransfer/GitBuddy/pull/35)) via [@WeTransferBot](https://github.com/WeTransferBot)
