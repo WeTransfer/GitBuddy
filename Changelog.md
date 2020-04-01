@@ -1,3 +1,7 @@
+### 2.4.1
+- Fix OctoKit version in Package.swift ([#42](https://github.com/WeTransfer/GitBuddy/pull/42)) via [@MaxDesiatov](https://github.com/MaxDesiatov)
+- Merge release 2.4.0 into master ([#41](https://github.com/WeTransfer/GitBuddy/pull/41)) via [@WeTransferBot](https://github.com/WeTransferBot)
+
 ### 2.4.0
 - Allow changelog to be split into separate sections ([#40](https://github.com/WeTransfer/GitBuddy/pull/40)) via [@MaxDesiatov](https://github.com/MaxDesiatov)
 - Log pull request number for verbose changelog ([#39](https://github.com/WeTransfer/GitBuddy/pull/39)) via [@MaxDesiatov](https://github.com/MaxDesiatov)
