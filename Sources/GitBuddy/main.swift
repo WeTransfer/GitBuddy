@@ -8,8 +8,4 @@
 
 import GitBuddyCore
 
-do {
-    try GitBuddy.run()
-} catch {
-    print("GitBuddy failed: \(error)")
-}
+GitBuddy.main()
