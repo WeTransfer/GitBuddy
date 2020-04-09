@@ -188,7 +188,7 @@ final class ReleaseProducerTests: XCTestCase {
     /// It should use the tag name setting.
     func testTagName() throws {
         let mockExpectation = expectation(description: "Mocks should be called")
-        let tagName = UUID().uuidString
+        let tagName = "1.0.0"
         var mock = Mocker.mockRelease()
         mock.onRequest = { _, parameters in
             guard let parameters = try? XCTUnwrap(parameters) else { return }
@@ -199,6 +199,37 @@ final class ReleaseProducerTests: XCTestCase {
 
         _ = try GitBuddy.run(arguments: ["GitBuddy", "release", "-s", "-n", tagName], configuration: configuration)
         wait(for: [mockExpectation], timeout: 0.3)
+    }
+
+    /// It should not contain changes that are merged into the target branch after the creation date of the tag we're using.
+    func testIncludedChangesForUsedTagName() throws {
+        let existingChangelog = """
+        ### 1.0.0
+        - Initial release
+        """
+        let tagName = "2.0.0"
+
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let date = dateFormatter.date(from: "2020-01-05")!
+        MockedShell.mockRelease(tag: "2.0.0", date: date)
+
+        let tempFileURL = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true).appendingPathComponent("Changelog.md")
+        XCTAssertTrue(FileManager.default.createFile(atPath: tempFileURL.path, contents: Data(existingChangelog.utf8), attributes: nil))
+        try GitBuddy.run(arguments: ["GitBuddy", "release", "-s", "-c", tempFileURL.path, "-n", tagName], configuration: configuration)
+        let updatedChangelogContents = try String(contentsOfFile: tempFileURL.path)
+
+        // Merged at: 2020-01-06 - Add charset utf-8 to html head
+        // Closed at: 2020-01-03 - Get warning for file
+        // Setting the tag date to 2020-01-05 should remove the Add charset
+
+        XCTAssertEqual(updatedChangelogContents, """
+        ### 2.0.0
+        - Get warning for file \'style.css\' after building \
+        ([#39](https://github.com/WeTransfer/Diagnostics/issues/39)) via [@AvdLee](https://github.com/AvdLee)
+
+        \(existingChangelog)
+        """)
     }
 
     /// It should use the release title setting.

@@ -77,7 +77,7 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
     }
 
     @discardableResult public func run(isSectioned: Bool) throws -> Release {
-        let releasedTag = try tagName.map { try Tag(name: $0, created: Date()) } ?? Tag.latest()
+        let releasedTag = try tagName.map { try Tag(name: $0) } ?? Tag.latest()
         let previousTag = lastReleaseTag ?? Self.shell.execute(.previousTag)
 
         /// We're adding 60 seconds to make sure the tag commit itself is included in the changelog as well.
