@@ -28,4 +28,3 @@ enum Log {
         Swift.print(message)
     }
 }
-
