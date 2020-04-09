@@ -11,6 +11,7 @@ import Foundation
 enum Log {
     static var isVerbose: Bool = false
 
+    /// Can be used to catch output for testing purposes.
     static var pipe: ((_ message: String) -> Void)?
 
     static func debug(_ message: String) {

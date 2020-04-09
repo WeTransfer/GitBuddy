@@ -12,7 +12,8 @@ extension Octokit {
 
     static var protocolClasses: [AnyClass]?
     static var environment: [String: String] = ProcessInfo.processInfo.environment
-    
+
+    /// Sets up the URLSession to be authenticated for the GitHub API.
     static func authenticate() throws {
         let token = try Token(environment: environment)
         Log.debug("Token is \(token)")
