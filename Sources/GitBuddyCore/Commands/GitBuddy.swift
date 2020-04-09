@@ -11,16 +11,7 @@ import ArgumentParser
 
 /// Entry class of GitBuddy that registers commands and handles execution.
 public struct GitBuddy: ParsableCommand {
-
     public static let configuration = CommandConfiguration(commandName: "gitbuddy", abstract: "Manage your GitHub repositories with ease", subcommands: [ChangelogCommand.self, ReleaseCommand.self, VersionCommand.self])
 
     public init() { }
-
-    private static func sessionConfiguration(using environment: [String: String]) throws -> URLSessionConfiguration {
-        let token = try Token(environment: environment)
-        Log.debug("Token is \(token)")
-        let configuration = URLSessionConfiguration.default
-        configuration.httpAdditionalHeaders = ["Authorization": "Basic \(token.base64Encoded)"]
-        return configuration
-    }
 }

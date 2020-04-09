@@ -40,6 +40,8 @@ final class ChangelogProducer: URLSessionInjectable {
     let project: GITProject
 
     init(since: Since = .latestTag, to: Date = Date(), baseBranch: Branch?) throws {
+        try Octokit.authenticate()
+
         self.to = to
         self.since = since
 

@@ -11,12 +11,20 @@ import Foundation
 enum Log {
     static var isVerbose: Bool = false
 
-    static func debug(_ message: Any) {
+    static var pipe: ((_ message: String) -> Void)?
+
+    static func debug(_ message: String) {
         guard isVerbose else { return }
         print(message)
     }
 
-    static func message(_ message: Any) {
+    static func message(_ message: String) {
         print(message)
     }
+
+    private static func print(_ message: String) {
+        pipe?(message)
+        Swift.print(message)
+    }
 }
+
