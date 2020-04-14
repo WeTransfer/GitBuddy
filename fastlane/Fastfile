@@ -12,3 +12,19 @@ lane :test do |options|
 		device: nil,
 		destination: "platform=macOS")
 end
+
+desc "Updates the local version before creating the regular release"
+lane :create_tag_release do |options|
+	update_version
+	release_from_tag
+end
+
+desc "Updates the version number to match the releasing tag"
+lane :update_version do
+	tag_name = ENV["BITRISE_GIT_TAG"]
+
+	file_path = "../Sources/GitBuddyCore/Commands/VersionCommand.swift"
+	text = File.read(file_path)
+	new_contents = text.gsub(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(\..*)?/, tag_name)
+	File.open(file_path, "w") {|file| file.puts new_contents }
+end
