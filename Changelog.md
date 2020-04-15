@@ -1,3 +1,9 @@
+### 3.0.0
+- Use the new ArgumentsParser framework ([#31](https://github.com/WeTransfer/GitBuddy/issues/31)) via [@AvdLee](https://github.com/AvdLee)
+- Changelog includes changes that are not in the build ([#33](https://github.com/WeTransfer/GitBuddy/issues/33)) via [@AvdLee](https://github.com/AvdLee)
+- Add a watermark to promote GitBuddy ([#28](https://github.com/WeTransfer/GitBuddy/issues/28)) via [@AvdLee](https://github.com/AvdLee)
+- Merge release 2.4.1 into master ([#43](https://github.com/WeTransfer/GitBuddy/pull/43)) via [@WeTransferBot](https://github.com/WeTransferBot)
+
 ### 2.4.1
 - Fix OctoKit version in Package.swift ([#42](https://github.com/WeTransfer/GitBuddy/pull/42)) via [@MaxDesiatov](https://github.com/MaxDesiatov)
 - Merge release 2.4.0 into master ([#41](https://github.com/WeTransfer/GitBuddy/pull/41)) via [@WeTransferBot](https://github.com/WeTransferBot)
