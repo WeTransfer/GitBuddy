@@ -8,29 +8,6 @@
 
 import Foundation
 import OctoKit
-import SPMUtility
-
-struct ChangelogCommand: Command {
-
-    static let command = "changelog"
-    static let description = "Create a changelog for GitHub repositories"
-    let sinceTag: OptionArgument<String>
-    let baseBranch: OptionArgument<String>
-    let isSectioned: OptionArgument<Bool>
-
-    init(subparser: ArgumentParser) {
-        sinceTag = subparser.add(option: "--since-tag", shortName: "-s", kind: String.self, usage: "The tag to use as a base. Defaults to the latest tag.")
-        baseBranch = subparser.add(option: "--base-branch", shortName: "-b", kind: String.self, usage: "The base branch to compare with. Defaults to master.")
-        isSectioned = subparser.add(option: "--sections", kind: Bool.self, usage: "Whether the changelog should be split into sections. Defaults to false.")
-    }
-
-    @discardableResult func run(using arguments: ArgumentParser.Result) throws -> String {
-        let sinceTag = arguments.get(self.sinceTag).map { ChangelogProducer.Since.tag(tag: $0) }
-        let changelogProducer = try ChangelogProducer(since: sinceTag ?? .latestTag,
-                                                      baseBranch: arguments.get(baseBranch))
-        return try changelogProducer.run(isSectioned: arguments.get(isSectioned) ?? false).description
-    }
-}
 
 /// Capable of producing a changelog based on input parameters.
 final class ChangelogProducer: URLSessionInjectable {
@@ -63,6 +40,8 @@ final class ChangelogProducer: URLSessionInjectable {
     let project: GITProject
 
     init(since: Since = .latestTag, to: Date = Date(), baseBranch: Branch?) throws {
+        try Octokit.authenticate()
+
         self.to = to
         self.since = since
 

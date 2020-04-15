@@ -8,45 +8,6 @@
 
 import Foundation
 import OctoKit
-import SPMUtility
-
-struct ReleaseCommand: Command {
-    static let command = "release"
-    static let description = "Create a new release including a changelog and publish comments on related issues"
-    let changelogPath: OptionArgument<String>
-    let skipComments: OptionArgument<Bool>
-    let isPrerelease: OptionArgument<Bool>
-    let targetCommitish: OptionArgument<String>
-    let tagName: OptionArgument<String>
-    let releaseTitle: OptionArgument<String>
-    let lastReleaseTag: OptionArgument<String>
-    let baseBranch: OptionArgument<String>
-    let isSectioned: OptionArgument<Bool>
-
-    init(subparser: ArgumentParser) {
-        changelogPath = subparser.add(option: "--changelog-path", shortName: "-c", kind: String.self, usage: "The path to the Changelog to update it with the latest changes")
-        skipComments = subparser.add(option: "--skip-comments", shortName: "-s", kind: Bool.self, usage: "Disable commenting on issues and PRs about the new release")
-        isPrerelease = subparser.add(option: "--use-pre-release", shortName: "-p", kind: Bool.self, usage: "Create the release as a pre-release")
-        targetCommitish = subparser.add(option: "--target-commitish", shortName: "-t", kind: String.self, usage: "Specifies the commitish value that determines where the Git tag is created from. Can be any branch or commit SHA. Unused if the Git tag already exists. Default: the repository's default branch (usually master).")
-        tagName = subparser.add(option: "--tag-name", shortName: "-n", kind: String.self, usage: "The name of the tag. Default: takes the last created tag to publish as a GitHub release.")
-        releaseTitle = subparser.add(option: "--release-title", shortName: "-r", kind: String.self, usage: "The title of the release. Default: uses the tag name.")
-        lastReleaseTag = subparser.add(option: "--last-release-tag", shortName: "-l", kind: String.self, usage: "The last release tag to use as a base for the changelog creation. Default: previous tag")
-        baseBranch = subparser.add(option: "--base-branch", shortName: "-b", kind: String.self, usage: "The base branch to compare with for generating the changelog. Defaults to master.")
-        isSectioned = subparser.add(option: "--sections", kind: Bool.self, usage: "Whether the changelog should be split into sections. Defaults to false.")
-    }
-
-    @discardableResult func run(using arguments: ArgumentParser.Result) throws -> String {
-        let releaseProducer = try ReleaseProducer(changelogPath: arguments.get(changelogPath),
-                                                  skipComments: arguments.get(skipComments) ?? false,
-                                                  isPrerelease: arguments.get(isPrerelease) ?? false,
-                                                  targetCommitish: arguments.get(targetCommitish),
-                                                  tagName: arguments.get(tagName),
-                                                  releaseTitle: arguments.get(releaseTitle),
-                                                  lastReleaseTag: arguments.get(lastReleaseTag),
-                                                  baseBranch: arguments.get(baseBranch))
-        return try releaseProducer.run(isSectioned: arguments.get(isSectioned) ?? false).url.absoluteString
-    }
-}
 
 /// Capable of producing a release, adjusting a Changelog file, and posting comments to released issues/PRs.
 final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
@@ -62,6 +23,8 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
     let baseBranch: String
     
     init(changelogPath: String?, skipComments: Bool, isPrerelease: Bool, targetCommitish: String? = nil, tagName: String? = nil, releaseTitle: String? = nil, lastReleaseTag: String? = nil, baseBranch: String? = nil) throws {
+        try Octokit.authenticate()
+        
         if let changelogPath = changelogPath {
             changelogURL = URL(string: changelogPath)
         } else {

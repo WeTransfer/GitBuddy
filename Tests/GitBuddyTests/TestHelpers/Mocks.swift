@@ -11,6 +11,7 @@ import Foundation
 import Mocker
 import OctoKit
 @testable import GitBuddyCore
+import XCTest
 
 struct MockedShell: ShellExecuting {
 
@@ -118,5 +119,15 @@ extension Data {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .formatted(Time.rfc3339DateFormatter)
         return try! decoder.decode(type, from: self)
+    }
+}
+
+extension XCTestCase {
+    func mockGITAuthentication(_ token: String = "username:79B02BE4-38D1-4E3D-9B41-4E0739761512") {
+        Octokit.environment = ["GITBUDDY_ACCESS_TOKEN": token]
+
+        addTeardownBlock {
+            Octokit.environment = ProcessInfo.processInfo.environment
+        }
     }
 }

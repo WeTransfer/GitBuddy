@@ -18,12 +18,16 @@ GitBuddy helps you with:
 $ gitbuddy changelog --help
 OVERVIEW: Create a changelog for GitHub repositories
 
+USAGE: gitbuddy changelog [--since-tag <since-tag>] [--base-branch <base-branch>] [--sections] [--verbose]
+
 OPTIONS:
-  --base-branch, -b   The base branch to compare with. Defaults to master.
-  --help              Display available options
-  --sections          Whether the changelog should be split into sections. Defaults to false. 
-  --since-tag, -s     The tag to use as a base. Defaults to the latest tag.
-  --verbose           Show extra logging for debugging purposes
+  -s, --since-tag <since-tag>
+                          The tag to use as a base. Defaults to the latest tag. 
+  -b, --base-branch <base-branch>
+                          The base branch to compare with. Defaults to master. 
+  --sections              Whether the changelog should be split into sections. Defaults to false. 
+  --verbose               Show extra logging for debugging purposes 
+  -h, --help              Show help information.
 ```
 
 This command generates a changelog based on merged PRs and fixed issues. Once a PR contains a reference like `"Fixed #30"`, the title of issue 30 will be included in the changelog. Otherwise, the Pull Request title will be used.
@@ -59,20 +63,33 @@ If you'd like a changelog to link to issues closed before a release was tagged, 
 ### Generating a release
 ```
 $ gitbuddy release --help
-OVERVIEW: Create a new release including a changelog and publish comments on related issues
+OVERVIEW: Create a new release including a changelog and publish comments on related issues.
+
+USAGE: gitbuddy release [--changelog-path <changelog-path>] [--skip-comments] [--use-pre-release] [--target-commitish <target-commitish>] [--tag-name <tag-name>] [--release-title <release-title>] [--last-release-tag <last-release-tag>] [--base-branch <base-branch>] [--sections] [--verbose]
 
 OPTIONS:
-  --base-branch, -b        The base branch to compare with for generating the changelog. Defaults to master.
-  --changelog-path, -c     The path to the Changelog to update it with the latest changes
-  --help                   Display available options
-  --last-release-tag, -l   The last release tag to use as a base for the changelog creation. Default: previous tag
-  --release-title, -r      The title of the release. Default: uses the tag name.
-  --sections               Whether the changelog should be split into sections. Defaults to false.
-  --skip-comments, -s      Disable commenting on issues and PRs about the new release
-  --tag-name, -n           The name of the tag. Default: takes the last created tag to publish as a GitHub release.
-  --target-commitish, -t   Specifies the commitish value that determines where the Git tag is created from. Can be any branch or commit SHA. Unused if the Git tag already exists. Default: the repository's default branch (usually master).
-  --use-pre-release, -p    Create the release as a pre-release
-  --verbose                Show extra logging for debugging purposes
+  -c, --changelog-path <changelog-path>
+                          The path to the Changelog to update it with the latest changes. 
+  -s, --skip-comments     Disable commenting on issues and PRs about the new release. 
+  -p, --use-pre-release   Create the release as a pre-release. 
+  -t, --target-commitish <target-commitish>
+                          Specifies the commitish value that determines where the Git tag is created
+                          from. Can be any branch or commit SHA. Unused if the Git tag already exists.
+                          Default: the repository's default branch (usually master). 
+  -n, --tag-name <tag-name>
+                          The name of the tag. Default: takes the last created tag to publish as a GitHub
+                          release. 
+  -r, --release-title <release-title>
+                          The title of the release. Default: uses the tag name. 
+  -l, --last-release-tag <last-release-tag>
+                          The last release tag to use as a base for the changelog creation. Default:
+                          previous tag. 
+  -b, --base-branch <base-branch>
+                          The base branch to compare with for generating the changelog. Defaults to
+                          master. 
+  --sections              Whether the changelog should be split into sections. Defaults to false. 
+  --verbose               Show extra logging for debugging purposes 
+  -h, --help              Show help information.
 ```
 
 The `release` command can be used to transform the latest tag into a GitHub release including the changelog as a body.
@@ -112,15 +129,15 @@ After that you can directly use it by executing it from within the repo you woul
 $ gitbuddy --help
 OVERVIEW: Manage your GitHub repositories with ease
 
-USAGE: GitBuddy <commands> <options>
+USAGE: gitbuddy [--version] <subcommand>
 
 OPTIONS:
-  --version   Prints the current GitBuddy version
-  --help      Display available options
+  --version               Prints the current GitBuddy version 
+  -h, --help              Show help information.
 
 SUBCOMMANDS:
-  changelog   Create a changelog for GitHub repositories
-  release     Create a new release including a changelog and publish comments on related issues
+  changelog               Create a changelog for GitHub repositories
+  release                 Create a new release including a changelog and publish 			 													 comments on related issues.
 ```
 
 ### Development

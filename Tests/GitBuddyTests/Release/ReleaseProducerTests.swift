@@ -9,18 +9,14 @@
 import XCTest
 @testable import GitBuddyCore
 import Mocker
-import SPMUtility
+import OctoKit
 
 final class ReleaseProducerTests: XCTestCase {
 
-    private let configuration: URLSessionConfiguration = {
-        let configuration = URLSessionConfiguration.default
-        configuration.protocolClasses = [MockingURLProtocol.self]
-        return configuration
-    }()
-
     override func setUp() {
         super.setUp()
+        Octokit.protocolClasses = [MockingURLProtocol.self]
+        mockGITAuthentication()
         ShellInjector.shell = MockedShell.self
         Mocker.mockPullRequests()
         Mocker.mockIssues()
@@ -34,12 +30,20 @@ final class ReleaseProducerTests: XCTestCase {
     override func tearDown() {
         super.tearDown()
         MockedShell.commandMocks.removeAll()
+        Mocker.removeAll()
+    }
+
+    /// It should use the GitHub Access Token for setting up URLSession.
+    func testAccessTokenConfiguration() throws {
+        let token = "username:79B02BE4-38D1-4E3D-9B41-4E0739761512"
+        mockGITAuthentication(token)
+        try AssertExecuteCommand(command: "gitbuddy release -s")
+        XCTAssertEqual(URLSessionInjector.urlSession.configuration.httpAdditionalHeaders?["Authorization"] as? String, "Basic dXNlcm5hbWU6NzlCMDJCRTQtMzhEMS00RTNELTlCNDEtNEUwNzM5NzYxNTEy")
     }
 
     /// It should correctly output the release URL.
     func testReleaseOutput() throws {
-        let releaseURL = try GitBuddy.run(arguments: ["GitBuddy", "release", "-s"], configuration: configuration)
-        XCTAssertEqual(releaseURL, "https://github.com/WeTransfer/ChangelogProducer/releases/tag/1.0.1")
+        try AssertExecuteCommand(command: "gitbuddy release -s", expected: "https://github.com/WeTransfer/ChangelogProducer/releases/tag/1.0.1")
     }
 
     /// It should set the parameters correctly.
@@ -62,7 +66,7 @@ final class ReleaseProducerTests: XCTestCase {
         }
         mock.register()
 
-        _ = try GitBuddy.run(arguments: ["GitBuddy", "release", "-s"], configuration: configuration)
+        try AssertExecuteCommand(command: "gitbuddy release -s")
         wait(for: [mockExpectation], timeout: 0.3)
     }
 
@@ -74,7 +78,7 @@ final class ReleaseProducerTests: XCTestCase {
         """
         let tempFileURL = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true).appendingPathComponent("Changelog.md")
         XCTAssertTrue(FileManager.default.createFile(atPath: tempFileURL.path, contents: Data(existingChangelog.utf8), attributes: nil))
-        try GitBuddy.run(arguments: ["GitBuddy", "release", "-s", "-c", tempFileURL.path], configuration: configuration)
+        try AssertExecuteCommand(command: "gitbuddy release -s -c \(tempFileURL.path)")
         let updatedChangelogContents = try String(contentsOfFile: tempFileURL.path)
 
         XCTAssertEqual(updatedChangelogContents, """
@@ -95,7 +99,8 @@ final class ReleaseProducerTests: XCTestCase {
         """
         let tempFileURL = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true).appendingPathComponent("Changelog.md")
         XCTAssertTrue(FileManager.default.createFile(atPath: tempFileURL.path, contents: Data(existingChangelog.utf8), attributes: nil))
-        try GitBuddy.run(arguments: ["GitBuddy", "release", "--sections", "-s", "-c", tempFileURL.path], configuration: configuration)
+        try AssertExecuteCommand(command: "gitbuddy release --sections -s -c \(tempFileURL.path)")
+
         let updatedChangelogContents = try String(contentsOfFile: tempFileURL.path)
 
         XCTAssertEqual(updatedChangelogContents, """
@@ -137,7 +142,7 @@ final class ReleaseProducerTests: XCTestCase {
             }
             mock.register()
         }
-        _ = try GitBuddy.run(arguments: ["GitBuddy", "release"], configuration: configuration)
+        try AssertExecuteCommand(command: "gitbuddy release")
         wait(for: [mocksExpectations], timeout: 2.0)
     }
 
@@ -151,7 +156,7 @@ final class ReleaseProducerTests: XCTestCase {
         }
         mock.register()
 
-        _ = try GitBuddy.run(arguments: ["GitBuddy", "release", "-s"], configuration: configuration)
+        try AssertExecuteCommand(command: "gitbuddy release -s")
         wait(for: [mockExpectation], timeout: 0.3)
     }
 
@@ -166,7 +171,7 @@ final class ReleaseProducerTests: XCTestCase {
         }
         mock.register()
 
-        _ = try GitBuddy.run(arguments: ["GitBuddy", "release", "-s", "-p"], configuration: configuration)
+        try AssertExecuteCommand(command: "gitbuddy release -s -p")
         wait(for: [mockExpectation], timeout: 0.3)
     }
 
@@ -181,7 +186,7 @@ final class ReleaseProducerTests: XCTestCase {
         }
         mock.register()
 
-        _ = try GitBuddy.run(arguments: ["GitBuddy", "release", "-s", "-t", "develop"], configuration: configuration)
+        try AssertExecuteCommand(command: "gitbuddy release -s -t develop")
         wait(for: [mockExpectation], timeout: 0.3)
     }
 
@@ -197,7 +202,7 @@ final class ReleaseProducerTests: XCTestCase {
         }
         mock.register()
 
-        _ = try GitBuddy.run(arguments: ["GitBuddy", "release", "-s", "-n", tagName], configuration: configuration)
+        try AssertExecuteCommand(command: "gitbuddy release -s -n \(tagName)")
         wait(for: [mockExpectation], timeout: 0.3)
     }
 
@@ -216,7 +221,9 @@ final class ReleaseProducerTests: XCTestCase {
 
         let tempFileURL = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true).appendingPathComponent("Changelog.md")
         XCTAssertTrue(FileManager.default.createFile(atPath: tempFileURL.path, contents: Data(existingChangelog.utf8), attributes: nil))
-        try GitBuddy.run(arguments: ["GitBuddy", "release", "-s", "-c", tempFileURL.path, "-n", tagName], configuration: configuration)
+
+        try AssertExecuteCommand(command: "gitbuddy release -s -n \(tagName) -c \(tempFileURL.path)")
+
         let updatedChangelogContents = try String(contentsOfFile: tempFileURL.path)
 
         // Merged at: 2020-01-06 - Add charset utf-8 to html head
@@ -244,7 +251,7 @@ final class ReleaseProducerTests: XCTestCase {
         }
         mock.register()
 
-        _ = try GitBuddy.run(arguments: ["GitBuddy", "release", "-s", "-r", title], configuration: configuration)
+        try AssertExecuteCommand(command: "gitbuddy release -s -r \(title)")
         wait(for: [mockExpectation], timeout: 0.3)
     }
 
@@ -259,6 +266,6 @@ final class ReleaseProducerTests: XCTestCase {
         let baseBranch = UUID().uuidString
         Mocker.mockPullRequests(baseBranch: baseBranch)
 
-        _ = try GitBuddy.run(arguments: ["GitBuddy", "release", "-s", "-l", lastReleaseTag, "-b", baseBranch, "--verbose"], configuration: configuration)
+        try AssertExecuteCommand(command: "gitbuddy release -s -l \(lastReleaseTag) -b \(baseBranch)")
     }
 }

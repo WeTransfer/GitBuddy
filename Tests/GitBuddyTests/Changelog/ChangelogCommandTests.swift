@@ -1,26 +1,21 @@
 //
-//  ChangelogProducerTests.swift
-//  ChangelogProducerTests
+//  ChangelogCommandTests.swift
+//  GitBuddyTests
 //
-//  Created by Antoine van der Lee on 10/01/2020.
-//  Copyright © 2020 WeTransfer. All rights reserved.
+//  Created by Antoine van der Lee on 09/04/2020.
 //
 
 import XCTest
-@testable import GitBuddyCore
 import Mocker
-import SPMUtility
+@testable import GitBuddyCore
+import OctoKit
 
-final class ChangelogProducerTests: XCTestCase {
-
-    private let configuration: URLSessionConfiguration = {
-        let configuration = URLSessionConfiguration.default
-        configuration.protocolClasses = [MockingURLProtocol.self]
-        return configuration
-    }()
+final class ChangelogCommandTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
+        Octokit.protocolClasses = [MockingURLProtocol.self]
+        mockGITAuthentication()
         ShellInjector.shell = MockedShell.self
         MockedShell.mockRelease(tag: "1.0.0")
         MockedShell.mockGITProject()
@@ -29,6 +24,19 @@ final class ChangelogProducerTests: XCTestCase {
     override func tearDown() {
         super.tearDown()
         MockedShell.commandMocks.removeAll()
+        Mocker.removeAll()
+    }
+
+    /// It should use the GitHub Access Token for setting up URLSession.
+    func testAccessTokenConfiguration() throws {
+        Mocker.mockPullRequests()
+        Mocker.mockForIssueNumber(39)
+        MockedShell.mockGITProject(organisation: "WeTransfer", repository: "Diagnostics")
+        
+        let token = "username:79B02BE4-38D1-4E3D-9B41-4E0739761512"
+        mockGITAuthentication(token)
+        try AssertExecuteCommand(command: "gitbuddy changelog")
+        XCTAssertEqual(URLSessionInjector.urlSession.configuration.httpAdditionalHeaders?["Authorization"] as? String, "Basic dXNlcm5hbWU6NzlCMDJCRTQtMzhEMS00RTNELTlCNDEtNEUwNzM5NzYxNTEy")
     }
 
     /// It should correctly output the changelog.
@@ -36,16 +44,15 @@ final class ChangelogProducerTests: XCTestCase {
         Mocker.mockPullRequests()
         Mocker.mockForIssueNumber(39)
         MockedShell.mockGITProject(organisation: "WeTransfer", repository: "Diagnostics")
-        let changelog = try GitBuddy.run(arguments: ["GitBuddy", "changelog"], configuration: configuration)
-        XCTAssertEqual(
-            changelog,
-            """
-            - Add charset utf-8 to html head \
-            ([#50](https://github.com/WeTransfer/Diagnostics/pull/50)) via [@AvdLee](https://github.com/AvdLee)
-            - Get warning for file \'style.css\' after building \
-            ([#39](https://github.com/WeTransfer/Diagnostics/issues/39)) via [@AvdLee](https://github.com/AvdLee)
-            """
-        )
+        
+        let expectedChangelog = """
+        - Add charset utf-8 to html head \
+        ([#50](https://github.com/WeTransfer/Diagnostics/pull/50)) via [@AvdLee](https://github.com/AvdLee)
+        - Get warning for file \'style.css\' after building \
+        ([#39](https://github.com/WeTransfer/Diagnostics/issues/39)) via [@AvdLee](https://github.com/AvdLee)
+        """
+
+        try AssertExecuteCommand(command: "gitbuddy changelog", expected: expectedChangelog)
     }
 
     /// It should correctly output the changelog.
@@ -54,28 +61,27 @@ final class ChangelogProducerTests: XCTestCase {
         Mocker.mockIssues()
         Mocker.mockForIssueNumber(39)
         MockedShell.mockGITProject(organisation: "WeTransfer", repository: "Diagnostics")
-        let changelog = try GitBuddy.run(arguments: ["GitBuddy", "changelog", "--sections"], configuration: configuration)
-        XCTAssertEqual(
-            changelog,
-            """
-            **Closed issues:**
 
-            - Include device product names ([#60](https://github.com/WeTransfer/Diagnostics/issues/60))
-            - Change the order of reported sessions ([#54](https://github.com/WeTransfer/Diagnostics/issues/54))
-            - Encode Logging for HTML so object descriptions are visible ([#51](https://github.com/WeTransfer/Diagnostics/issues/51))
-            - Chinese characters display incorrectly in HTML output in Safari ([#48](https://github.com/WeTransfer/Diagnostics/issues/48))
-            - Get warning for file 'style.css' after building ([#39](https://github.com/WeTransfer/Diagnostics/issues/39))
-            - Crash happening when there is no space left on the device ([#37](https://github.com/WeTransfer/Diagnostics/issues/37))
-            - Add support for users without the Apple Mail app ([#36](https://github.com/WeTransfer/Diagnostics/issues/36))
-            - Support for Apple Watch App Logs ([#33](https://github.com/WeTransfer/Diagnostics/issues/33))
-            - Support different platforms/APIs ([#30](https://github.com/WeTransfer/Diagnostics/issues/30))
-            - Strongly typed HTML would be nice ([#6](https://github.com/WeTransfer/Diagnostics/issues/6))
+        let expectedChangelog = """
+        **Closed issues:**
 
-            **Merged pull requests:**
+        - Include device product names ([#60](https://github.com/WeTransfer/Diagnostics/issues/60))
+        - Change the order of reported sessions ([#54](https://github.com/WeTransfer/Diagnostics/issues/54))
+        - Encode Logging for HTML so object descriptions are visible ([#51](https://github.com/WeTransfer/Diagnostics/issues/51))
+        - Chinese characters display incorrectly in HTML output in Safari ([#48](https://github.com/WeTransfer/Diagnostics/issues/48))
+        - Get warning for file 'style.css' after building ([#39](https://github.com/WeTransfer/Diagnostics/issues/39))
+        - Crash happening when there is no space left on the device ([#37](https://github.com/WeTransfer/Diagnostics/issues/37))
+        - Add support for users without the Apple Mail app ([#36](https://github.com/WeTransfer/Diagnostics/issues/36))
+        - Support for Apple Watch App Logs ([#33](https://github.com/WeTransfer/Diagnostics/issues/33))
+        - Support different platforms/APIs ([#30](https://github.com/WeTransfer/Diagnostics/issues/30))
+        - Strongly typed HTML would be nice ([#6](https://github.com/WeTransfer/Diagnostics/issues/6))
 
-            - Add charset utf-8 to html head ([#50](https://github.com/WeTransfer/Diagnostics/pull/50)) via [@AvdLee](https://github.com/AvdLee)
-            """
-        )
+        **Merged pull requests:**
+
+        - Add charset utf-8 to html head ([#50](https://github.com/WeTransfer/Diagnostics/pull/50)) via [@AvdLee](https://github.com/AvdLee)
+        """
+
+        try AssertExecuteCommand(command: "gitbuddy changelog --sections", expected: expectedChangelog)
     }
 
     /// It should default to master branch.

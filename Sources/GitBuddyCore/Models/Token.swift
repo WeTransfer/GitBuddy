@@ -9,10 +9,11 @@
 import Foundation
 
 struct Token: CustomStringConvertible {
-    enum Error: Swift.Error, CustomDebugStringConvertible {
+    enum Error: Swift.Error, LocalizedError {
         case missingAccessToken
         case invalidAccessToken
 
+        var errorDescription: String? { debugDescription }
         var debugDescription: String {
             switch self {
             case .missingAccessToken:
