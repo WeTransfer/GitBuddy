@@ -221,7 +221,9 @@ final class ReleaseProducerTests: XCTestCase {
 
         let tempFileURL = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true).appendingPathComponent("Changelog.md")
         XCTAssertTrue(FileManager.default.createFile(atPath: tempFileURL.path, contents: Data(existingChangelog.utf8), attributes: nil))
+
         try AssertExecuteCommand(command: "gitbuddy release -s -n \(tagName) -c \(tempFileURL.path)")
+
         let updatedChangelogContents = try String(contentsOfFile: tempFileURL.path)
 
         // Merged at: 2020-01-06 - Add charset utf-8 to html head
