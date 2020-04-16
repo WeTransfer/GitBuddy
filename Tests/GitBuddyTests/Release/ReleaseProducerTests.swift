@@ -206,6 +206,22 @@ final class ReleaseProducerTests: XCTestCase {
         wait(for: [mockExpectation], timeout: 0.3)
     }
 
+    /// It should use the fallback date if the tag does not yet exist.
+    func testFallbackDate() throws {
+        let mockExpectation = expectation(description: "Mocks should be called")
+        let tagName = "3.0.0"
+        var mock = Mocker.mockRelease()
+        mock.onRequest = { _, parameters in
+            guard let parameters = try? XCTUnwrap(parameters) else { return }
+            XCTAssertEqual(parameters["tag_name"] as? String, tagName)
+            mockExpectation.fulfill()
+        }
+        mock.register()
+
+        try AssertExecuteCommand(command: "gitbuddy release -s -n \(tagName)")
+        wait(for: [mockExpectation], timeout: 0.3)
+    }
+
     /// It should not contain changes that are merged into the target branch after the creation date of the tag we're using.
     func testIncludedChangesForUsedTagName() throws {
         let existingChangelog = """
