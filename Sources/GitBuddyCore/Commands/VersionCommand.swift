@@ -12,7 +12,7 @@ struct VersionCommand: ParsableCommand {
 
     public static let configuration = CommandConfiguration(commandName: "version", abstract: "Prints the current GitBuddy version.")
 
-    public static let version = "3.0.0"
+    public static let version = "3.0.1"
 
     func run() throws {
         throw CleanExit.message("""

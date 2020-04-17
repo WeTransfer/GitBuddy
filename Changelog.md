@@ -1,3 +1,7 @@
+### 3.0.1
+- Fix fallback date for new tag releases ([#53](https://github.com/WeTransfer/GitBuddy/pull/53)) via [@AvdLee](https://github.com/AvdLee)
+- Merge release 3.0.0 into master ([#51](https://github.com/WeTransfer/GitBuddy/pull/51)) via [@WeTransferBot](https://github.com/WeTransferBot)
+
 ### 3.0.0
 - Use the new ArgumentsParser framework ([#31](https://github.com/WeTransfer/GitBuddy/issues/31)) via [@AvdLee](https://github.com/AvdLee)
 - Merge release 2.4.1 into master ([#43](https://github.com/WeTransfer/GitBuddy/pull/43)) via [@WeTransferBot](https://github.com/WeTransferBot)
