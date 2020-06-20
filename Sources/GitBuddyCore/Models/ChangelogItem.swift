@@ -33,6 +33,7 @@ struct ChangelogItem {
 
     var title: String? {
         guard var title = input.title else { return nil }
+        title = title.prefix(1).uppercased() + title.dropFirst()
         if let htmlURL = input.htmlURL {
             title += " ([#\(input.number)](\(htmlURL)))"
         }

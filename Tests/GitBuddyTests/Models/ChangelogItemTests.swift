@@ -18,6 +18,18 @@ final class ChangelogItemTests: XCTestCase {
         XCTAssertNil(item.title)
     }
 
+    /// It should return `title` as is.
+    func testFirstUpperCaseTitle() {
+        let item = ChangelogItem(input: MockChangelogInput(title: "Update README.md"), closedBy: MockedPullRequest())
+        XCTAssertEqual(item.title, "Update README.md")
+    }
+
+    /// It should capitalize first word in `title`
+    func testFirstLowerCaseTitle() {
+        let item = ChangelogItem(input: MockChangelogInput(title: "ignoring query example"), closedBy: MockedPullRequest())
+        XCTAssertEqual(item.title, "Ignoring query example")
+    }
+
     /// It should correctly display the number and URL.
     func testNumberURL() {
         let input = MockChangelogInput(number: 1, title: UUID().uuidString, htmlURL: URL(string: "https://www.fakeurl.com")!)
