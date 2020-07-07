@@ -18,7 +18,7 @@ enum ShellCommand {
     var rawValue: String {
         switch self {
         case .fetchTags:
-            return "git fetch --tags origin master --no-recurse-submodules -q"
+            return "git fetch --tags origin --no-recurse-submodules -q"
         case .latestTag:
             return "git describe --abbrev=0 --tags `git rev-list --tags --max-count=1 --no-walk`"
         case .previousTag:
