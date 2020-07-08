@@ -1,3 +1,10 @@
+### 3.1.0
+- Enable --version flag ([#58](https://github.com/WeTransfer/GitBuddy/pull/58)) via [@MaxDesiatov](https://github.com/MaxDesiatov)
+- Avoid referring to the `master` branch in ShellCommand.rawValue ([#59](https://github.com/WeTransfer/GitBuddy/pull/59)) via [@MaxDesiatov](https://github.com/MaxDesiatov)
+- Fix CI by updating dependencies ([#60](https://github.com/WeTransfer/GitBuddy/pull/60)) via [@AvdLee](https://github.com/AvdLee)
+- Use uppercase first for changelog items ([#56](https://github.com/WeTransfer/GitBuddy/issues/56)) via [@mosamer](https://github.com/mosamer)
+- Merge release 3.0.1 into master ([#54](https://github.com/WeTransfer/GitBuddy/pull/54)) via [@WeTransferBot](https://github.com/WeTransferBot)
+
 ### 3.0.1
 - Fix fallback date for new tag releases ([#53](https://github.com/WeTransfer/GitBuddy/pull/53)) via [@AvdLee](https://github.com/AvdLee)
 - Merge release 3.0.0 into master ([#51](https://github.com/WeTransfer/GitBuddy/pull/51)) via [@WeTransferBot](https://github.com/WeTransferBot)
