@@ -11,11 +11,13 @@ import ArgumentParser
 
 /// Entry class of GitBuddy that registers commands and handles execution.
 public struct GitBuddy: ParsableCommand {
+    public static let version = "3.0.1"
+
     public static let configuration = CommandConfiguration(
-        commandName: "gitbuddy", 
-        abstract: "Manage your GitHub repositories with ease", 
-        version: VersionCommand.version,
-        subcommands: [ChangelogCommand.self, ReleaseCommand.self, VersionCommand.self]
+        commandName: "gitbuddy",
+        abstract: "Manage your GitHub repositories with ease",
+        version: Self.version,
+        subcommands: [ChangelogCommand.self, ReleaseCommand.self]
     )
 
     public init() { }
