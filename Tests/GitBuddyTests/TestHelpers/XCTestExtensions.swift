@@ -30,7 +30,7 @@ extension XCTest {
         let splitCommand = command.split(separator: " ")
         let arguments = splitCommand.dropFirst().map(String.init)
 
-        let gitBuddyCommand = try GitBuddy.parseAsRoot(arguments)
+        var gitBuddyCommand = try GitBuddy.parseAsRoot(arguments)
 
         var output = ""
         Log.pipe = { message in

@@ -19,10 +19,10 @@ struct ChangelogCommand: ParsableCommand {
     private var baseBranch: String?
 
     @Flag(name: .customLong("sections"), help: "Whether the changelog should be split into sections. Defaults to false.")
-    private var isSectioned: Bool
+    private var isSectioned: Bool = false
 
     @Flag(name: .long, help: "Show extra logging for debugging purposes")
-    private var verbose: Bool
+    private var verbose: Bool = false
 
     func run() throws {
         Log.isVerbose = verbose

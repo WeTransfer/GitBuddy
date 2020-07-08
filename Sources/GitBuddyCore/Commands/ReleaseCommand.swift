@@ -16,10 +16,10 @@ struct ReleaseCommand: ParsableCommand {
     var changelogPath: String?
 
     @Flag(name: .shortAndLong, help: "Disable commenting on issues and PRs about the new release.")
-    var skipComments: Bool
+    var skipComments: Bool = false
 
     @Flag(name: [.customLong("use-pre-release"), .customShort("p")], help: "Create the release as a pre-release.")
-    var isPrerelease: Bool
+    var isPrerelease: Bool = false
 
     @Option(name: .shortAndLong, help: "Specifies the commitish value that determines where the Git tag is created from. Can be any branch or commit SHA. Unused if the Git tag already exists. Default: the repository's default branch (usually master).")
     var targetCommitish: String?
@@ -37,10 +37,10 @@ struct ReleaseCommand: ParsableCommand {
     var baseBranch: String?
 
     @Flag(name: .customLong("sections"), help: "Whether the changelog should be split into sections. Defaults to false.")
-    private var isSectioned: Bool
+    private var isSectioned: Bool = false
 
     @Flag(name: .long, help: "Show extra logging for debugging purposes")
-    private var verbose: Bool
+    private var verbose: Bool = false
 
     func run() throws {
         Log.isVerbose = verbose
