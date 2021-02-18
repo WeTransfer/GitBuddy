@@ -1,3 +1,7 @@
+### 3.1.1
+- Fix compilation error that happened due to naming changes in OctoKit. ([#66](https://github.com/WeTransfer/GitBuddy/pull/66)) via [@kairadiagne](https://github.com/kairadiagne)
+- Merge release 3.1.0 into master ([#61](https://github.com/WeTransfer/GitBuddy/pull/61)) via [@ghost](https://github.com/ghost)
+
 ### 3.1.0
 - Enable --version flag ([#58](https://github.com/WeTransfer/GitBuddy/pull/58)) via [@MaxDesiatov](https://github.com/MaxDesiatov)
 - Avoid referring to the `master` branch in ShellCommand.rawValue ([#59](https://github.com/WeTransfer/GitBuddy/pull/59)) via [@MaxDesiatov](https://github.com/MaxDesiatov)
