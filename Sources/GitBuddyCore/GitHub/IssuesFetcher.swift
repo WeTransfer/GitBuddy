@@ -20,7 +20,7 @@ struct IssuesFetcher {
 
         var result: Result<[Issue], Swift.Error>!
 
-        octoKit.issues(session, owner: project.organisation, repository: project.repository, state: .Closed) { (response) in
+        octoKit.issues(session, owner: project.organisation, repository: project.repository, state: .closed) { (response) in
             switch response {
             case .success(let issues):
                 result = .success(issues)
