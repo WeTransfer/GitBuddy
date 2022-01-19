@@ -10,7 +10,7 @@ import Foundation
 
 /// A release that exists on GitHub.
 struct Release: Encodable {
-    let tag: Tag
+    let tagName: String
     let url: URL
     let title: String
     let changelog: String
