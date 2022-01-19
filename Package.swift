@@ -1,6 +1,5 @@
 // swift-tools-version:5.5
 // The swift-tools-version declares the minimum version of Swift required to build this package.
-// We're hiding dev, test, and danger dependencies with // dev to make sure they're not fetched by users of this package.
 import PackageDescription
 
 let package = Package(
@@ -9,19 +8,15 @@ let package = Package(
         .macOS(.v10_15)
         ],
     products: [
-        // dev .library(name: "DangerDeps", type: .dynamic, targets: ["DangerDependencies"]),
         .executable(name: "GitBuddy", targets: ["GitBuddy"])
     ],
     dependencies: [
-        // dev .package(url: "https://github.com/danger/swift", from: "3.0.0"),
-        // dev .package(path: "Submodules/WeTransfer-iOS-CI/Danger-Swift"),
         .package(url: "https://github.com/WeTransfer/Mocker.git", .upToNextMajor(from: "2.1.0")),
         .package(url: "https://github.com/nerdishbynature/octokit.swift", .upToNextMajor(from: "0.10.1")),
         .package(url: "https://github.com/apple/swift-argument-parser", .upToNextMajor(from: "1.0.0"))
     ],
     targets: [
-        // dev .target(name: "DangerDependencies", dependencies: ["Danger", "WeTransferPRLinter"], path: "Submodules/WeTransfer-iOS-CI/Danger-Swift", sources: ["DangerFakeSource.swift"]),
-        .target(name: "GitBuddy", dependencies: ["GitBuddyCore"]),
+        .executableTarget(name: "GitBuddy", dependencies: ["GitBuddyCore"]),
         .target(name: "GitBuddyCore", dependencies: [
             .product(name: "OctoKit", package: "octokit.swift"),
             .product(name: "ArgumentParser", package: "swift-argument-parser")
