@@ -37,13 +37,18 @@ final class ReleaseProducerTests: XCTestCase {
     func testAccessTokenConfiguration() throws {
         let token = "username:79B02BE4-38D1-4E3D-9B41-4E0739761512"
         mockGITAuthentication(token)
-        try AssertExecuteCommand(command: "gitbuddy release -s")
+        try executeCommand("gitbuddy release -s")
         XCTAssertEqual(URLSessionInjector.urlSession.configuration.httpAdditionalHeaders?["Authorization"] as? String, "Basic dXNlcm5hbWU6NzlCMDJCRTQtMzhEMS00RTNELTlCNDEtNEUwNzM5NzYxNTEy")
     }
 
     /// It should correctly output the release URL.
-    func testReleaseOutput() throws {
-        try AssertExecuteCommand(command: "gitbuddy release -s", expected: "https://github.com/WeTransfer/ChangelogProducer/releases/tag/1.0.1")
+    func testReleaseOutputURL() throws {
+        try AssertExecuteCommand("gitbuddy release -s", expected: "https://github.com/WeTransfer/ChangelogProducer/releases/tag/1.0.1")
+    }
+
+    func testReleaseOutputJSON() throws {
+        let output = try executeCommand("gitbuddy release -s --json")
+        XCTAssertTrue(output.contains("{\"title\":\"1.0.1\",\"url\":\"https:\\/\\/github.com\\/WeTransfer\\/ChangelogProducer\\/releases\\/tag\\/1.0.1\",\"tag\":{\"name\":\"1.0.1\",\"created\""))
     }
 
     /// It should set the parameters correctly.
@@ -66,7 +71,7 @@ final class ReleaseProducerTests: XCTestCase {
         }
         mock.register()
 
-        try AssertExecuteCommand(command: "gitbuddy release -s")
+        try executeCommand("gitbuddy release -s")
         wait(for: [mockExpectation], timeout: 0.3)
     }
 
@@ -78,7 +83,7 @@ final class ReleaseProducerTests: XCTestCase {
         """
         let tempFileURL = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true).appendingPathComponent("Changelog.md")
         XCTAssertTrue(FileManager.default.createFile(atPath: tempFileURL.path, contents: Data(existingChangelog.utf8), attributes: nil))
-        try AssertExecuteCommand(command: "gitbuddy release -s -c \(tempFileURL.path)")
+        try executeCommand("gitbuddy release -s -c \(tempFileURL.path)")
         let updatedChangelogContents = try String(contentsOfFile: tempFileURL.path)
 
         XCTAssertEqual(updatedChangelogContents, """
@@ -99,7 +104,7 @@ final class ReleaseProducerTests: XCTestCase {
         """
         let tempFileURL = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true).appendingPathComponent("Changelog.md")
         XCTAssertTrue(FileManager.default.createFile(atPath: tempFileURL.path, contents: Data(existingChangelog.utf8), attributes: nil))
-        try AssertExecuteCommand(command: "gitbuddy release --sections -s -c \(tempFileURL.path)")
+        try executeCommand("gitbuddy release --sections -s -c \(tempFileURL.path)")
 
         let updatedChangelogContents = try String(contentsOfFile: tempFileURL.path)
 
@@ -142,7 +147,7 @@ final class ReleaseProducerTests: XCTestCase {
             }
             mock.register()
         }
-        try AssertExecuteCommand(command: "gitbuddy release")
+        try executeCommand("gitbuddy release")
         wait(for: [mocksExpectations], timeout: 2.0)
     }
 
@@ -156,7 +161,7 @@ final class ReleaseProducerTests: XCTestCase {
         }
         mock.register()
 
-        try AssertExecuteCommand(command: "gitbuddy release -s")
+        try executeCommand("gitbuddy release -s")
         wait(for: [mockExpectation], timeout: 0.3)
     }
 
@@ -171,7 +176,7 @@ final class ReleaseProducerTests: XCTestCase {
         }
         mock.register()
 
-        try AssertExecuteCommand(command: "gitbuddy release -s -p")
+        try executeCommand("gitbuddy release -s -p")
         wait(for: [mockExpectation], timeout: 0.3)
     }
 
@@ -186,7 +191,7 @@ final class ReleaseProducerTests: XCTestCase {
         }
         mock.register()
 
-        try AssertExecuteCommand(command: "gitbuddy release -s -t develop")
+        try executeCommand("gitbuddy release -s -t develop")
         wait(for: [mockExpectation], timeout: 0.3)
     }
 
@@ -202,7 +207,7 @@ final class ReleaseProducerTests: XCTestCase {
         }
         mock.register()
 
-        try AssertExecuteCommand(command: "gitbuddy release -s -n \(tagName)")
+        try executeCommand("gitbuddy release -s -n \(tagName)")
         wait(for: [mockExpectation], timeout: 0.3)
     }
 
@@ -218,7 +223,7 @@ final class ReleaseProducerTests: XCTestCase {
         }
         mock.register()
 
-        try AssertExecuteCommand(command: "gitbuddy release -s -n \(tagName)")
+        try executeCommand("gitbuddy release -s -n \(tagName)")
         wait(for: [mockExpectation], timeout: 0.3)
     }
 
@@ -238,7 +243,7 @@ final class ReleaseProducerTests: XCTestCase {
         let tempFileURL = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true).appendingPathComponent("Changelog.md")
         XCTAssertTrue(FileManager.default.createFile(atPath: tempFileURL.path, contents: Data(existingChangelog.utf8), attributes: nil))
 
-        try AssertExecuteCommand(command: "gitbuddy release -s -n \(tagName) -c \(tempFileURL.path)")
+        try executeCommand("gitbuddy release -s -n \(tagName) -c \(tempFileURL.path)")
 
         let updatedChangelogContents = try String(contentsOfFile: tempFileURL.path)
 
@@ -267,7 +272,7 @@ final class ReleaseProducerTests: XCTestCase {
         }
         mock.register()
 
-        try AssertExecuteCommand(command: "gitbuddy release -s -r \(title)")
+        try executeCommand("gitbuddy release -s -r \(title)")
         wait(for: [mockExpectation], timeout: 0.3)
     }
 
@@ -282,6 +287,6 @@ final class ReleaseProducerTests: XCTestCase {
         let baseBranch = UUID().uuidString
         Mocker.mockPullRequests(baseBranch: baseBranch)
 
-        try AssertExecuteCommand(command: "gitbuddy release -s -l \(lastReleaseTag) -b \(baseBranch)")
+        try executeCommand("gitbuddy release -s -l \(lastReleaseTag) -b \(baseBranch)")
     }
 }

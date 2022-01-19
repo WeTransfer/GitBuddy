@@ -39,6 +39,9 @@ struct ReleaseCommand: ParsableCommand {
     @Flag(name: .customLong("sections"), help: "Whether the changelog should be split into sections. Defaults to false.")
     private var isSectioned: Bool = false
 
+    @Flag(name: .customLong("json"), help: "Whether the release output should be in JSON, containing more details. Defaults to false.")
+    private var shouldUseJSONOutput: Bool = false
+
     @Flag(name: .long, help: "Show extra logging for debugging purposes")
     private var verbose: Bool = false
 
@@ -54,6 +57,13 @@ struct ReleaseCommand: ParsableCommand {
                                                   lastReleaseTag: lastReleaseTag,
                                                   baseBranch: baseBranch)
         let release = try releaseProducer.run(isSectioned: isSectioned)
-        Log.message(release.url.absoluteString)
+
+        if shouldUseJSONOutput {
+            let jsonData = try JSONEncoder().encode(release)
+            let jsonString = String(decoding: jsonData, as: UTF8.self)
+            Log.message(jsonString)
+        } else {
+            Log.message(release.url.absoluteString)
+        }
     }
 }

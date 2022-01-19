@@ -28,7 +28,7 @@ final class CommenterTests: XCTestCase {
     func testWatermark() throws {
         Mocker.mockPullRequests()
         let latestTag = try Tag.latest()
-        let release = Release(tag: latestTag, url: URL(string: "https://www.fakegithub.com")!, title: "Release title")
+        let release = Release(tag: latestTag, url: URL(string: "https://www.fakegithub.com")!, title: "Release title", changelog: "")
         let project = GITProject(organisation: "WeTransfer", repository: "GitBuddy")
 
         let mockExpectation = expectation(description: "Mock should be called")

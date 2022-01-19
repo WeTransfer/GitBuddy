@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Tag: ShellInjectable {
+struct Tag: ShellInjectable, Encodable {
     enum Error: Swift.Error, CustomStringConvertible {
         case missingTagCreationDate
         case noTagsAvailable

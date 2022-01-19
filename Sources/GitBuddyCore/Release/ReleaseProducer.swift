@@ -136,6 +136,6 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
         }
         group.wait()
         let releaseURL = try result.get()
-        return Release(tag: tag, url: releaseURL, title: tag.name)
+        return Release(tag: tag, url: releaseURL, title: tag.name, changelog: body)
     }
 }
