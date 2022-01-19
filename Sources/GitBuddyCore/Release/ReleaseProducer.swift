@@ -36,7 +36,7 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
 
     init(changelogPath: String?, skipComments: Bool, isPrerelease: Bool, targetCommitish: String? = nil, tagName: String? = nil, releaseTitle: String? = nil, lastReleaseTag: String? = nil, baseBranch: String? = nil, changelogToTag: String? = nil) throws {
         try Octokit.authenticate()
-        
+
         if let changelogPath = changelogPath {
             changelogURL = URL(string: changelogPath)
         } else {

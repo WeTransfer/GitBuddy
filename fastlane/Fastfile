@@ -5,12 +5,12 @@ import "./../Submodules/WeTransfer-iOS-CI/Fastlane/Fastfile"
 
 desc "Run the tests and prepare for Danger"
 lane :test do |options|
-	spm(command: "generate-xcodeproj")
-	test_project(
-		project_name: "GitBuddy", 
-		scheme: "GitBuddy-Package",
-		device: nil,
-		destination: "platform=macOS")
+	test_package(
+		package_name: 'GitBuddy',
+        package_path: ENV['PWD'],
+        device: nil,
+		destination: "platform=macOS"
+	)
 end
 
 desc "Updates the local version before creating the regular release"
