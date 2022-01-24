@@ -12,7 +12,8 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/WeTransfer/Mocker.git", .upToNextMajor(from: "2.1.0")),
-        .package(url: "https://github.com/nerdishbynature/octokit.swift", .upToNextMajor(from: "0.10.1")),
+        .package(path: "../../Forks/octokit.swift"),
+//        .package(url: "https://github.com/nerdishbynature/octokit.swift", .upToNextMajor(from: "0.10.1")),
         .package(url: "https://github.com/apple/swift-argument-parser", .upToNextMajor(from: "1.0.0"))
     ],
     targets: [
