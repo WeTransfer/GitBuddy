@@ -48,7 +48,7 @@ final class ReleaseProducerTests: XCTestCase {
 
     func testReleaseOutputJSON() throws {
         let output = try executeCommand("gitbuddy release -s --json")
-        XCTAssertTrue(output.contains("{\"title\":\"1.0.1\",\"url\":\"https:\\/\\/github.com\\/WeTransfer\\/ChangelogProducer\\/releases\\/tag\\/1.0.1\",\"tag\":{\"name\":\"1.0.1\",\"created\""))
+        XCTAssertTrue(output.contains("{\"title\":\"1.0.1\",\"tagName\":\"1.0.1\",\"url\":\"https:\\/\\/github.com\\/WeTransfer\\/ChangelogProducer\\/releases\\/tag\\/1.0.1\""))
     }
 
     /// It should set the parameters correctly.
@@ -198,7 +198,9 @@ final class ReleaseProducerTests: XCTestCase {
     /// It should use the tag name setting.
     func testTagName() throws {
         let mockExpectation = expectation(description: "Mocks should be called")
-        let tagName = "1.0.0"
+        let tagName = "3.0.0b1233"
+        let changelogToTag = "3.0.0b1232"
+        MockedShell.mockRelease(tag: changelogToTag)
         var mock = Mocker.mockRelease()
         mock.onRequest = { _, parameters in
             guard let parameters = try? XCTUnwrap(parameters) else { return }
@@ -207,24 +209,14 @@ final class ReleaseProducerTests: XCTestCase {
         }
         mock.register()
 
-        try executeCommand("gitbuddy release -s -n \(tagName)")
+        try executeCommand("gitbuddy release --changelogToTag \(changelogToTag) -s -n \(tagName)")
         wait(for: [mockExpectation], timeout: 0.3)
     }
 
-    /// It should use the fallback date if the tag does not yet exist.
-    func testFallbackDate() throws {
-        let mockExpectation = expectation(description: "Mocks should be called")
-        let tagName = "3.0.0"
-        var mock = Mocker.mockRelease()
-        mock.onRequest = { _, parameters in
-            guard let parameters = try? XCTUnwrap(parameters) else { return }
-            XCTAssertEqual(parameters["tag_name"] as? String, tagName)
-            mockExpectation.fulfill()
+    func testThrowsMissingTargetDateError() {
+        XCTAssertThrowsError(try executeCommand("gitbuddy release -s -n 3.0.0"), "Missing target date error should be thrown") { error in
+            XCTAssertEqual(error as? ReleaseProducer.Error, .changelogTargetDateMissing)
         }
-        mock.register()
-
-        try executeCommand("gitbuddy release -s -n \(tagName)")
-        wait(for: [mockExpectation], timeout: 0.3)
     }
 
     /// It should not contain changes that are merged into the target branch after the creation date of the tag we're using.
@@ -233,17 +225,18 @@ final class ReleaseProducerTests: XCTestCase {
         ### 1.0.0
         - Initial release
         """
-        let tagName = "2.0.0"
+        let tagName = "2.0.0b1233"
+        let changelogToTag = "2.0.0b1232"
 
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         let date = dateFormatter.date(from: "2020-01-05")!
-        MockedShell.mockRelease(tag: "2.0.0", date: date)
+        MockedShell.mockRelease(tag: changelogToTag, date: date)
 
         let tempFileURL = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true).appendingPathComponent("Changelog.md")
         XCTAssertTrue(FileManager.default.createFile(atPath: tempFileURL.path, contents: Data(existingChangelog.utf8), attributes: nil))
 
-        try executeCommand("gitbuddy release -s -n \(tagName) -c \(tempFileURL.path)")
+        try executeCommand("gitbuddy release --changelogToTag \(changelogToTag) -s -n \(tagName) -c \(tempFileURL.path)")
 
         let updatedChangelogContents = try String(contentsOfFile: tempFileURL.path)
 
@@ -252,7 +245,7 @@ final class ReleaseProducerTests: XCTestCase {
         // Setting the tag date to 2020-01-05 should remove the Add charset
 
         XCTAssertEqual(updatedChangelogContents, """
-        ### 2.0.0
+        ### 2.0.0b1233
         - Get warning for file \'style.css\' after building \
         ([#39](https://github.com/WeTransfer/Diagnostics/issues/39)) via [@AvdLee](https://github.com/AvdLee)
 
