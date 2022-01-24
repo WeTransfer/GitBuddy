@@ -32,10 +32,10 @@ final class ChangelogCommandTests: XCTestCase {
         Mocker.mockPullRequests()
         Mocker.mockForIssueNumber(39)
         MockedShell.mockGITProject(organisation: "WeTransfer", repository: "Diagnostics")
-        
+
         let token = "username:79B02BE4-38D1-4E3D-9B41-4E0739761512"
         mockGITAuthentication(token)
-        try AssertExecuteCommand(command: "gitbuddy changelog")
+        try executeCommand("gitbuddy changelog")
         XCTAssertEqual(URLSessionInjector.urlSession.configuration.httpAdditionalHeaders?["Authorization"] as? String, "Basic dXNlcm5hbWU6NzlCMDJCRTQtMzhEMS00RTNELTlCNDEtNEUwNzM5NzYxNTEy")
     }
 
@@ -44,7 +44,7 @@ final class ChangelogCommandTests: XCTestCase {
         Mocker.mockPullRequests()
         Mocker.mockForIssueNumber(39)
         MockedShell.mockGITProject(organisation: "WeTransfer", repository: "Diagnostics")
-        
+
         let expectedChangelog = """
         - Add charset utf-8 to html head \
         ([#50](https://github.com/WeTransfer/Diagnostics/pull/50)) via [@AvdLee](https://github.com/AvdLee)
@@ -52,7 +52,7 @@ final class ChangelogCommandTests: XCTestCase {
         ([#39](https://github.com/WeTransfer/Diagnostics/issues/39)) via [@AvdLee](https://github.com/AvdLee)
         """
 
-        try AssertExecuteCommand(command: "gitbuddy changelog", expected: expectedChangelog)
+        try AssertExecuteCommand("gitbuddy changelog", expected: expectedChangelog)
     }
 
     /// It should correctly output the changelog.
@@ -81,7 +81,7 @@ final class ChangelogCommandTests: XCTestCase {
         - Add charset utf-8 to html head ([#50](https://github.com/WeTransfer/Diagnostics/pull/50)) via [@AvdLee](https://github.com/AvdLee)
         """
 
-        try AssertExecuteCommand(command: "gitbuddy changelog --sections", expected: expectedChangelog)
+        try AssertExecuteCommand("gitbuddy changelog --sections", expected: expectedChangelog)
     }
 
     /// It should default to master branch.

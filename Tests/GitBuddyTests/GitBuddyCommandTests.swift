@@ -14,7 +14,7 @@ final class GitBuddyCommandTests: XCTestCase {
     /// It should throw an error if the GitHub access token was not set.
     func testMissingAccessToken() {
         do {
-            try AssertExecuteCommand(command: "gitbuddy changelog")
+            try executeCommand("gitbuddy changelog")
         } catch {
             XCTAssertEqual(error as? Token.Error, .missingAccessToken)
         }
@@ -24,7 +24,7 @@ final class GitBuddyCommandTests: XCTestCase {
     func testInvalidAccessToken() {
         do {
             mockGITAuthentication(UUID().uuidString)
-            try AssertExecuteCommand(command: "gitbuddy changelog")
+            try executeCommand("gitbuddy changelog")
         } catch {
             XCTAssertEqual(error as? Token.Error, .invalidAccessToken)
         }

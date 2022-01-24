@@ -12,6 +12,17 @@ import OctoKit
 /// Capable of producing a release, adjusting a Changelog file, and posting comments to released issues/PRs.
 final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
 
+    enum Error: Swift.Error, CustomStringConvertible {
+        case changelogTargetDateMissing
+
+        var description: String {
+            switch self {
+            case .changelogTargetDateMissing:
+                return "Tag name is set, but `changelogToTag` is missing"
+            }
+        }
+    }
+
     private lazy var octoKit: Octokit = Octokit()
     let changelogURL: Foundation.URL?
     let skipComments: Bool
@@ -20,11 +31,12 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
     let tagName: String?
     let releaseTitle: String?
     let lastReleaseTag: String?
+    let changelogToTag: String?
     let baseBranch: String
-    
-    init(changelogPath: String?, skipComments: Bool, isPrerelease: Bool, targetCommitish: String? = nil, tagName: String? = nil, releaseTitle: String? = nil, lastReleaseTag: String? = nil, baseBranch: String? = nil) throws {
+
+    init(changelogPath: String?, skipComments: Bool, isPrerelease: Bool, targetCommitish: String? = nil, tagName: String? = nil, releaseTitle: String? = nil, lastReleaseTag: String? = nil, baseBranch: String? = nil, changelogToTag: String? = nil) throws {
         try Octokit.authenticate()
-        
+
         if let changelogPath = changelogPath {
             changelogURL = URL(string: changelogPath)
         } else {
@@ -36,25 +48,33 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
         self.tagName = tagName
         self.releaseTitle = releaseTitle
         self.lastReleaseTag = lastReleaseTag
+        self.changelogToTag = changelogToTag
         self.baseBranch = baseBranch ?? "master"
     }
 
     @discardableResult public func run(isSectioned: Bool) throws -> Release {
-        let releasedTag = try tagName.map { try Tag(name: $0, fallbackDate: Date()) } ?? Tag.latest()
-        let previousTag = lastReleaseTag ?? Self.shell.execute(.previousTag)
+        /// If a tagname exists, it means we're creating a new tag.
+        /// In this case, we need another way to fetch the from date for the changelog.
+        if tagName != nil, changelogToTag == nil {
+            throw Error.changelogTargetDateMissing
+        }
+
+        let changelogToTag = try changelogToTag.map { try Tag(name: $0) } ?? Tag.latest()
+        let changelogSinceTag = lastReleaseTag ?? Self.shell.execute(.previousTag)
 
         /// We're adding 60 seconds to make sure the tag commit itself is included in the changelog as well.
-        let toDate = releasedTag.created.addingTimeInterval(60)
-        let changelogProducer = try ChangelogProducer(since: .tag(tag: previousTag), to: toDate, baseBranch: baseBranch)
+        let toDate = changelogToTag.created.addingTimeInterval(60)
+        let changelogProducer = try ChangelogProducer(since: .tag(tag: changelogSinceTag), to: toDate, baseBranch: baseBranch)
         let changelog = try changelogProducer.run(isSectioned: isSectioned)
         Log.debug("\(changelog)\n")
 
-        try updateChangelogFile(adding: changelog.description, for: releasedTag)
+        let tagName = tagName ?? changelogToTag.name
+        try updateChangelogFile(adding: changelog.description, for: tagName)
 
         let repositoryName = Self.shell.execute(.repositoryName)
         let project = GITProject.current()
-        Log.debug("Creating a release for tag \(releasedTag.name) at repository \(repositoryName)")
-        let release = try createRelease(using: project, tag: releasedTag, targetCommitish: targetCommitish, title: releaseTitle, body: changelog.description)
+        Log.debug("Creating a release for tag \(tagName) at repository \(repositoryName)")
+        let release = try createRelease(using: project, tagName: tagName, targetCommitish: targetCommitish, title: releaseTitle, body: changelog.description)
         postComments(for: changelog, project: project, release: release)
 
         Log.debug("Result of creating the release:\n")
@@ -68,7 +88,7 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
         }
         let dispatchGroup = DispatchGroup()
         for (pullRequestID, issueIDs) in changelog.itemIdentifiers {
-            Log.debug("Marking PR #\(pullRequestID) as having been released in version #\(release.tag.name)")
+            Log.debug("Marking PR #\(pullRequestID) as having been released in version #\(release.tagName)")
             dispatchGroup.enter()
             Commenter.post(.releasedPR(release: release), on: pullRequestID, at: project) {
                 dispatchGroup.leave()
@@ -88,8 +108,8 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
     /// Appends the changelog to the changelog file if the argument is set.
     /// - Parameters:
     ///   - changelog: The changelog to append to the changelog file.
-    ///   - tag: The tag that is used as the title for the newly added section.
-    private func updateChangelogFile(adding changelog: String, for tag: Tag) throws {
+    ///   - tagName: The name of the tag that is used as the title for the newly added section.
+    private func updateChangelogFile(adding changelog: String, for tagName: String) throws {
         guard let changelogURL = changelogURL else {
             Log.debug("Skipping changelog file updating")
             return
@@ -97,7 +117,7 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
 
         let currentContent = try String(contentsOfFile: changelogURL.path)
         let newContent = """
-        ### \(tag.name)
+        ### \(tagName)
         \(changelog)\n
         \(currentContent)
         """
@@ -107,25 +127,26 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
         handle.closeFile()
     }
 
-    private func createRelease(using project: GITProject, tag: Tag, targetCommitish: String?, title: String?, body: String) throws -> Release {
+    private func createRelease(using project: GITProject, tagName: String, targetCommitish: String?, title: String?, body: String) throws -> Release {
         let group = DispatchGroup()
         group.enter()
 
+        let releaseTitle = title ?? tagName
         Log.debug("""
         \nCreating a new release:
             owner:           \(project.organisation)
             repo:            \(project.repository)
-            tagName:         \(tag.name)
+            tagName:         \(tagName)
             targetCommitish: \(targetCommitish ?? "default")
             prerelease:      \(isPrerelease)
             draft:           false
-            title:           \(title ?? tag.name)
+            title:           \(releaseTitle)
             body:
             \(body)\n
         """)
 
         var result: Result<Foundation.URL, Swift.Error>!
-        octoKit.postRelease(urlSession, owner: project.organisation, repository: project.repository, tagName: tag.name, targetCommitish: targetCommitish, name: title ?? tag.name, body: body, prerelease: isPrerelease, draft: false) { (response) in
+        octoKit.postRelease(urlSession, owner: project.organisation, repository: project.repository, tagName: tagName, targetCommitish: targetCommitish, name: releaseTitle, body: body, prerelease: isPrerelease, draft: false) { (response) in
             switch response {
             case .success(let release):
                 result = .success(release.htmlURL)
@@ -136,6 +157,6 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
         }
         group.wait()
         let releaseURL = try result.get()
-        return Release(tag: tag, url: releaseURL, title: tag.name)
+        return Release(tagName: tagName, url: releaseURL, title: releaseTitle, changelog: body)
     }
 }

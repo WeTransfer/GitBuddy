@@ -26,7 +26,13 @@ extension XCTest {
     ///   - command: The command to execute. This command can be exactly the same as you would use in the terminal. E.g. "gitbuddy changelog".
     ///   - expected: The expected outcome printed in the console.
     /// - Throws: The error occured while executing the command.
-    func AssertExecuteCommand(command: String, expected: String? = nil, file: StaticString = #file, line: UInt = #line) throws {
+    func AssertExecuteCommand(_ command: String, expected: String, file: StaticString = #file, line: UInt = #line) throws {
+        let output = try executeCommand(command)
+        AssertEqualStringsIgnoringTrailingWhitespace(expected, output, file: file, line: line)
+    }
+
+    @discardableResult
+    func executeCommand(_ command: String) throws -> String {
         let splitCommand = command.split(separator: " ")
         let arguments = splitCommand.dropFirst().map(String.init)
 
@@ -39,9 +45,7 @@ extension XCTest {
 
         try gitBuddyCommand.run()
 
-        if let expected = expected {
-            AssertEqualStringsIgnoringTrailingWhitespace(expected, output, file: file, line: line)
-        }
+        return output
     }
 }
 
