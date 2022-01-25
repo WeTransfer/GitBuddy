@@ -68,8 +68,8 @@ final class TagsDeleter: URLSessionInjectable, ShellInjectable {
                 group.leave()
                 return
             }
-
-            octoKit.deleteRelease(owner: project.organisation, repository: project.repository, releaseId: release.id) { error in
+            
+            octoKit.deleteRelease(urlSession, owner: project.organisation, repository: project.repository, releaseId: release.id) { error in
                 defer { group.leave() }
                 guard let error = error else {
                     Log.debug("Successfully deleted \(release.tagName)")
