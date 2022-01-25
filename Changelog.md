@@ -1,3 +1,7 @@
+### 4.0.0
+- Merge release 3.1.1 into master ([#67](https://github.com/WeTransfer/GitBuddy/pull/67)) via [@wetransferplatform](https://github.com/wetransferplatform)
+- Add a new `--json` parameter  ([#71](https://github.com/WeTransfer/GitBuddy/pull/71)) via [@AvdLee](https://github.com/AvdLee)
+
 ### 3.1.1
 - Fix compilation error that happened due to naming changes in OctoKit. ([#66](https://github.com/WeTransfer/GitBuddy/pull/66)) via [@kairadiagne](https://github.com/kairadiagne)
 - Merge release 3.1.0 into master ([#61](https://github.com/WeTransfer/GitBuddy/pull/61)) via [@ghost](https://github.com/ghost)
