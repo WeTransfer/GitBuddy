@@ -17,12 +17,7 @@ final class TagsDeleterTests: XCTestCase {
         Octokit.protocolClasses = [MockingURLProtocol.self]
         mockGITAuthentication()
         ShellInjector.shell = MockedShell.self
-        Mocker.mockPullRequests()
-        Mocker.mockIssues()
-        Mocker.mockForIssueNumber(39)
-        Mocker.mockRelease()
-        MockedShell.mockRelease(tag: "1.0.1")
-        MockedShell.mock(.previousTag, value: "1.0.0")
+        Mocker.mockListReleases()
         MockedShell.mockGITProject(organisation: "WeTransfer", repository: "Diagnostics")
     }
 
@@ -32,13 +27,54 @@ final class TagsDeleterTests: XCTestCase {
         Mocker.removeAll()
     }
 
-    func testReleaseDeletion() throws {
-        Octokit.protocolClasses = []
-        mockGITAuthentication("wetransferplatform:c425814d26890ead0ff1984981fc89f017624cb2")
+    func testDeletingUpUntilTagName() throws {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd-MM-yyyy"
-        MockedShell.mockRelease(tag: "1.2.0b935", date: dateFormatter.date(from: "24-12-2021")!)
-        MockedShell.mockGITProject(organisation: "WeTransfer", repository: "Mule")
-        try executeCommand("gitbuddy tagDeletion --verbose -u 1.2.0b935 -l 1 --prerelease-only --dry-run")
+        let dateMatchingTagInMockedJSON = dateFormatter.date(from: "26-06-2013")!
+        MockedShell.mockRelease(tag: "2.0.0", date: dateMatchingTagInMockedJSON)
+
+        let expectedTags = ["v1.0.0", "v1.0.1", "v1.0.2", "v1.0.3"]
+        for (index, tagName) in expectedTags.enumerated() {
+            Mocker.mockDeletingRelease(id: index)
+            Mocker.mockDeletingReference(tagName: tagName)
+        }
+
+        let output = try executeCommand("gitbuddy tagDeletion -u 2.0.0 -l 100")
+        XCTAssertEqual(output, "Deleted tags: [\"\(expectedTags.joined(separator: "\", \""))\"]")
+    }
+
+    func testDeletingLimit() throws {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd-MM-yyyy"
+        let dateMatchingTagInMockedJSON = dateFormatter.date(from: "26-06-2013")!
+        MockedShell.mockRelease(tag: "2.0.0", date: dateMatchingTagInMockedJSON)
+
+        Mocker.mockDeletingRelease(id: 1)
+        Mocker.mockDeletingReference(tagName: "v1.0.3")
+
+        let output = try executeCommand("gitbuddy tagDeletion -u 2.0.0 -l 1")
+        XCTAssertEqual(output, "Deleted tags: [\"v1.0.3\"]")
+    }
+
+
+    func testDeletingPrereleaseOnly() throws {
+        MockedShell.mockRelease(tag: "2.0.0", date: Date())
+
+        Mocker.mockDeletingRelease(id: 1)
+        Mocker.mockDeletingReference(tagName: "v1.0.3")
+
+        let output = try executeCommand("gitbuddy tagDeletion -u 2.0.0 -l 1 --prerelease-only")
+        XCTAssertEqual(output, "Deleted tags: [\"v1.0.3\"]")
+    }
+
+    func testDeletingUpUntilLastTag() throws {
+        MockedShell.mockRelease(tag: "2.0.0", date: Date())
+
+        MockedShell.mock(.previousTag, value: "2.0.0")
+        Mocker.mockDeletingRelease(id: 1)
+        Mocker.mockDeletingReference(tagName: "v1.0.3")
+
+        let output = try executeCommand("gitbuddy tagDeletion -l 1 --prerelease-only")
+        XCTAssertEqual(output, "Deleted tags: [\"v1.0.3\"]")
     }
 }
