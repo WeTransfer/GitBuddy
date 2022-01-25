@@ -21,7 +21,7 @@ struct TagDeletionsCommand: ParsableCommand {
     var verbose: Bool = false
 
     func run() throws {
-        Log.isVerbose = true
+        Log.isVerbose = verbose
 
         let tagsDeleter = try TagsDeleter(upUntilTagName: upUntilTag, limit: limit, prereleaseOnly: prereleaseOnly, dryRun: dryRun)
         let deletedTags = try tagsDeleter.run()
