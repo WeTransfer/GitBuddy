@@ -53,22 +53,17 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
     }
 
     @discardableResult public func run(isSectioned: Bool) throws -> Release {
-        /// If a tagname exists, it means we're creating a new tag.
-        /// In this case, we need another way to fetch the from date for the changelog.
-        if tagName != nil, changelogToTag == nil {
-            throw Error.changelogTargetDateMissing
-        }
-
-        let changelogToTag = try changelogToTag.map { try Tag(name: $0) } ?? Tag.latest()
-        let changelogSinceTag = lastReleaseTag ?? Self.shell.execute(.previousTag)
+        let changelogToDate = try fetchChangelogToDate()
 
         /// We're adding 60 seconds to make sure the tag commit itself is included in the changelog as well.
-        let toDate = changelogToTag.created.addingTimeInterval(60)
-        let changelogProducer = try ChangelogProducer(since: .tag(tag: changelogSinceTag), to: toDate, baseBranch: baseBranch)
+        let adjustedChangelogToDate = changelogToDate.addingTimeInterval(60)
+
+        let changelogSinceTag = lastReleaseTag ?? Self.shell.execute(.previousTag)
+        let changelogProducer = try ChangelogProducer(since: .tag(tag: changelogSinceTag), to: adjustedChangelogToDate, baseBranch: baseBranch)
         let changelog = try changelogProducer.run(isSectioned: isSectioned)
         Log.debug("\(changelog)\n")
 
-        let tagName = tagName ?? changelogToTag.name
+        let tagName = try tagName ?? Tag.latest().name
         try updateChangelogFile(adding: changelog.description, for: tagName)
 
         let repositoryName = Self.shell.execute(.repositoryName)
@@ -79,6 +74,36 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
 
         Log.debug("Result of creating the release:\n")
         return release
+    }
+
+    private func fetchChangelogToDate() throws -> Date {
+        if tagName != nil {
+            /// If a tagname exists, it means we're creating a new tag.
+            /// In this case, we need another way to fetch the `to` date for the changelog.
+            ///
+            /// One option is using the `changelogToTag`:
+            if let changelogToTag = changelogToTag {
+                return try Tag(name: changelogToTag).created
+            } else if let targetCommitishDate = targetCommitishDate() {
+                /// We fallback to the target commit date, covering cases in which we create a release
+                /// from a certain branch
+                return targetCommitishDate
+            } else {
+                /// Since we were unable to fetch the date
+                throw Error.changelogTargetDateMissing
+            }
+        } else {
+            /// This is the scenario of creating a release for an already created tag.
+            return try Tag.latest().created
+        }
+    }
+
+    private func targetCommitishDate() -> Date? {
+        guard let targetCommitish = targetCommitish else {
+            return nil
+        }
+        let commitishDate = Self.shell.execute(.commitDate(commitish: targetCommitish))
+        return Formatter.gitDateFormatter.date(from: commitishDate)
     }
 
     private func postComments(for changelog: Changelog, project: GITProject, release: Release) {

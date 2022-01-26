@@ -5,7 +5,7 @@
 //  Created by Antoine van der Lee on 10/01/2020.
 //  Copyright © 2020 WeTransfer. All rights reserved.
 //
-//  danger:disable final_class
+// swiftlint:disable final_class
 
 import Foundation
 import Mocker
@@ -23,6 +23,12 @@ struct MockedShell: ShellExecuting {
 
     static func mock(_ command: ShellCommand, value: String) {
         commandMocks[command.rawValue] = value
+    }
+
+    static func mockCommitish(_ commitish: String, date: Date = Date()) {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss Z"
+        commandMocks[ShellCommand.commitDate(commitish: commitish).rawValue] = dateFormatter.string(from: date)
     }
 
     static func mockRelease(tag: String, date: Date = Date()) {
