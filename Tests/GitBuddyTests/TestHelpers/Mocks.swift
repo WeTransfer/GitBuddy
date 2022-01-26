@@ -25,6 +25,12 @@ struct MockedShell: ShellExecuting {
         commandMocks[command.rawValue] = value
     }
 
+    static func mockCommitish(_ commitish: String, date: Date = Date()) {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss Z"
+        commandMocks[ShellCommand.commitDate(commitish: commitish).rawValue] = dateFormatter.string(from: date)
+    }
+
     static func mockRelease(tag: String, date: Date = Date()) {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss Z"

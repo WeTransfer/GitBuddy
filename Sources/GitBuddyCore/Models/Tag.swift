@@ -51,7 +51,7 @@ struct Tag: ShellInjectable, Encodable {
             dateFormatter.locale = Locale(identifier: "en_US_POSIX")
             dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
 
-            guard let date = dateFormatter.date(from: tagCreationDate) else {
+            guard let date = Formatter.gitDateFormatter.date(from: tagCreationDate) else {
                 throw Error.missingTagCreationDate
             }
             self.created = date
