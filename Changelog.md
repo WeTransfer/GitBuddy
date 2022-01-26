@@ -1,3 +1,8 @@
+### 4.1.0
+- Add a new `tagDeletion` command ([#74](https://github.com/WeTransfer/GitBuddy/pull/74)) via [@AvdLee](https://github.com/AvdLee)
+- Make use of the target commitish date ([#75](https://github.com/WeTransfer/GitBuddy/pull/75)) via [@AvdLee](https://github.com/AvdLee)
+- Merge release 4.0.0 into master ([#73](https://github.com/WeTransfer/GitBuddy/pull/73)) via [@wetransferplatform](https://github.com/wetransferplatform)
+
 ### 4.0.0
 - Merge release 3.1.1 into master ([#67](https://github.com/WeTransfer/GitBuddy/pull/67)) via [@wetransferplatform](https://github.com/wetransferplatform)
 - Add a new `--json` parameter  ([#71](https://github.com/WeTransfer/GitBuddy/pull/71)) via [@AvdLee](https://github.com/AvdLee)
