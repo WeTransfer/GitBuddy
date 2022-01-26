@@ -17,7 +17,7 @@ public struct GitBuddy: ParsableCommand {
         commandName: "gitbuddy",
         abstract: "Manage your GitHub repositories with ease",
         version: Self.version,
-        subcommands: [ChangelogCommand.self, ReleaseCommand.self]
+        subcommands: [ChangelogCommand.self, ReleaseCommand.self, TagDeletionsCommand.self]
     )
 
     public init() { }

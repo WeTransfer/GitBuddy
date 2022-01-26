@@ -40,18 +40,13 @@ struct Tag: ShellInjectable, Encodable {
         } else {
             let tagCreationDate = Self.shell.execute(.tagCreationDate(tag: name))
             if tagCreationDate.isEmpty {
-                Log.debug("Tag creation date could not be found")
+                Log.debug("Tag creation date could not be found for \(name)")
                 throw Error.missingTagCreationDate
             }
 
             Log.debug("Tag \(name) is created at \(tagCreationDate)")
 
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss Z"
-            dateFormatter.locale = Locale(identifier: "en_US_POSIX")
-            dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
-
-            guard let date = dateFormatter.date(from: tagCreationDate) else {
+            guard let date = Formatter.gitDateFormatter.date(from: tagCreationDate) else {
                 throw Error.missingTagCreationDate
             }
             self.created = date

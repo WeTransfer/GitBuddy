@@ -5,7 +5,7 @@
 //  Created by Antoine van der Lee on 10/01/2020.
 //  Copyright © 2020 WeTransfer. All rights reserved.
 //
-//  danger:disable final_class
+// swiftlint:disable final_class
 
 import Foundation
 import Mocker
@@ -23,6 +23,12 @@ struct MockedShell: ShellExecuting {
 
     static func mock(_ command: ShellCommand, value: String) {
         commandMocks[command.rawValue] = value
+    }
+
+    static func mockCommitish(_ commitish: String, date: Date = Date()) {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss Z"
+        commandMocks[ShellCommand.commitDate(commitish: commitish).rawValue] = dateFormatter.string(from: date)
     }
 
     static func mockRelease(tag: String, date: Date = Date()) {
@@ -103,6 +109,25 @@ extension Mocker {
     @discardableResult static func mockRelease() -> Mock {
         let releaseJSONData = ReleaseJSON.data(using: .utf8)!
         let mock = Mock(url: URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/releases")!, dataType: .json, statusCode: 201, data: [.post: releaseJSONData])
+        mock.register()
+        return mock
+    }
+
+    @discardableResult static func mockListReleases() -> Mock {
+        let releaseJSONData = ListReleasesJSON.data(using: .utf8)!
+        let mock = Mock(url: URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/releases?per_page=100")!, dataType: .json, statusCode: 200, data: [.get: releaseJSONData])
+        mock.register()
+        return mock
+    }
+
+    @discardableResult static func mockDeletingRelease(id: Int) -> Mock {
+        let mock = Mock(url: URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/releases/\(id)")!, dataType: .json, statusCode: 204, data: [.delete: Data()])
+        mock.register()
+        return mock
+    }
+
+    @discardableResult static func mockDeletingReference(tagName: String) -> Mock {
+        let mock = Mock(url: URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/git/refs/tags/\(tagName)")!, dataType: .json, statusCode: 204, data: [.delete: Data()])
         mock.register()
         return mock
     }
