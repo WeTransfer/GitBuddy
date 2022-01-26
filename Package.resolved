@@ -11,6 +11,15 @@
         }
       },
       {
+        "package": "OctoKit",
+        "repositoryURL": "https://github.com/AvdLee/octokit.swift",
+        "state": {
+          "branch": "master",
+          "revision": "c1d49d82fa34d8022b0cdc95ca94113a54a4ec81",
+          "version": null
+        }
+      },
+      {
         "package": "RequestKit",
         "repositoryURL": "https://github.com/nerdishbynature/RequestKit.git",
         "state": {

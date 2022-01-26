@@ -56,7 +56,6 @@ final class TagsDeleterTests: XCTestCase {
         XCTAssertEqual(output, "Deleted tags: [\"v1.0.3\"]")
     }
 
-
     func testDeletingPrereleaseOnly() throws {
         MockedShell.mockRelease(tag: "2.0.0", date: Date())
 

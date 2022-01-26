@@ -48,12 +48,14 @@ final class TagsDeleter: URLSessionInjectable, ShellInjectable {
         let releases = try result.get()
         Log.debug("Fetched releases: \(releases.map { $0.tagName }.joined(separator: ", "))")
 
-        return releases.filter({ release in
-            guard !prereleaseOnly || release.prerelease else {
-                return false
-            }
-            return release.createdAt < upUntil
-        }).suffix(limit)
+        return releases
+            .filter({ release in
+                guard !prereleaseOnly || release.prerelease else {
+                    return false
+                }
+                return release.createdAt < upUntil
+            })
+            .suffix(limit)
     }
 
     private func deleteReleases(_ releases: [OctoKit.Release], project: GITProject) throws {
