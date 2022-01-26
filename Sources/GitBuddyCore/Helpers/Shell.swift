@@ -14,6 +14,7 @@ enum ShellCommand {
     case previousTag
     case repositoryName
     case tagCreationDate(tag: String)
+    case commitDate(commitish: String)
 
     var rawValue: String {
         switch self {
@@ -27,6 +28,8 @@ enum ShellCommand {
             return "git remote show origin -n | ruby -ne 'puts /^\\s*Fetch.*(:|\\/){1}([^\\/]+\\/[^\\/]+).git/.match($_)[2] rescue nil'"
         case .tagCreationDate(let tag):
             return "git log -1 --format=%ai \(tag)"
+        case .commitDate(let commitish):
+            return "git show -s --format=%ai \(commitish)"
         }
     }
 }
@@ -43,9 +46,11 @@ extension Process {
         let data = outputPipe.fileHandleForReading.readDataToEndOfFile()
         guard let outputData = String(data: data, encoding: String.Encoding.utf8) else { return "" }
 
-        return outputData.reduce("") { (result, value) in
-            return result + String(value)
-        }.trimmingCharacters(in: .whitespacesAndNewlines)
+        return outputData
+            .reduce("") { (result, value) in
+                return result + String(value)
+            }
+            .trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
 

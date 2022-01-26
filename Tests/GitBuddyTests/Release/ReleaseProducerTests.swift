@@ -213,6 +213,40 @@ final class ReleaseProducerTests: XCTestCase {
         wait(for: [mockExpectation], timeout: 0.3)
     }
 
+    func testUsingTargetCommitishDate() throws {
+        let existingChangelog = """
+        ### 1.0.0
+        - Initial release
+        """
+        let tagName = "2.0.0b1233"
+        let changelogToTag = "2.0.0b1232"
+        let commitish = "1e88145e2101dc7203af3095d6e"
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let date = dateFormatter.date(from: "2020-01-05")!
+        MockedShell.mockCommitish(commitish, date: date)
+        MockedShell.mockRelease(tag: changelogToTag, date: date)
+
+        let tempFileURL = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true).appendingPathComponent("Changelog.md")
+        XCTAssertTrue(FileManager.default.createFile(atPath: tempFileURL.path, contents: Data(existingChangelog.utf8), attributes: nil))
+
+        try executeCommand("gitbuddy release --target-commitish \(commitish) -s -n \(tagName) -c \(tempFileURL.path)")
+
+        let updatedChangelogContents = try String(contentsOfFile: tempFileURL.path)
+
+        // Merged at: 2020-01-06 - Add charset utf-8 to html head
+        // Closed at: 2020-01-03 - Get warning for file
+        // Setting the tag date to 2020-01-05 should remove the Add charset
+
+        XCTAssertEqual(updatedChangelogContents, """
+        ### 2.0.0b1233
+        - Get warning for file \'style.css\' after building \
+        ([#39](https://github.com/WeTransfer/Diagnostics/issues/39)) via [@AvdLee](https://github.com/AvdLee)
+
+        \(existingChangelog)
+        """)
+    }
+
     func testThrowsMissingTargetDateError() {
         XCTAssertThrowsError(try executeCommand("gitbuddy release -s -n 3.0.0"), "Missing target date error should be thrown") { error in
             XCTAssertEqual(error as? ReleaseProducer.Error, .changelogTargetDateMissing)
