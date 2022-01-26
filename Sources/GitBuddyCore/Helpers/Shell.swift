@@ -46,9 +46,11 @@ extension Process {
         let data = outputPipe.fileHandleForReading.readDataToEndOfFile()
         guard let outputData = String(data: data, encoding: String.Encoding.utf8) else { return "" }
 
-        return outputData.reduce("") { (result, value) in
-            return result + String(value)
-        }.trimmingCharacters(in: .whitespacesAndNewlines)
+        return outputData
+            .reduce("") { (result, value) in
+                return result + String(value)
+            }
+            .trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
 

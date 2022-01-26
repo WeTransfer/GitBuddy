@@ -46,11 +46,6 @@ struct Tag: ShellInjectable, Encodable {
 
             Log.debug("Tag \(name) is created at \(tagCreationDate)")
 
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss Z"
-            dateFormatter.locale = Locale(identifier: "en_US_POSIX")
-            dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
-
             guard let date = Formatter.gitDateFormatter.date(from: tagCreationDate) else {
                 throw Error.missingTagCreationDate
             }
