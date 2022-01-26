@@ -40,7 +40,7 @@ struct Tag: ShellInjectable, Encodable {
         } else {
             let tagCreationDate = Self.shell.execute(.tagCreationDate(tag: name))
             if tagCreationDate.isEmpty {
-                Log.debug("Tag creation date could not be found")
+                Log.debug("Tag creation date could not be found for \(name)")
                 throw Error.missingTagCreationDate
             }
 

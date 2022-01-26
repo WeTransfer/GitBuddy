@@ -113,6 +113,25 @@ extension Mocker {
         return mock
     }
 
+    @discardableResult static func mockListReleases() -> Mock {
+        let releaseJSONData = ListReleasesJSON.data(using: .utf8)!
+        let mock = Mock(url: URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/releases?per_page=100")!, dataType: .json, statusCode: 200, data: [.get: releaseJSONData])
+        mock.register()
+        return mock
+    }
+
+    @discardableResult static func mockDeletingRelease(id: Int) -> Mock {
+        let mock = Mock(url: URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/releases/\(id)")!, dataType: .json, statusCode: 204, data: [.delete: Data()])
+        mock.register()
+        return mock
+    }
+
+    @discardableResult static func mockDeletingReference(tagName: String) -> Mock {
+        let mock = Mock(url: URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/git/refs/tags/\(tagName)")!, dataType: .json, statusCode: 204, data: [.delete: Data()])
+        mock.register()
+        return mock
+    }
+
     static func mockForCommentingOn(issueNumber: Int) -> Mock {
         let urlComponents = URLComponents(string: "https://api.github.com/repos/WeTransfer/Diagnostics/issues/\(issueNumber)/comments")!
         let commentJSONData = CommentJSON.data(using: .utf8)!
