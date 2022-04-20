@@ -1,3 +1,6 @@
+### 4.1.2
+- Update gems ([#80](https://github.com/WeTransfer/GitBuddy/pull/80)) via [@kairadiagne](https://github.com/kairadiagne)
+
 ### 4.1.0
 - Add a new `tagDeletion` command ([#74](https://github.com/WeTransfer/GitBuddy/pull/74)) via [@AvdLee](https://github.com/AvdLee)
 - Make use of the target commitish date ([#75](https://github.com/WeTransfer/GitBuddy/pull/75)) via [@AvdLee](https://github.com/AvdLee)
