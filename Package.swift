@@ -6,7 +6,7 @@ let package = Package(
     name: "GitBuddy",
     platforms: [
         .macOS(.v10_15)
-        ],
+    ],
     products: [
         .executable(name: "GitBuddy", targets: ["GitBuddy"])
     ],

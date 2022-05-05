@@ -5,6 +5,8 @@
 //  Created by Max Desiatov on 28/03/2020.
 //
 
+// swiftlint:disable line_length
+// swiftlint:disable file_length
 let IssuesJSON = #"""
 [
   {
@@ -777,7 +779,7 @@ let IssuesJSON = #"""
     "id": 545013288,
     "node_id": "MDExOlB1bGxSZXF1ZXN0MzU5MDA1MjAz",
     "number": 50,
-    "title": "Add charset utf-8 to html head",
+    "title": "Add charset utf-8 to html head 😃",
     "user": {
       "login": "intitni",
       "id": 793147,

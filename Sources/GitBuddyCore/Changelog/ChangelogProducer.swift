@@ -11,14 +11,14 @@ import OctoKit
 
 /// Capable of producing a changelog based on input parameters.
 final class ChangelogProducer: URLSessionInjectable {
-
     enum Since {
         case date(date: Date)
         case tag(tag: String)
         case latestTag
 
         /// Gets the date for the current Since property.
-        /// In the case of a tag, we add 60 seconds to make sure that the Changelog does not include the commit that is used for creating the tag.
+        /// In the case of a tag, we add 60 seconds to make sure that the Changelog does not include the commit that
+        /// is used for creating the tag.
         /// This is needed as the tag creation date equals the commit creation date.
         func get() throws -> Date {
             switch self {
@@ -32,7 +32,7 @@ final class ChangelogProducer: URLSessionInjectable {
         }
     }
 
-    private lazy var octoKit: Octokit = Octokit()
+    private lazy var octoKit: Octokit = .init()
     let baseBranch: Branch
     let since: Since
     let from: Date

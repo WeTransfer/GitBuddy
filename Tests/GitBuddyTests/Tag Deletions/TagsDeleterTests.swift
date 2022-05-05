@@ -1,17 +1,16 @@
 //
 //  TagsDeleterTests.swift
-//  
+//
 //
 //  Created by Antoine van der Lee on 25/01/2022.
 //
 
-import XCTest
 @testable import GitBuddyCore
 import Mocker
 import OctoKit
+import XCTest
 
 final class TagsDeleterTests: XCTestCase {
-
     override func setUp() {
         super.setUp()
         Octokit.protocolClasses = [MockingURLProtocol.self]

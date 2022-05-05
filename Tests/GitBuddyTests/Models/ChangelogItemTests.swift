@@ -6,12 +6,11 @@
 //  Copyright © 2020 WeTransfer. All rights reserved.
 //
 
-import XCTest
 @testable import GitBuddyCore
 import OctoKit
+import XCTest
 
 final class ChangelogItemTests: XCTestCase {
-
     /// It should return `nil` if there's no title.
     func testNilTitle() {
         let item = ChangelogItem(input: MockChangelogInput(), closedBy: MockedPullRequest())
@@ -42,7 +41,7 @@ final class ChangelogItemTests: XCTestCase {
         let input = PullRequestsJSON.data(using: .utf8)!.mapJSON(to: [PullRequest].self).first!
         input.htmlURL = nil
         let item = ChangelogItem(input: input, closedBy: input)
-        XCTAssertEqual(item.title, "\(input.title!) via [@AvdLee](https://github.com/AvdLee)")
+        XCTAssertEqual(item.title, "Add charset utf-8 to html head via [@AvdLee](https://github.com/AvdLee)")
     }
 
     /// It should fallback to the assignee if the user is nil for Pull Requests.
@@ -53,7 +52,7 @@ final class ChangelogItemTests: XCTestCase {
         let item = ChangelogItem(input: input, closedBy: input)
         XCTAssertEqual(
             item.title,
-            "\(input.title!) via [@kairadiagne](https://github.com/kairadiagne)"
+            "Add charset utf-8 to html head via [@kairadiagne](https://github.com/kairadiagne)"
         )
     }
 
@@ -67,5 +66,4 @@ final class ChangelogItemTests: XCTestCase {
             "\(input.title!) ([#1](https://www.fakeurl.com)) via [@Henk](https://github.com/Henk)"
         )
     }
-
 }

@@ -6,14 +6,13 @@
 //  Copyright © 2020 WeTransfer. All rights reserved.
 //
 
-import XCTest
-import OctoKit
-import Mocker
 @testable import GitBuddyCore
+import Mocker
+import OctoKit
+import XCTest
 
 final class PullRequestFetcherTests: XCTestCase {
-
-    private let octoKit: Octokit = Octokit()
+    private let octoKit: Octokit = .init()
     private var urlSession: URLSession!
 
     override func setUp() {
@@ -36,8 +35,7 @@ final class PullRequestFetcherTests: XCTestCase {
         let fetcher = PullRequestFetcher(octoKit: octoKit, baseBranch: "master", project: project)
         let pullRequests = try fetcher.fetchAllBetween(release.created, and: Date(), using: urlSession)
         XCTAssertEqual(pullRequests.count, 2)
-        XCTAssertEqual(pullRequests[0].title, "Add charset utf-8 to html head")
+        XCTAssertEqual(pullRequests[0].title, "Add charset utf-8 to html head 😃")
         XCTAssertEqual(pullRequests[1].title, "Fix warning occurring in pod library because of importing style.css #trivial")
     }
-
 }

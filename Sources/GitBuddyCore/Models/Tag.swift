@@ -21,7 +21,6 @@ struct Tag: ShellInjectable, Encodable {
                 return "There's no tags available"
             }
         }
-
     }
 
     let name: String
@@ -30,7 +29,8 @@ struct Tag: ShellInjectable, Encodable {
     /// Creates a new Tag instance.
     /// - Parameters:
     ///   - name: The name to use for the tag.
-    ///   - created: The creation date to use. If `nil`, the date is fetched using the `git` terminal command. See `fallbackDate` for setting a date if this operation fails due to a missing tag.
+    ///   - created: The creation date to use. If `nil`, the date is fetched using the `git` terminal command. See `fallbackDate`
+    ///   for setting a date if this operation fails due to a missing tag.
     /// - Throws: An error if the creation date could not be found.
     init(name: String, created: Date? = nil) throws {
         self.name = name

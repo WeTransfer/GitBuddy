@@ -1,9 +1,11 @@
-import Foundation
 import ArgumentParser
+import Foundation
 
 struct TagDeletionsCommand: ParsableCommand {
-
-    public static let configuration = CommandConfiguration(commandName: "tagDeletion", abstract: "Delete a batch of tags based on given predicates.")
+    public static let configuration = CommandConfiguration(
+        commandName: "tagDeletion",
+        abstract: "Delete a batch of tags based on given predicates."
+    )
 
     @Option(name: .shortAndLong, help: "The date of this tag will be used as a limit. Defaults to the latest tag.")
     private var upUntilTag: String?

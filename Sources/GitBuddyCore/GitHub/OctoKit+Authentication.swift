@@ -9,7 +9,6 @@ import Foundation
 import OctoKit
 
 extension Octokit {
-
     static var protocolClasses: [AnyClass]?
     static var environment: [String: String] = ProcessInfo.processInfo.environment
 

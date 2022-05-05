@@ -6,8 +6,8 @@
 //  Copyright © 2020 WeTransfer. All rights reserved.
 //
 
-import Foundation
 import ArgumentParser
+import Foundation
 
 /// Entry class of GitBuddy that registers commands and handles execution.
 public struct GitBuddy: ParsableCommand {
@@ -20,5 +20,5 @@ public struct GitBuddy: ParsableCommand {
         subcommands: [ChangelogCommand.self, ReleaseCommand.self, TagDeletionsCommand.self]
     )
 
-    public init() { }
+    public init() {}
 }

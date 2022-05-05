@@ -6,11 +6,10 @@
 //  Copyright © 2020 WeTransfer. All rights reserved.
 //
 
-import XCTest
 @testable import GitBuddyCore
+import XCTest
 
 final class GitBuddyCommandTests: XCTestCase {
-
     /// It should throw an error if the GitHub access token was not set.
     func testMissingAccessToken() {
         do {

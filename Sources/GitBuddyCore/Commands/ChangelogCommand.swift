@@ -5,11 +5,10 @@
 //  Created by Antoine van der Lee on 09/04/2020.
 //
 
-import Foundation
 import ArgumentParser
+import Foundation
 
 struct ChangelogCommand: ParsableCommand {
-
     public static let configuration = CommandConfiguration(commandName: "changelog", abstract: "Create a changelog for GitHub repositories")
 
     @Option(name: .shortAndLong, help: "The tag to use as a base. Defaults to the latest tag.")

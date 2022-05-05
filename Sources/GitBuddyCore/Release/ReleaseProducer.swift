@@ -11,7 +11,6 @@ import OctoKit
 
 /// Capable of producing a release, adjusting a Changelog file, and posting comments to released issues/PRs.
 final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
-
     enum Error: Swift.Error, CustomStringConvertible {
         case changelogTargetDateMissing
 
@@ -23,7 +22,7 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
         }
     }
 
-    private lazy var octoKit: Octokit = Octokit()
+    private lazy var octoKit: Octokit = .init()
     let changelogURL: Foundation.URL?
     let skipComments: Bool
     let isPrerelease: Bool
@@ -34,7 +33,17 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
     let changelogToTag: String?
     let baseBranch: String
 
-    init(changelogPath: String?, skipComments: Bool, isPrerelease: Bool, targetCommitish: String? = nil, tagName: String? = nil, releaseTitle: String? = nil, lastReleaseTag: String? = nil, baseBranch: String? = nil, changelogToTag: String? = nil) throws {
+    init(
+        changelogPath: String?,
+        skipComments: Bool,
+        isPrerelease: Bool,
+        targetCommitish: String? = nil,
+        tagName: String? = nil,
+        releaseTitle: String? = nil,
+        lastReleaseTag: String? = nil,
+        baseBranch: String? = nil,
+        changelogToTag: String? = nil
+    ) throws {
         try Octokit.authenticate()
 
         if let changelogPath = changelogPath {
@@ -59,7 +68,11 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
         let adjustedChangelogToDate = changelogToDate.addingTimeInterval(60)
 
         let changelogSinceTag = lastReleaseTag ?? Self.shell.execute(.previousTag)
-        let changelogProducer = try ChangelogProducer(since: .tag(tag: changelogSinceTag), to: adjustedChangelogToDate, baseBranch: baseBranch)
+        let changelogProducer = try ChangelogProducer(
+            since: .tag(tag: changelogSinceTag),
+            to: adjustedChangelogToDate,
+            baseBranch: baseBranch
+        )
         let changelog = try changelogProducer.run(isSectioned: isSectioned)
         Log.debug("\(changelog)\n")
 
@@ -69,7 +82,13 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
         let repositoryName = Self.shell.execute(.repositoryName)
         let project = GITProject.current()
         Log.debug("Creating a release for tag \(tagName) at repository \(repositoryName)")
-        let release = try createRelease(using: project, tagName: tagName, targetCommitish: targetCommitish, title: releaseTitle, body: changelog.description)
+        let release = try createRelease(
+            using: project,
+            tagName: tagName,
+            targetCommitish: targetCommitish,
+            title: releaseTitle,
+            body: changelog.description
+        )
         postComments(for: changelog, project: project, release: release)
 
         Log.debug("Result of creating the release:\n")
@@ -152,7 +171,9 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
         handle.closeFile()
     }
 
-    private func createRelease(using project: GITProject, tagName: String, targetCommitish: String?, title: String?, body: String) throws -> Release {
+    private func createRelease(using project: GITProject, tagName: String, targetCommitish: String?, title: String?,
+                               body: String) throws -> Release
+    {
         let group = DispatchGroup()
         group.enter()
 
@@ -171,7 +192,17 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
         """)
 
         var result: Result<Foundation.URL, Swift.Error>!
-        octoKit.postRelease(urlSession, owner: project.organisation, repository: project.repository, tagName: tagName, targetCommitish: targetCommitish, name: releaseTitle, body: body, prerelease: isPrerelease, draft: false) { (response) in
+        octoKit.postRelease(
+            urlSession,
+            owner: project.organisation,
+            repository: project.repository,
+            tagName: tagName,
+            targetCommitish: targetCommitish,
+            name: releaseTitle,
+            body: body,
+            prerelease: isPrerelease,
+            draft: false
+        ) { response in
             switch response {
             case .success(let release):
                 result = .success(release.htmlURL)
