@@ -35,7 +35,7 @@ struct ChangelogItem {
         guard var title = input.title else { return nil }
         title = title.prefix(1).uppercased() + title.dropFirst()
         title = title.removingEmojis().trimmingCharacters(in: .whitespaces)
-        
+
         if let htmlURL = input.htmlURL {
             title += " ([#\(input.number)](\(htmlURL)))"
         }

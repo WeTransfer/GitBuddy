@@ -62,7 +62,7 @@ final class IssueResolverTests: XCTestCase {
             "Resolves",
             "resolved"
         ]
-        
+
         let issueNumber = 4343
 
         issueClosingKeywords.forEach { (closingKeyword) in
@@ -70,13 +70,13 @@ final class IssueResolverTests: XCTestCase {
             XCTAssertEqual(description.resolvingIssues(), [issueNumber])
         }
     }
-    
+
     /// It should not extract anything if no issue number is found.
     func testResolvingNoReferencedIssue() {
         let description = examplePullRequestDescriptionUsing(closingKeyword: "fixes", issueNumber: nil)
         XCTAssertTrue(description.resolvingIssues().isEmpty)
     }
-    
+
     /// It should not extract anything if no closing keyword is found.
     func testResolvingNoClosingKeyword() {
         let issueNumber = 4343
@@ -84,7 +84,7 @@ final class IssueResolverTests: XCTestCase {
         let description = examplePullRequestDescriptionUsing(closingKeyword: "", issueNumber: issueNumber)
         XCTAssertTrue(description.resolvingIssues().isEmpty)
     }
-    
+
     /// It should extract mulitple issues.
     func testResolvingMultipleIssues() {
         let description = "This is a beautiful PR that close #123 for real. It also fixes #1 and fixes #2"
@@ -92,31 +92,31 @@ final class IssueResolverTests: XCTestCase {
         XCTAssertEqual(resolvedIssues.count, 3)
         XCTAssertEqual(Set(description.resolvingIssues()), Set([123, 1, 2]))
     }
-    
+
     /// It should deduplicate if the same issue is closed multiple times.
     func testResolvingMultipleIssuesDedup() {
         let description = "This is a beautiful PR that close #123 for real. It also fixes #123"
         XCTAssertEqual(description.resolvingIssues(), [123])
     }
-    
+
     /// It should not extract anything if there is no number after the #.
     func testResolvingNoNumber() {
         let description = "This is a beautiful PR that close # for real."
         XCTAssertTrue(description.resolvingIssues().isEmpty)
     }
-    
+
     /// It should not extract anything if there is no number after the #, and it's at the end.
     func testResolvingNoNumberLast() {
         let description = "This is a beautiful PR that close #"
         XCTAssertTrue(description.resolvingIssues().isEmpty)
     }
-    
+
     /// It should extract the issue if it's first.
     func testResolvingIssueFirst() {
         let description = "Resolves #123. Yay!"
         XCTAssertEqual(description.resolvingIssues(), [123])
     }
-    
+
     /// It should extract the issue if it's the only thing present.
     func testResolvingIssueOnly() {
         let description = "Resolved #123"
@@ -127,7 +127,7 @@ final class IssueResolverTests: XCTestCase {
 extension IssueResolverTests {
     func examplePullRequestDescriptionUsing(closingKeyword: String, issueNumber: Int?) -> String {
         let issueNumberString = issueNumber?.description ?? ""
-        
+
         return """
             This PR does a lot of awesome stuff.
             It even closes some issues!

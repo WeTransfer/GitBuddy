@@ -50,7 +50,7 @@ struct SectionedChangelog: Changelog {
     let description: String
 
     let itemIdentifiers: [PullRequestID: [IssueID]]
-    
+
     init(issues: [Issue], pullRequests: [PullRequest]) {
         description =
             """
