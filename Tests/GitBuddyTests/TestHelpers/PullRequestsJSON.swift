@@ -21,7 +21,7 @@ let PullRequestsJSON = """
         "number": 50,
         "state": "closed",
         "locked": false,
-        "title": "Add charset utf-8 to html head",
+        "title": "Add charset utf-8 to html head 🫥",
         "user": {
             "login": "AvdLee",
             "id": 793147,

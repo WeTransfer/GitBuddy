@@ -21,21 +21,26 @@ struct ReleaseCommand: ParsableCommand {
     @Flag(name: [.customLong("use-pre-release"), .customShort("p")], help: "Create the release as a pre-release.")
     var isPrerelease: Bool = false
 
+    // Main
     @Option(name: .shortAndLong, help: "Specifies the commitish value that determines where the Git tag is created from. Can be any branch or commit SHA. Unused if the Git tag already exists. Default: the repository's default branch (usually main).")
     var targetCommitish: String?
 
+    // 1.3.1b1072
     @Option(name: [.long, .customShort("n")], help: "The name of the tag. If set, `changelogToTag` is required too. Default: takes the last created tag to publish as a GitHub release.")
     var tagName: String?
 
+    // // 1.3.1b1072 - App Store Release
     @Option(name: .shortAndLong, help: "The title of the release. Default: uses the tag name.")
     var releaseTitle: String?
 
+    // 1.3.0b1039
     @Option(name: .shortAndLong, help: "The last release tag to use as a base for the changelog creation. Default: previous tag.")
     var lastReleaseTag: String?
 
     @Option(name: .customLong("changelogToTag"), help: "If set, the date of this tag will be used as the limit for the changelog creation. This variable should be passed when `tagName` is set. Default: latest tag.")
     var changelogToTag: String?
 
+    // Develop
     @Option(name: .shortAndLong, help: "The base branch to compare with for generating the changelog. Defaults to master.")
     var baseBranch: String?
 

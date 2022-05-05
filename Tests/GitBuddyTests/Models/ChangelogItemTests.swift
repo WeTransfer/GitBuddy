@@ -42,7 +42,7 @@ final class ChangelogItemTests: XCTestCase {
         let input = PullRequestsJSON.data(using: .utf8)!.mapJSON(to: [PullRequest].self).first!
         input.htmlURL = nil
         let item = ChangelogItem(input: input, closedBy: input)
-        XCTAssertEqual(item.title, "\(input.title!) via [@AvdLee](https://github.com/AvdLee)")
+        XCTAssertEqual(item.title, "Add charset utf-8 to html head via [@AvdLee](https://github.com/AvdLee)")
     }
 
     /// It should fallback to the assignee if the user is nil for Pull Requests.
@@ -53,7 +53,7 @@ final class ChangelogItemTests: XCTestCase {
         let item = ChangelogItem(input: input, closedBy: input)
         XCTAssertEqual(
             item.title,
-            "\(input.title!) via [@kairadiagne](https://github.com/kairadiagne)"
+            "Add charset utf-8 to html head via [@kairadiagne](https://github.com/kairadiagne)"
         )
     }
 
