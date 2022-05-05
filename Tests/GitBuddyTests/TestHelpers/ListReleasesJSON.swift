@@ -1,6 +1,6 @@
 //
 //  ListReleasesJSON.swift
-//  
+//
 //
 //  Created by Antoine van der Lee on 25/01/2022.
 //

@@ -8,13 +8,12 @@
 // swiftlint:disable final_class
 
 import Foundation
+@testable import GitBuddyCore
 import Mocker
 import OctoKit
-@testable import GitBuddyCore
 import XCTest
 
 struct MockedShell: ShellExecuting {
-
     static var commandMocks: [String: String] = [:]
 
     @discardableResult static func execute(_ command: ShellCommand) -> String {
@@ -59,8 +58,8 @@ class MockChangelogInput: ChangelogInput {
     }
 }
 
-final class MockedPullRequest: MockChangelogInput, ChangelogPullRequest { }
-final class MockedIssue: MockChangelogInput, ChangelogIssue { }
+final class MockedPullRequest: MockChangelogInput, ChangelogPullRequest {}
+final class MockedIssue: MockChangelogInput, ChangelogIssue {}
 
 extension Mocker {
     static func mockPullRequests(baseBranch: String = "master") {

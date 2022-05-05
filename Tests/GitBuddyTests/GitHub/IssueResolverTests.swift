@@ -6,14 +6,13 @@
 //  Copyright © 2020 WeTransfer. All rights reserved.
 //
 
-import XCTest
-import OctoKit
-import Mocker
 @testable import GitBuddyCore
+import Mocker
+import OctoKit
+import XCTest
 
 final class IssueResolverTests: XCTestCase {
-
-    private let octoKit: Octokit = Octokit()
+    private let octoKit: Octokit = .init()
     private var urlSession: URLSession!
 
     override func setUp() {
@@ -65,7 +64,7 @@ final class IssueResolverTests: XCTestCase {
 
         let issueNumber = 4343
 
-        issueClosingKeywords.forEach { (closingKeyword) in
+        issueClosingKeywords.forEach { closingKeyword in
             let description = examplePullRequestDescriptionUsing(closingKeyword: closingKeyword, issueNumber: issueNumber)
             XCTAssertEqual(description.resolvingIssues(), [issueNumber])
         }
@@ -129,12 +128,11 @@ extension IssueResolverTests {
         let issueNumberString = issueNumber?.description ?? ""
 
         return """
-            This PR does a lot of awesome stuff.
-            It even closes some issues!
-            Not #3737 though. This one is too hard.
+        This PR does a lot of awesome stuff.
+        It even closes some issues!
+        Not #3737 though. This one is too hard.
 
-            \(closingKeyword) #\(issueNumberString)
-            """
-
+        \(closingKeyword) #\(issueNumberString)
+        """
     }
 }

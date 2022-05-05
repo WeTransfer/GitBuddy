@@ -21,7 +21,7 @@ struct ChangelogItemsFactory {
                 return [ChangelogItem(input: pullRequest, closedBy: pullRequest)]
             }
             return resolvedIssues.map { issue -> ChangelogItem in
-                return ChangelogItem(input: issue, closedBy: pullRequest)
+                ChangelogItem(input: issue, closedBy: pullRequest)
             }
         }
     }

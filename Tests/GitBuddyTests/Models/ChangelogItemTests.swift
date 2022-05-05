@@ -6,12 +6,11 @@
 //  Copyright © 2020 WeTransfer. All rights reserved.
 //
 
-import XCTest
 @testable import GitBuddyCore
 import OctoKit
+import XCTest
 
 final class ChangelogItemTests: XCTestCase {
-
     /// It should return `nil` if there's no title.
     func testNilTitle() {
         let item = ChangelogItem(input: MockChangelogInput(), closedBy: MockedPullRequest())
@@ -67,5 +66,4 @@ final class ChangelogItemTests: XCTestCase {
             "\(input.title!) ([#1](https://www.fakeurl.com)) via [@Henk](https://github.com/Henk)"
         )
     }
-
 }

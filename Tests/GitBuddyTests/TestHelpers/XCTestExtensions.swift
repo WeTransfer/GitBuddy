@@ -6,11 +6,10 @@
 //
 
 import Foundation
-import XCTest
 @testable import GitBuddyCore
+import XCTest
 
 extension XCTest {
-
     func AssertEqualStringsIgnoringTrailingWhitespace(_ string1: String, _ string2: String, file: StaticString = #file, line: UInt = #line) {
         let lines1 = string1.split(separator: "\n", omittingEmptySubsequences: false)
         let lines2 = string2.split(separator: "\n", omittingEmptySubsequences: false)
@@ -51,7 +50,7 @@ extension XCTest {
 
 extension Substring {
     func trimmed() -> Substring {
-        guard let i = lastIndex(where: { $0 != " "}) else {
+        guard let i = lastIndex(where: { $0 != " " }) else {
             return ""
         }
         return self[...i]

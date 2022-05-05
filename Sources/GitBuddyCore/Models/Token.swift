@@ -47,5 +47,4 @@ struct Token: CustomStringConvertible {
         self.username = String(username)
         self.accessToken = String(accessToken)
     }
-
 }

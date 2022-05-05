@@ -28,7 +28,7 @@ struct SingleSectionChangelog: Changelog {
 
     init(items: [ChangelogItem]) {
         description = ChangelogBuilder(items: items).build()
-        self.itemIdentifiers = items.reduce(into: [:], { (result, item) in
+        itemIdentifiers = items.reduce(into: [:]) { result, item in
             let pullRequestID: PullRequestID = item.closedBy.number
 
             if var pullRequestIssues = result[pullRequestID] {
@@ -40,7 +40,7 @@ struct SingleSectionChangelog: Changelog {
             } else {
                 result[pullRequestID] = []
             }
-        })
+        }
     }
 }
 
@@ -63,7 +63,7 @@ struct SectionedChangelog: Changelog {
             \(ChangelogBuilder(items: pullRequests.map { ChangelogItem(input: $0, closedBy: $0) }).build())
             """
 
-        itemIdentifiers = pullRequests.reduce(into: [:]) { (result, item) in
+        itemIdentifiers = pullRequests.reduce(into: [:]) { result, item in
             result[item.number] = item.body?.resolvingIssues()
         }
     }

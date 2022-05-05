@@ -21,7 +21,6 @@ struct Tag: ShellInjectable, Encodable {
                 return "There's no tags available"
             }
         }
-
     }
 
     let name: String

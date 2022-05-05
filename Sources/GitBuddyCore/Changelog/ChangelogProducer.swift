@@ -11,7 +11,6 @@ import OctoKit
 
 /// Capable of producing a changelog based on input parameters.
 final class ChangelogProducer: URLSessionInjectable {
-
     enum Since {
         case date(date: Date)
         case tag(tag: String)
@@ -32,7 +31,7 @@ final class ChangelogProducer: URLSessionInjectable {
         }
     }
 
-    private lazy var octoKit: Octokit = Octokit()
+    private lazy var octoKit: Octokit = .init()
     let baseBranch: Branch
     let since: Since
     let from: Date

@@ -5,11 +5,10 @@
 //  Created by Antoine van der Lee on 09/04/2020.
 //
 
-import Foundation
 import ArgumentParser
+import Foundation
 
 struct ReleaseCommand: ParsableCommand {
-
     public static let configuration = CommandConfiguration(commandName: "release", abstract: "Create a new release including a changelog and publish comments on related issues.")
 
     @Option(name: .shortAndLong, help: "The path to the Changelog to update it with the latest changes.")

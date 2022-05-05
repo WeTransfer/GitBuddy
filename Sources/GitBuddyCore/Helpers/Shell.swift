@@ -47,8 +47,8 @@ extension Process {
         guard let outputData = String(data: data, encoding: String.Encoding.utf8) else { return "" }
 
         return outputData
-            .reduce("") { (result, value) in
-                return result + String(value)
+            .reduce("") { result, value in
+                result + String(value)
             }
             .trimmingCharacters(in: .whitespacesAndNewlines)
     }
@@ -65,7 +65,7 @@ private enum Shell: ShellExecuting {
 }
 
 /// Adds a `shell` property which defaults to `Shell.self`.
-protocol ShellInjectable { }
+protocol ShellInjectable {}
 
 extension ShellInjectable {
     static var shell: ShellExecuting.Type { ShellInjector.shell }

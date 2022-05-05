@@ -11,7 +11,6 @@ import OctoKit
 
 /// Capable of producing a release, adjusting a Changelog file, and posting comments to released issues/PRs.
 final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
-
     enum Error: Swift.Error, CustomStringConvertible {
         case changelogTargetDateMissing
 
@@ -23,7 +22,7 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
         }
     }
 
-    private lazy var octoKit: Octokit = Octokit()
+    private lazy var octoKit: Octokit = .init()
     let changelogURL: Foundation.URL?
     let skipComments: Bool
     let isPrerelease: Bool
@@ -171,7 +170,7 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
         """)
 
         var result: Result<Foundation.URL, Swift.Error>!
-        octoKit.postRelease(urlSession, owner: project.organisation, repository: project.repository, tagName: tagName, targetCommitish: targetCommitish, name: releaseTitle, body: body, prerelease: isPrerelease, draft: false) { (response) in
+        octoKit.postRelease(urlSession, owner: project.organisation, repository: project.repository, tagName: tagName, targetCommitish: targetCommitish, name: releaseTitle, body: body, prerelease: isPrerelease, draft: false) { response in
             switch response {
             case .success(let release):
                 result = .success(release.htmlURL)

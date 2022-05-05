@@ -2,8 +2,7 @@ import Foundation
 import OctoKit
 
 final class TagsDeleter: URLSessionInjectable, ShellInjectable {
-
-    private lazy var octoKit: Octokit = Octokit()
+    private lazy var octoKit: Octokit = .init()
     let upUntilTagName: String?
     let limit: Int
     let prereleaseOnly: Bool
@@ -49,12 +48,12 @@ final class TagsDeleter: URLSessionInjectable, ShellInjectable {
         Log.debug("Fetched releases: \(releases.map { $0.tagName }.joined(separator: ", "))")
 
         return releases
-            .filter({ release in
+            .filter { release in
                 guard !prereleaseOnly || release.prerelease else {
                     return false
                 }
                 return release.createdAt < upUntil
-            })
+            }
             .suffix(limit)
     }
 

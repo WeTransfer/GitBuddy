@@ -5,12 +5,11 @@
 //  Created by Antoine van der Lee on 09/04/2020.
 //
 
-import XCTest
 @testable import GitBuddyCore
 import Mocker
+import XCTest
 
 final class CommenterTests: XCTestCase {
-
     override func setUp() {
         super.setUp()
         let configuration = URLSessionConfiguration.default

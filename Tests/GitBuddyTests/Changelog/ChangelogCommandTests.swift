@@ -5,13 +5,12 @@
 //  Created by Antoine van der Lee on 09/04/2020.
 //
 
-import XCTest
-import Mocker
 @testable import GitBuddyCore
+import Mocker
 import OctoKit
+import XCTest
 
 final class ChangelogCommandTests: XCTestCase {
-
     override func setUp() {
         super.setUp()
         Octokit.protocolClasses = [MockingURLProtocol.self]
@@ -99,7 +98,7 @@ final class ChangelogCommandTests: XCTestCase {
     /// It should use the latest tag by default for the latest release adding 60 seconds to its creation date.
     func testLatestReleaseUsingLatestTag() throws {
         let tag = "2.1.3"
-        let date = Date().addingTimeInterval(TimeInterval.random(in: 0..<100))
+        let date = Date().addingTimeInterval(TimeInterval.random(in: 0 ..< 100))
         MockedShell.mockRelease(tag: tag, date: date)
 
         let producer = try ChangelogProducer(baseBranch: nil)
@@ -109,11 +108,11 @@ final class ChangelogCommandTests: XCTestCase {
     /// It should use a tag passed as argument over the latest tag adding 60 seconds to its creation date..
     func testReleaseUsingTagArgument() throws {
         let expectedTag = "3.0.2"
-        let date = Date().addingTimeInterval(TimeInterval.random(in: 0..<100))
+        let date = Date().addingTimeInterval(TimeInterval.random(in: 0 ..< 100))
         MockedShell.mockRelease(tag: expectedTag, date: date)
 
         let producer = try ChangelogProducer(since: .tag(tag: expectedTag), baseBranch: nil)
-        guard case let ChangelogProducer.Since.tag(tag) = producer.since else {
+        guard case ChangelogProducer.Since.tag(let tag) = producer.since else {
             XCTFail("Wrong since used")
             return
         }
@@ -131,5 +130,4 @@ final class ChangelogCommandTests: XCTestCase {
         XCTAssertEqual(producer.project.organisation, organisation)
         XCTAssertEqual(producer.project.repository, repository)
     }
-
 }

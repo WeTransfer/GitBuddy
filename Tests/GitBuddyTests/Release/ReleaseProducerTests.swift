@@ -6,13 +6,12 @@
 //  Copyright © 2020 WeTransfer. All rights reserved.
 //
 
-import XCTest
 @testable import GitBuddyCore
 import Mocker
 import OctoKit
+import XCTest
 
 final class ReleaseProducerTests: XCTestCase {
-
     override func setUp() {
         super.setUp()
         Octokit.protocolClasses = [MockingURLProtocol.self]

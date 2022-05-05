@@ -6,14 +6,13 @@
 //  Copyright © 2020 WeTransfer. All rights reserved.
 //
 
-import XCTest
 @testable import GitBuddyCore
-@testable import OctoKit
 import Mocker
+@testable import OctoKit
+import XCTest
 
 final class ChangelogItemsFactoryTests: XCTestCase {
-
-    private let octoKit: Octokit = Octokit()
+    private let octoKit: Octokit = .init()
     private var urlSession: URLSession!
     private let project = GITProject(organisation: "WeTransfer", repository: "Diagnostics")
 
@@ -51,5 +50,4 @@ final class ChangelogItemsFactoryTests: XCTestCase {
         XCTAssertEqual(items.first?.input.title, issue.title)
         XCTAssertEqual(items.first?.closedBy.title, pullRequest.title)
     }
-
 }
