@@ -36,7 +36,7 @@ final class PullRequestFetcherTests: XCTestCase {
         let fetcher = PullRequestFetcher(octoKit: octoKit, baseBranch: "master", project: project)
         let pullRequests = try fetcher.fetchAllBetween(release.created, and: Date(), using: urlSession)
         XCTAssertEqual(pullRequests.count, 2)
-        XCTAssertEqual(pullRequests[0].title, "Add charset utf-8 to html head 🫥")
+        XCTAssertEqual(pullRequests[0].title, "Add charset utf-8 to html head 😃")
         XCTAssertEqual(pullRequests[1].title, "Fix warning occurring in pod library because of importing style.css #trivial")
     }
 
