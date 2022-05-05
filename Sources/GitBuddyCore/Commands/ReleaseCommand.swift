@@ -9,7 +9,10 @@ import ArgumentParser
 import Foundation
 
 struct ReleaseCommand: ParsableCommand {
-    public static let configuration = CommandConfiguration(commandName: "release", abstract: "Create a new release including a changelog and publish comments on related issues.")
+    public static let configuration = CommandConfiguration(
+        commandName: "release",
+        abstract: "Create a new release including a changelog and publish comments on related issues."
+    )
 
     @Option(name: .shortAndLong, help: "The path to the Changelog to update it with the latest changes.")
     var changelogPath: String?
@@ -21,11 +24,26 @@ struct ReleaseCommand: ParsableCommand {
     var isPrerelease: Bool = false
 
     // Main
-    @Option(name: .shortAndLong, help: "Specifies the commitish value that determines where the Git tag is created from. Can be any branch or commit SHA. Unused if the Git tag already exists. Default: the repository's default branch (usually main).")
+    @Option(
+        name: .shortAndLong,
+        help: """
+            Specifies the commitish value that determines where the Git tag is created from. Can be any branch or commit SHA.
+            Unused if the Git tag already exists.
+
+            Default: the repository's default branch (usually main).
+        """
+    )
     var targetCommitish: String?
 
     // 1.3.1b1072
-    @Option(name: [.long, .customShort("n")], help: "The name of the tag. If set, `changelogToTag` is required too. Default: takes the last created tag to publish as a GitHub release.")
+    @Option(
+        name: [.long, .customShort("n")],
+        help: """
+            The name of the tag. If set, `changelogToTag` is required too.
+
+            Default: takes the last created tag to publish as a GitHub release.
+        """
+    )
     var tagName: String?
 
     // // 1.3.1b1072 - App Store Release
@@ -36,7 +54,15 @@ struct ReleaseCommand: ParsableCommand {
     @Option(name: .shortAndLong, help: "The last release tag to use as a base for the changelog creation. Default: previous tag.")
     var lastReleaseTag: String?
 
-    @Option(name: .customLong("changelogToTag"), help: "If set, the date of this tag will be used as the limit for the changelog creation. This variable should be passed when `tagName` is set. Default: latest tag.")
+    @Option(
+        name: .customLong("changelogToTag"),
+        help: """
+            If set, the date of this tag will be used as the limit for the changelog creation.
+            This variable should be passed when `tagName` is set.
+
+            Default: latest tag.
+            """
+    )
     var changelogToTag: String?
 
     // Develop

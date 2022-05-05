@@ -68,7 +68,10 @@ extension Mocker {
         let date = dateFormatter.date(from: "2020-01-03")!
         MockedShell.mockRelease(tag: "1.0.0", date: date)
 
-        var urlComponents = URLComponents(url: URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/pulls")!, resolvingAgainstBaseURL: false)!
+        var urlComponents = URLComponents(
+            url: URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/pulls")!,
+            resolvingAgainstBaseURL: false
+        )!
         urlComponents.queryItems = [
             URLQueryItem(name: "base", value: baseBranch),
             URLQueryItem(name: "direction", value: "desc"),
@@ -87,7 +90,10 @@ extension Mocker {
         let date = dateFormatter.date(from: "2020-01-03")!
         MockedShell.mockRelease(tag: "1.0.0", date: date)
 
-        var urlComponents = URLComponents(url: URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/issues")!, resolvingAgainstBaseURL: false)!
+        var urlComponents = URLComponents(
+            url: URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/issues")!,
+            resolvingAgainstBaseURL: false
+        )!
         urlComponents.queryItems = [
             URLQueryItem(name: "page", value: "1"),
             URLQueryItem(name: "per_page", value: "100"),
@@ -107,26 +113,46 @@ extension Mocker {
 
     @discardableResult static func mockRelease() -> Mock {
         let releaseJSONData = ReleaseJSON.data(using: .utf8)!
-        let mock = Mock(url: URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/releases")!, dataType: .json, statusCode: 201, data: [.post: releaseJSONData])
+        let mock = Mock(
+            url: URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/releases")!,
+            dataType: .json,
+            statusCode: 201,
+            data: [.post: releaseJSONData]
+        )
         mock.register()
         return mock
     }
 
     @discardableResult static func mockListReleases() -> Mock {
         let releaseJSONData = ListReleasesJSON.data(using: .utf8)!
-        let mock = Mock(url: URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/releases?per_page=100")!, dataType: .json, statusCode: 200, data: [.get: releaseJSONData])
+        let mock = Mock(
+            url: URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/releases?per_page=100")!,
+            dataType: .json,
+            statusCode: 200,
+            data: [.get: releaseJSONData]
+        )
         mock.register()
         return mock
     }
 
     @discardableResult static func mockDeletingRelease(id: Int) -> Mock {
-        let mock = Mock(url: URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/releases/\(id)")!, dataType: .json, statusCode: 204, data: [.delete: Data()])
+        let mock = Mock(
+            url: URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/releases/\(id)")!,
+            dataType: .json,
+            statusCode: 204,
+            data: [.delete: Data()]
+        )
         mock.register()
         return mock
     }
 
     @discardableResult static func mockDeletingReference(tagName: String) -> Mock {
-        let mock = Mock(url: URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/git/refs/tags/\(tagName)")!, dataType: .json, statusCode: 204, data: [.delete: Data()])
+        let mock = Mock(
+            url: URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/git/refs/tags/\(tagName)")!,
+            dataType: .json,
+            statusCode: 204,
+            data: [.delete: Data()]
+        )
         mock.register()
         return mock
     }

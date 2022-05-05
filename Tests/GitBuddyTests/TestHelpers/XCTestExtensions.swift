@@ -10,7 +10,9 @@ import Foundation
 import XCTest
 
 extension XCTest {
-    func AssertEqualStringsIgnoringTrailingWhitespace(_ string1: String, _ string2: String, file: StaticString = #file, line: UInt = #line) {
+    func AssertEqualStringsIgnoringTrailingWhitespace(_ string1: String, _ string2: String, file: StaticString = #file,
+                                                      line: UInt = #line)
+    {
         let lines1 = string1.split(separator: "\n", omittingEmptySubsequences: false)
         let lines2 = string2.split(separator: "\n", omittingEmptySubsequences: false)
 
@@ -22,7 +24,8 @@ extension XCTest {
 
     /// Executes the command and throws the execution error if any occur.
     /// - Parameters:
-    ///   - command: The command to execute. This command can be exactly the same as you would use in the terminal. E.g. "gitbuddy changelog".
+    ///   - command: The command to execute. This command can be exactly the same as you would use in the terminal.
+    ///   E.g. "gitbuddy changelog".
     ///   - expected: The expected outcome printed in the console.
     /// - Throws: The error occured while executing the command.
     func AssertExecuteCommand(_ command: String, expected: String, file: StaticString = #file, line: UInt = #line) throws {

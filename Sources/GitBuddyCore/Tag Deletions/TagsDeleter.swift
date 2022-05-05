@@ -102,7 +102,12 @@ final class TagsDeleter: URLSessionInjectable, ShellInjectable {
                 return
             }
 
-            octoKit.deleteReference(urlSession, owner: project.organisation, repository: project.repository, ref: "tags/\(release.tagName)") { error in
+            octoKit.deleteReference(
+                urlSession,
+                owner: project.organisation,
+                repository: project.repository,
+                ref: "tags/\(release.tagName)"
+            ) { error in
                 defer { group.leave() }
                 guard let error = error else {
                     Log.debug("Successfully deleted tag \(release.tagName)")

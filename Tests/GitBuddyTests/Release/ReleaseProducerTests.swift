@@ -37,7 +37,10 @@ final class ReleaseProducerTests: XCTestCase {
         let token = "username:79B02BE4-38D1-4E3D-9B41-4E0739761512"
         mockGITAuthentication(token)
         try executeCommand("gitbuddy release -s")
-        XCTAssertEqual(URLSessionInjector.urlSession.configuration.httpAdditionalHeaders?["Authorization"] as? String, "Basic dXNlcm5hbWU6NzlCMDJCRTQtMzhEMS00RTNELTlCNDEtNEUwNzM5NzYxNTEy")
+        XCTAssertEqual(
+            URLSessionInjector.urlSession.configuration.httpAdditionalHeaders?["Authorization"] as? String,
+            "Basic dXNlcm5hbWU6NzlCMDJCRTQtMzhEMS00RTNELTlCNDEtNEUwNzM5NzYxNTEy"
+        )
     }
 
     /// It should correctly output the release URL.
@@ -47,6 +50,7 @@ final class ReleaseProducerTests: XCTestCase {
 
     func testReleaseOutputJSON() throws {
         let output = try executeCommand("gitbuddy release -s --json")
+        // swiftlint:disable:next line_length
         XCTAssertTrue(output.contains("{\"title\":\"1.0.1\",\"tagName\":\"1.0.1\",\"url\":\"https:\\/\\/github.com\\/WeTransfer\\/ChangelogProducer\\/releases\\/tag\\/1.0.1\""))
     }
 

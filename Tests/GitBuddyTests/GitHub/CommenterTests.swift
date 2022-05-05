@@ -27,11 +27,21 @@ final class CommenterTests: XCTestCase {
     func testWatermark() throws {
         Mocker.mockPullRequests()
         let latestTag = try Tag.latest()
-        let release = Release(tagName: latestTag.name, url: URL(string: "https://www.fakegithub.com")!, title: "Release title", changelog: "")
+        let release = Release(
+            tagName: latestTag.name,
+            url: URL(string: "https://www.fakegithub.com")!,
+            title: "Release title",
+            changelog: ""
+        )
         let project = GITProject(organisation: "WeTransfer", repository: "GitBuddy")
 
         let mockExpectation = expectation(description: "Mock should be called")
-        var mock = Mock(url: URL(string: "https://api.github.com/repos/WeTransfer/GitBuddy/issues/1/comments")!, dataType: .json, statusCode: 200, data: [.post: Data()])
+        var mock = Mock(
+            url: URL(string: "https://api.github.com/repos/WeTransfer/GitBuddy/issues/1/comments")!,
+            dataType: .json,
+            statusCode: 200,
+            data: [.post: Data()]
+        )
         mock.onRequest = { _, postBodyArguments in
             let body = postBodyArguments?["body"] as? String
             XCTAssertTrue(body?.contains(Commenter.watermark) == true)

@@ -18,8 +18,10 @@ enum Comment {
         case .releasedPR(let release):
             return "Congratulations! :tada: This was released as part of [Release \(release.title)](\(release.url)) :rocket:"
         case .releasedIssue(let release, let pullRequestID):
-            var body = "The pull request #\(pullRequestID) that closed this issue was merged and released as part of [Release \(release.title)](\(release.url)) :rocket:\n"
-            body += "Please let us know if the functionality works as expected as a reply here. If it does not, please open a new issue. Thanks!"
+            var body = "The pull request #\(pullRequestID) that closed this issue was merged and released "
+            body += "as part of [Release \(release.title)](\(release.url)) :rocket:\n"
+            body += "Please let us know if the functionality works as expected as a reply here. "
+            body += "If it does not, please open a new issue. Thanks!"
             return body
         }
     }
@@ -43,14 +45,17 @@ enum Commenter {
     static func post(_ comment: Comment, on issueID: Int, at project: GITProject, completion: @escaping () -> Void) {
         var body = comment.body
         body += watermark
-        Octokit().commentIssue(urlSession, owner: project.organisation, repository: project.repository, number: issueID, body: body) { response in
-            switch response {
-            case .success(let comment):
-                Log.debug("Successfully posted comment at: \(comment.htmlURL)")
-            case .failure(let error):
-                Log.debug("Posting comment for issue #\(issueID) failed: \(error)")
+        Octokit()
+            .commentIssue(urlSession, owner: project.organisation, repository: project.repository, number: issueID,
+                          body: body)
+            { response in
+                switch response {
+                case .success(let comment):
+                    Log.debug("Successfully posted comment at: \(comment.htmlURL)")
+                case .failure(let error):
+                    Log.debug("Posting comment for issue #\(issueID) failed: \(error)")
+                }
+                completion()
             }
-            completion()
-        }
     }
 }

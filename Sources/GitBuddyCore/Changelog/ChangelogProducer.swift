@@ -17,7 +17,8 @@ final class ChangelogProducer: URLSessionInjectable {
         case latestTag
 
         /// Gets the date for the current Since property.
-        /// In the case of a tag, we add 60 seconds to make sure that the Changelog does not include the commit that is used for creating the tag.
+        /// In the case of a tag, we add 60 seconds to make sure that the Changelog does not include the commit that
+        /// is used for creating the tag.
         /// This is needed as the tag creation date equals the commit creation date.
         func get() throws -> Date {
             switch self {

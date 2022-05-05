@@ -22,7 +22,15 @@ struct PullRequestFetcher {
 
         var result: Result<[PullRequest], Swift.Error>!
 
-        octoKit.pullRequests(session, owner: project.organisation, repository: project.repository, base: baseBranch, state: .closed, sort: .updated, direction: .desc) { response in
+        octoKit.pullRequests(
+            session,
+            owner: project.organisation,
+            repository: project.repository,
+            base: baseBranch,
+            state: .closed,
+            sort: .updated,
+            direction: .desc
+        ) { response in
             switch response {
             case .success(let pullRequests):
                 result = .success(pullRequests)

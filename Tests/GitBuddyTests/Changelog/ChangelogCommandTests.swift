@@ -35,7 +35,10 @@ final class ChangelogCommandTests: XCTestCase {
         let token = "username:79B02BE4-38D1-4E3D-9B41-4E0739761512"
         mockGITAuthentication(token)
         try executeCommand("gitbuddy changelog")
-        XCTAssertEqual(URLSessionInjector.urlSession.configuration.httpAdditionalHeaders?["Authorization"] as? String, "Basic dXNlcm5hbWU6NzlCMDJCRTQtMzhEMS00RTNELTlCNDEtNEUwNzM5NzYxNTEy")
+        XCTAssertEqual(
+            URLSessionInjector.urlSession.configuration.httpAdditionalHeaders?["Authorization"] as? String,
+            "Basic dXNlcm5hbWU6NzlCMDJCRTQtMzhEMS00RTNELTlCNDEtNEUwNzM5NzYxNTEy"
+        )
     }
 
     /// It should correctly output the changelog.
