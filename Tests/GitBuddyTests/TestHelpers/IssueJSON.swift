@@ -6,6 +6,7 @@
 //  Copyright © 2020 WeTransfer. All rights reserved.
 //
 
+// swiftlint:disable line_length
 let IssueJSON = """
 
 {

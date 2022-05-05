@@ -5,6 +5,8 @@
 //  Created by Max Desiatov on 28/03/2020.
 //
 
+// swiftlint:disable line_length
+// swiftlint:disable file_length
 let IssuesJSON = #"""
 [
   {

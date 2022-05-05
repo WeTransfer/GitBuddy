@@ -16,8 +16,9 @@ protocol ChangelogInput {
     var htmlURL: Foundation.URL? { get }
     var username: String? { get }
 }
-protocol ChangelogIssue: ChangelogInput { }
-protocol ChangelogPullRequest: ChangelogInput { }
+
+protocol ChangelogIssue: ChangelogInput {}
+protocol ChangelogPullRequest: ChangelogInput {}
 
 extension PullRequest: ChangelogPullRequest {
     var username: String? { user?.login ?? assignee?.login }

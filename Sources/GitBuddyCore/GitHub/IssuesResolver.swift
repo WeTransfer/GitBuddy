@@ -42,7 +42,6 @@ struct IssuesResolver {
 }
 
 extension String {
-
     /// Extracts the resolved issues from a Pull Request body.
     func resolvingIssues() -> [Int] {
         var resolvedIssues = Set<Int>()
@@ -69,8 +68,8 @@ extension String {
                     guard index + 1 <= splits.count - 1 else { break }
                     let nextSplit = splits[index + 1]
 
-                    let numberPrefixString = nextSplit.prefix { (character) -> Bool in
-                        return character.isNumber
+                    let numberPrefixString = nextSplit.prefix { character -> Bool in
+                        character.isNumber
                     }
 
                     if !numberPrefixString.isEmpty, let numberPrefix = Int(numberPrefixString.description) {

@@ -7,11 +7,10 @@
 //
 
 import Foundation
-import XCTest
 @testable import GitBuddyCore
+import XCTest
 
 final class SingleSectionChangelogTests: XCTestCase {
-
     /// It should report a single issue from a pull request correctly.
     func testPullRequestSingleIssue() {
         let pullRequest = MockedPullRequest(number: 0)

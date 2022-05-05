@@ -12,7 +12,6 @@ import OctoKit
 typealias Branch = String
 
 struct PullRequestFetcher {
-
     let octoKit: Octokit
     let baseBranch: Branch
     let project: GITProject
@@ -23,7 +22,15 @@ struct PullRequestFetcher {
 
         var result: Result<[PullRequest], Swift.Error>!
 
-        octoKit.pullRequests(session, owner: project.organisation, repository: project.repository, base: baseBranch, state: .closed, sort: .updated, direction: .desc) { (response) in
+        octoKit.pullRequests(
+            session,
+            owner: project.organisation,
+            repository: project.repository,
+            base: baseBranch,
+            state: .closed,
+            sort: .updated,
+            direction: .desc
+        ) { response in
             switch response {
             case .success(let pullRequests):
                 result = .success(pullRequests)
@@ -39,5 +46,4 @@ struct PullRequestFetcher {
             return mergedAt > fromDate && mergedAt < toDate
         }
     }
-
 }
