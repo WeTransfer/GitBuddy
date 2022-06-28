@@ -12,10 +12,10 @@
       },
       {
         "package": "OctoKit",
-        "repositoryURL": "https://github.com/AvdLee/octokit.swift",
+        "repositoryURL": "https://github.com/WeTransfer/octokit.swift",
         "state": {
-          "branch": "master",
-          "revision": "c1d49d82fa34d8022b0cdc95ca94113a54a4ec81",
+          "branch": "main",
+          "revision": "8f78b18b3278a378d9a96bd7b832ce4091378c5c",
           "version": null
         }
       },
