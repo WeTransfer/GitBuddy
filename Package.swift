@@ -12,8 +12,9 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/WeTransfer/Mocker.git", .upToNextMajor(from: "2.1.0")),
-        /// Temporarily pointing to the WeTransfer fork of octokit.swift. When a new version is released, we should go back pointing to
-        /// the original repo: `.package(url: "https://github.com/nerdishbynature/octokit.swift", .upToNextMajor(from: "0.10.1"))`
+        /// Temporarily pointing to the WeTransfer fork of `octokit.swift` because the current version (`0.11.0`) doesn't include
+        /// the changes around Releases. Once a new version is released, we should go back to pointing to the original repo:
+        /// `.package(url: "https://github.com/nerdishbynature/octokit.swift", .upToNextMajor(from: "0.11.0"))`
         .package(url: "https://github.com/WeTransfer/octokit.swift", .branch("main")),
         .package(url: "https://github.com/apple/swift-argument-parser", .upToNextMajor(from: "1.0.0"))
     ],
