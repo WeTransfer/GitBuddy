@@ -22,11 +22,11 @@ USAGE: gitbuddy changelog [--since-tag <since-tag>] [--base-branch <base-branch>
 
 OPTIONS:
   -s, --since-tag <since-tag>
-                          The tag to use as a base. Defaults to the latest tag. 
+                          The tag to use as a base. Defaults to the latest tag.
   -b, --base-branch <base-branch>
-                          The base branch to compare with. Defaults to master. 
-  --sections              Whether the changelog should be split into sections. Defaults to false. 
-  --verbose               Show extra logging for debugging purposes 
+                          The base branch to compare with. Defaults to master.
+  --sections              Whether the changelog should be split into sections. Defaults to false.
+  --verbose               Show extra logging for debugging purposes
   -h, --help              Show help information.
 ```
 
@@ -69,26 +69,26 @@ USAGE: gitbuddy release [--changelog-path <changelog-path>] [--skip-comments] [-
 
 OPTIONS:
   -c, --changelog-path <changelog-path>
-                          The path to the Changelog to update it with the latest changes. 
-  -s, --skip-comments     Disable commenting on issues and PRs about the new release. 
-  -p, --use-pre-release   Create the release as a pre-release. 
+                          The path to the Changelog to update it with the latest changes.
+  -s, --skip-comments     Disable commenting on issues and PRs about the new release.
+  -p, --use-pre-release   Create the release as a pre-release.
   -t, --target-commitish <target-commitish>
                           Specifies the commitish value that determines where the Git tag is created
                           from. Can be any branch or commit SHA. Unused if the Git tag already exists.
-                          Default: the repository's default branch (usually master). 
+                          Default: the repository's default branch (usually master).
   -n, --tag-name <tag-name>
                           The name of the tag. Default: takes the last created tag to publish as a GitHub
-                          release. 
+                          release.
   -r, --release-title <release-title>
-                          The title of the release. Default: uses the tag name. 
+                          The title of the release. Default: uses the tag name.
   -l, --last-release-tag <last-release-tag>
                           The last release tag to use as a base for the changelog creation. Default:
-                          previous tag. 
+                          previous tag.
   -b, --base-branch <base-branch>
                           The base branch to compare with for generating the changelog. Defaults to
-                          master. 
-  --sections              Whether the changelog should be split into sections. Defaults to false. 
-  --verbose               Show extra logging for debugging purposes 
+                          master.
+  --sections              Whether the changelog should be split into sections. Defaults to false.
+  --verbose               Show extra logging for debugging purposes
   -h, --help              Show help information.
 ```
 
@@ -132,7 +132,7 @@ OVERVIEW: Manage your GitHub repositories with ease
 USAGE: gitbuddy [--version] <subcommand>
 
 OPTIONS:
-  --version               Prints the current GitBuddy version 
+  --version               Prints the current GitBuddy version
   -h, --help              Show help information.
 
 SUBCOMMANDS:
@@ -142,7 +142,7 @@ SUBCOMMANDS:
 
 ### Development
 - `cd` into the repository
-- run `swift package generate-xcodeproj` (Generates an Xcode project for development)
+- open the `Package.swift` file
 - Run the following command from the project you're using it for:
 
 ```bash
