@@ -137,7 +137,7 @@ OPTIONS:
 
 SUBCOMMANDS:
   changelog               Create a changelog for GitHub repositories
-  release                 Create a new release including a changelog and publish 			 													 comments on related issues.
+  release                 Create a new release including a changelog and publish comments on related issues.
 ```
 
 ### Development
