@@ -24,7 +24,7 @@ struct IssuesFetcher {
             case .success(let issues):
                 result = .success(issues)
             case .failure(let error):
-                result = .failure(error)
+                result = .failure(OctoKitError(error: error))
             }
             group.leave()
         }
