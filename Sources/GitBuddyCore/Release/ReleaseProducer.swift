@@ -207,7 +207,7 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
             case .success(let release):
                 result = .success(release.htmlURL)
             case .failure(let error):
-                result = .failure(error)
+                result = .failure(OctoKitError(error: error))
             }
             group.leave()
         }

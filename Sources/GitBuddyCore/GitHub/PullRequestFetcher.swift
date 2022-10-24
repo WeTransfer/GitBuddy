@@ -35,7 +35,7 @@ struct PullRequestFetcher {
             case .success(let pullRequests):
                 result = .success(pullRequests)
             case .failure(let error):
-                result = .failure(error)
+                result = .failure(OctoKitError(error: error))
             }
             group.leave()
         }
