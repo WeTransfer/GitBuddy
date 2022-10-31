@@ -1,3 +1,9 @@
+### 4.1.4
+- Improve error logs for GitBuddy GitHub API failures ([#93](https://github.com/WeTransfer/GitBuddy/pull/93)) via [@AvdLee](https://github.com/AvdLee)
+- Update `Development` section in `README` file ([#91](https://github.com/WeTransfer/GitBuddy/pull/91)) via [@peagasilva](https://github.com/peagasilva)
+- Update `octokit.swift` dependency ([#90](https://github.com/WeTransfer/GitBuddy/pull/90)) via [@peagasilva](https://github.com/peagasilva)
+- Merge release 4.1.3 into master ([#84](https://github.com/WeTransfer/GitBuddy/pull/84)) via [@wetransferplatform](https://github.com/wetransferplatform)
+
 ### 4.1.3
 - Filter emojis out of changelog ([#82](https://github.com/WeTransfer/GitBuddy/pull/82)) via [@AvdLee](https://github.com/AvdLee)
 - Merge release 4.1.2 into master ([#81](https://github.com/WeTransfer/GitBuddy/pull/81)) via [@wetransferplatform](https://github.com/wetransferplatform)
