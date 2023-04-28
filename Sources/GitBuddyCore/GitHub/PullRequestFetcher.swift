@@ -29,7 +29,8 @@ struct PullRequestFetcher {
             base: baseBranch,
             state: .closed,
             sort: .updated,
-            direction: .desc
+            direction: .desc,
+            perPage: 100
         ) { response in
             switch response {
             case .success(let pullRequests):
