@@ -75,6 +75,7 @@ extension Mocker {
         urlComponents.queryItems = [
             URLQueryItem(name: "base", value: baseBranch),
             URLQueryItem(name: "direction", value: "desc"),
+            URLQueryItem(name: "per_page", value: "100"),
             URLQueryItem(name: "sort", value: "updated"),
             URLQueryItem(name: "state", value: "closed")
         ]
