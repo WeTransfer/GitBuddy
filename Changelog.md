@@ -1,3 +1,8 @@
+### 4.1.5
+- Increase PR Limit to fetch 100 latest ([#96](https://github.com/WeTransfer/GitBuddy/pull/96)) via [@AvdLee](https://github.com/AvdLee)
+- Update README.md ([#92](https://github.com/WeTransfer/GitBuddy/pull/92)) via [@iSapozhnik](https://github.com/iSapozhnik)
+- Merge release 4.1.4 into master ([#94](https://github.com/WeTransfer/GitBuddy/pull/94)) via [@wetransferplatform](https://github.com/wetransferplatform)
+
 ### 4.1.4
 - Improve error logs for GitBuddy GitHub API failures ([#93](https://github.com/WeTransfer/GitBuddy/pull/93)) via [@AvdLee](https://github.com/AvdLee)
 - Update `Development` section in `README` file ([#91](https://github.com/WeTransfer/GitBuddy/pull/91)) via [@peagasilva](https://github.com/peagasilva)
