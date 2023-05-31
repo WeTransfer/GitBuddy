@@ -32,6 +32,7 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
     let lastReleaseTag: String?
     let changelogToTag: String?
     let baseBranch: String
+    let useGitHubReleaseNotes: Bool
 
     init(
         changelogPath: String?,
@@ -42,7 +43,8 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
         releaseTitle: String? = nil,
         lastReleaseTag: String? = nil,
         baseBranch: String? = nil,
-        changelogToTag: String? = nil
+        changelogToTag: String? = nil,
+        useGitHubReleaseNotes: Bool
     ) throws {
         try Octokit.authenticate()
 
@@ -59,6 +61,7 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
         self.lastReleaseTag = lastReleaseTag
         self.changelogToTag = changelogToTag
         self.baseBranch = baseBranch ?? "master"
+        self.useGitHubReleaseNotes = useGitHubReleaseNotes
     }
 
     @discardableResult public func run(isSectioned: Bool) throws -> Release {
@@ -187,6 +190,7 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
             prerelease:      \(isPrerelease)
             draft:           false
             title:           \(releaseTitle)
+            useGitHubReleaseNotes: \(useGitHubReleaseNotes)
             body:
             \(body)\n
         """)
@@ -201,7 +205,8 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
             name: releaseTitle,
             body: body,
             prerelease: isPrerelease,
-            draft: false
+            draft: false,
+            generateReleaseNotes: useGitHubReleaseNotes
         ) { response in
             switch response {
             case .success(let release):
