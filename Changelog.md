@@ -1,3 +1,7 @@
+### 4.2.0
+- Add the possibility to let GitHub generate release notes ([#98](https://github.com/WeTransfer/GitBuddy/pull/98)) via [@AvdLee](https://github.com/AvdLee)
+- Merge release 4.1.5 into master ([#97](https://github.com/WeTransfer/GitBuddy/pull/97)) via [@wetransferplatform](https://github.com/wetransferplatform)
+
 ### 4.1.5
 - Increase PR Limit to fetch 100 latest ([#96](https://github.com/WeTransfer/GitBuddy/pull/96)) via [@AvdLee](https://github.com/AvdLee)
 - Update README.md ([#92](https://github.com/WeTransfer/GitBuddy/pull/92)) via [@iSapozhnik](https://github.com/iSapozhnik)
