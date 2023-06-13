@@ -69,17 +69,21 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
 
         /// We're adding 60 seconds to make sure the tag commit itself is included in the changelog as well.
         let adjustedChangelogToDate = changelogToDate.addingTimeInterval(60)
+        let tagName = try tagName ?? Tag.latest().name
 
         let changelogSinceTag = lastReleaseTag ?? Self.shell.execute(.previousTag)
         let changelogProducer = try ChangelogProducer(
             since: .tag(tag: changelogSinceTag),
             to: adjustedChangelogToDate,
-            baseBranch: baseBranch
+            baseBranch: baseBranch,
+            useGitHubReleaseNotes: useGitHubReleaseNotes,
+            tagName: tagName,
+            targetCommitish: targetCommitish,
+            previousTagName: changelogSinceTag
         )
         let changelog = try changelogProducer.run(isSectioned: isSectioned)
         Log.debug("\(changelog)\n")
 
-        let tagName = try tagName ?? Tag.latest().name
         try updateChangelogFile(adding: changelog.description, for: tagName)
 
         let repositoryName = Self.shell.execute(.repositoryName)
@@ -206,7 +210,8 @@ final class ReleaseProducer: URLSessionInjectable, ShellInjectable {
             body: body,
             prerelease: isPrerelease,
             draft: false,
-            generateReleaseNotes: useGitHubReleaseNotes
+            /// Since GitHub's API does not support setting `previous_tag_name`, we manually call the API to generate automated GH changelogs.
+            generateReleaseNotes: false
         ) { response in
             switch response {
             case .success(let release):

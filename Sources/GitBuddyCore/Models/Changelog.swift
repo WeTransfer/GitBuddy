@@ -20,6 +20,14 @@ protocol Changelog: CustomStringConvertible {
     var itemIdentifiers: [PullRequestID: [IssueID]] { get }
 }
 
+extension ReleaseNotes: Changelog {
+    var itemIdentifiers: [PullRequestID : [IssueID]] {
+        [:]
+    }
+
+    public var description: String { body }
+}
+
 /// Represents a changelog with a single section of changelog items.
 struct SingleSectionChangelog: Changelog {
     let description: String

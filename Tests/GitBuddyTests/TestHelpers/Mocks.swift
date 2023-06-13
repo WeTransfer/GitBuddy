@@ -124,6 +124,18 @@ extension Mocker {
         return mock
     }
 
+    @discardableResult static func mockReleaseNotes() -> Mock {
+        let releaseNotesJSONData = ReleaseNotesJSON.data(using: .utf8)!
+        let mock = Mock(
+            url: URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/releases/generate-notes")!,
+            dataType: .json,
+            statusCode: 200,
+            data: [.post: releaseNotesJSONData]
+        )
+        mock.register()
+        return mock
+    }
+
     @discardableResult static func mockListReleases() -> Mock {
         let releaseJSONData = ListReleasesJSON.data(using: .utf8)!
         let mock = Mock(

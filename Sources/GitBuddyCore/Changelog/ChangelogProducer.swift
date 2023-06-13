@@ -38,8 +38,20 @@ final class ChangelogProducer: URLSessionInjectable {
     let from: Date
     let to: Date
     let project: GITProject
+    let useGitHubReleaseNotes: Bool
+    let tagName: String?
+    let targetCommitish: String?
+    let previousTagName: String?
 
-    init(since: Since = .latestTag, to: Date = Date(), baseBranch: Branch?) throws {
+    init(
+        since: Since = .latestTag,
+        to: Date = Date(),
+        baseBranch: Branch?,
+        useGitHubReleaseNotes: Bool = false,
+        tagName: String? = nil,
+        targetCommitish: String? = nil,
+        previousTagName: String? = nil
+    ) throws {
         try Octokit.authenticate()
 
         self.to = to
@@ -57,9 +69,27 @@ final class ChangelogProducer: URLSessionInjectable {
         Log.debug("Getting all changes between \(self.from) and \(self.to)")
         self.baseBranch = baseBranch ?? "master"
         project = GITProject.current()
+        self.useGitHubReleaseNotes = useGitHubReleaseNotes
+        self.tagName = tagName
+        self.targetCommitish = targetCommitish
+        self.previousTagName = previousTagName
     }
 
     @discardableResult public func run(isSectioned: Bool) throws -> Changelog {
+        if useGitHubReleaseNotes, let tagName, let targetCommitish, let previousTagName {
+            return try GitHubReleaseNotesGenerator(
+                octoKit: octoKit,
+                project: project,
+                tagName: tagName,
+                targetCommitish: targetCommitish,
+                previousTagName: previousTagName
+            ).generate(using: urlSession)
+        } else {
+            return try generateChangelogUsingPRsAndIssues(isSectioned: isSectioned)
+        }
+    }
+
+    private func generateChangelogUsingPRsAndIssues(isSectioned: Bool) throws -> Changelog {
         let pullRequestsFetcher = PullRequestFetcher(octoKit: octoKit, baseBranch: baseBranch, project: project)
         let pullRequests = try pullRequestsFetcher.fetchAllBetween(from, and: to, using: urlSession)
 
