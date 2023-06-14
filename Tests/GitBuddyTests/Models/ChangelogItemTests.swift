@@ -38,7 +38,7 @@ final class ChangelogItemTests: XCTestCase {
 
     /// It should show the user if possible.
     func testUser() {
-        let input = PullRequestsJSON.data(using: .utf8)!.mapJSON(to: [PullRequest].self).first!
+        let input = Data(PullRequestsJSON.utf8).mapJSON(to: [PullRequest].self).first!
         input.htmlURL = nil
         let item = ChangelogItem(input: input, closedBy: input)
         XCTAssertEqual(item.title, "Add charset utf-8 to html head via [@AvdLee](https://github.com/AvdLee)")
@@ -46,7 +46,7 @@ final class ChangelogItemTests: XCTestCase {
 
     /// It should fallback to the assignee if the user is nil for Pull Requests.
     func testAssigneeFallback() {
-        let input = PullRequestsJSON.data(using: .utf8)!.mapJSON(to: [PullRequest].self).first!
+        let input = Data(PullRequestsJSON.utf8).mapJSON(to: [PullRequest].self).first!
         input.user = nil
         input.htmlURL = nil
         let item = ChangelogItem(input: input, closedBy: input)

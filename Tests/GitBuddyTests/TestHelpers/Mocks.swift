@@ -80,7 +80,7 @@ extension Mocker {
             URLQueryItem(name: "state", value: "closed")
         ]
 
-        let pullRequestJSONData = PullRequestsJSON.data(using: .utf8)!
+        let pullRequestJSONData = Data(PullRequestsJSON.utf8)
         let mock = Mock(url: urlComponents.url!, dataType: .json, statusCode: 200, data: [.get: pullRequestJSONData])
         mock.register()
     }
@@ -101,19 +101,19 @@ extension Mocker {
             URLQueryItem(name: "state", value: "closed")
         ]
 
-        let data = IssuesJSON.data(using: .utf8)!
+        let data = Data(IssuesJSON.utf8)
         let mock = Mock(url: urlComponents.url!, dataType: .json, statusCode: 200, data: [.get: data])
         mock.register()
     }
 
     static func mockForIssueNumber(_ issueNumber: Int) {
         let urlComponents = URLComponents(string: "https://api.github.com/repos/WeTransfer/Diagnostics/issues/\(issueNumber)")!
-        let issueJSONData = IssueJSON.data(using: .utf8)!
+        let issueJSONData = Data(IssueJSON.utf8)
         Mock(url: urlComponents.url!, dataType: .json, statusCode: 200, data: [.get: issueJSONData]).register()
     }
 
     @discardableResult static func mockRelease() -> Mock {
-        let releaseJSONData = ReleaseJSON.data(using: .utf8)!
+        let releaseJSONData = Data(ReleaseJSON.utf8)
         let mock = Mock(
             url: URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/releases")!,
             dataType: .json,
@@ -125,7 +125,7 @@ extension Mocker {
     }
 
     @discardableResult static func mockReleaseNotes() -> Mock {
-        let releaseNotesJSONData = ReleaseNotesJSON.data(using: .utf8)!
+        let releaseNotesJSONData = Data(ReleaseNotesJSON.utf8)
         let mock = Mock(
             url: URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/releases/generate-notes")!,
             dataType: .json,
@@ -137,7 +137,7 @@ extension Mocker {
     }
 
     @discardableResult static func mockListReleases() -> Mock {
-        let releaseJSONData = ListReleasesJSON.data(using: .utf8)!
+        let releaseJSONData = Data(ListReleasesJSON.utf8)
         let mock = Mock(
             url: URL(string: "https://api.github.com/repos/WeTransfer/Diagnostics/releases?per_page=100")!,
             dataType: .json,
@@ -172,7 +172,7 @@ extension Mocker {
 
     static func mockForCommentingOn(issueNumber: Int) -> Mock {
         let urlComponents = URLComponents(string: "https://api.github.com/repos/WeTransfer/Diagnostics/issues/\(issueNumber)/comments")!
-        let commentJSONData = CommentJSON.data(using: .utf8)!
+        let commentJSONData = Data(CommentJSON.utf8)
         return Mock(url: urlComponents.url!, dataType: .json, statusCode: 201, data: [.post: commentJSONData])
     }
 }
