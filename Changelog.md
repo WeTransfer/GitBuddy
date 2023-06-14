@@ -1,3 +1,8 @@
+### 4.3.0
+- Make sure GH release notes are used correctly with previous tag ([#101](https://github.com/WeTransfer/GitBuddy/pull/101)) via [@AvdLee](https://github.com/AvdLee)
+- Merge release 4.2.0 into master ([#100](https://github.com/WeTransfer/GitBuddy/pull/100)) via [@wetransferplatform](https://github.com/wetransferplatform)
+- Update CI ([#99](https://github.com/WeTransfer/GitBuddy/pull/99)) via [@AvdLee](https://github.com/AvdLee)
+
 ### 4.2.0
 - Add the possibility to let GitHub generate release notes ([#98](https://github.com/WeTransfer/GitBuddy/pull/98)) via [@AvdLee](https://github.com/AvdLee)
 - Merge release 4.1.5 into master ([#97](https://github.com/WeTransfer/GitBuddy/pull/97)) via [@wetransferplatform](https://github.com/wetransferplatform)
