@@ -3,6 +3,7 @@
 //  
 //
 //  Created by Antoine van der Lee on 13/06/2023.
+//  Copyright © 2023 WeTransfer. All rights reserved.
 //
 
 import Foundation
