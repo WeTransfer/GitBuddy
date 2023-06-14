@@ -78,6 +78,28 @@ final class ReleaseProducerTests: XCTestCase {
         wait(for: [mockExpectation], timeout: 0.3)
     }
 
+    /// It should set the parameters correctly.
+    func testPostBodyArgumentsGitHubReleaseNotes() throws {
+        let mockExpectation = expectation(description: "Mocks should be called")
+        Mocker.mockReleaseNotes()
+        var mock = Mocker.mockRelease()
+        mock.onRequest = { _, parameters in
+            guard let parameters = try? XCTUnwrap(parameters) else { return }
+            XCTAssertEqual(parameters["prerelease"] as? Bool, false)
+            XCTAssertEqual(parameters["draft"] as? Bool, false)
+            XCTAssertEqual(parameters["tag_name"] as? String, "1.0.1")
+            XCTAssertEqual(parameters["name"] as? String, "1.0.1")
+            XCTAssertEqual(parameters["body"] as? String, """
+            ##Changes in Release v1.0.0 ... ##Contributors @monalisa
+            """)
+            mockExpectation.fulfill()
+        }
+        mock.register()
+
+        try executeCommand("gitbuddy release -s --use-github-release-notes -t develop")
+        wait(for: [mockExpectation], timeout: 0.3)
+    }
+
     /// It should update the changelog file if the argument is set.
     func testChangelogUpdating() throws {
         let existingChangelog = """

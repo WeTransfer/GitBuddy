@@ -31,7 +31,7 @@ final class ChangelogItemsFactoryTests: XCTestCase {
 
     /// It should return the pull request only if no referencing issues are found.
     func testCreatingItems() {
-        let pullRequest = PullRequestsJSON.data(using: .utf8)!.mapJSON(to: [PullRequest].self).first!
+        let pullRequest = Data(PullRequestsJSON.utf8).mapJSON(to: [PullRequest].self).first!
         let factory = ChangelogItemsFactory(octoKit: octoKit, pullRequests: [pullRequest], project: project)
         let items = factory.items(using: urlSession)
         XCTAssertEqual(items.count, 1)
@@ -41,8 +41,8 @@ final class ChangelogItemsFactoryTests: XCTestCase {
 
     /// It should return the referencing issue with the pull request.
     func testReferencingIssue() {
-        let pullRequest = PullRequestsJSON.data(using: .utf8)!.mapJSON(to: [PullRequest].self).last!
-        let issue = IssueJSON.data(using: .utf8)!.mapJSON(to: Issue.self)
+        let pullRequest = Data(PullRequestsJSON.utf8).mapJSON(to: [PullRequest].self).last!
+        let issue = Data(IssueJSON.utf8).mapJSON(to: Issue.self)
         let factory = ChangelogItemsFactory(octoKit: octoKit, pullRequests: [pullRequest], project: project)
         Mocker.mockForIssueNumber(39)
         let items = factory.items(using: urlSession)
